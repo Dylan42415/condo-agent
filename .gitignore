@@ -10,5 +10,9 @@ __pycache__/
 tmp/
 *.log
 data/private/
+*.db
+data/*.db
+data/evidence/
+.agents/
 .build/
 Management_Agent-Stakeholder_Deck.pdf

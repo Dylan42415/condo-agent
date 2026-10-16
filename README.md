@@ -1,8 +1,8 @@
-# Management Agent: Resident Request Classifier
+# Condo Agent: Autonomous Condominium Emergency Triage & Management Platform
 
-A working prototype for organising condominium residents' requests. Each message
-is classified into a **category, priority, suggested team and review decision**
-to help staff assess what needs attention.
+A production-grade multi-agent platform for condominium resident services, emergency triage,
+and contractor auto-dispatch. Powered by **LangGraph**, **Hybrid Graph RAG (Obsidian/BMSMA)**,
+and real-time **Telegram Bot coordination**.
 
 Start with the included offline classifier, or use Ollama to explore local
 language-model inference. The project focuses on classification and staff review

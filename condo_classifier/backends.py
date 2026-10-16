@@ -1,6 +1,7 @@
 import csv
 import json
 import os
+import re
 from pathlib import Path
 from typing import Protocol
 from urllib.parse import urlparse
@@ -73,11 +74,9 @@ class BaselineBackend:
 
 
 def parse_model_decision(content: str, request: ResidentRequest) -> ModelDecision:
-    cleaned = content.strip()
-    if cleaned.startswith("```json\n") and cleaned.endswith("```"):
-        cleaned = cleaned[8:-3].strip()
-    elif cleaned.startswith("```\n") and cleaned.endswith("```"):
-        cleaned = cleaned[4:-3].strip()
+    cleaned = re.sub(
+        r"^```(?:json)?\s*\r?\n|\r?\n```$", "", content.strip(), flags=re.IGNORECASE
+    ).strip()
     result = ModelDecision.model_validate_json(cleaned)
     normalized_evidence = []
     for quote in result.evidence:

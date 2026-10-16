@@ -1,13 +1,15 @@
 [project]
-name = "resident-request-classifier"
-version = "0.1.0"
-description = "A classifier-first foundation for condominium resident service requests."
+name = "condo-agent"
+version = "1.0.0"
+description = "Condo Agent - Autonomous Condominium Emergency Triage, Auto-Dispatch & Hybrid Graph RAG Platform."
 requires-python = ">=3.11,<3.14"
 dependencies = [
+    "google-genai>=2.30.1",
     "langchain-ollama>=1.0,<2",
     "langgraph>=1.0,<2",
     "pydantic>=2.10,<3",
     "python-dotenv>=1.0,<2",
+    "python-telegram-bot>=22.8",
     "scikit-learn>=1.6,<2",
     "streamlit>=1.50,<2",
 ]

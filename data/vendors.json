@@ -1,0 +1,117 @@
+{
+  "maintenance": {
+    "plumbing": {
+      "vendor_name": "Apex 24/7 Rapid Plumbing",
+      "phone": "+65 6789-0123",
+      "emergency_phone": "+65 6789-0123",
+      "emergency_sla_minutes": 25,
+      "routine_sla_minutes": 120,
+      "coverage": "24/7",
+      "auto_dispatch": true
+    },
+    "electrical": {
+      "vendor_name": "VoltCare Electrical Hotline",
+      "phone": "+65 6555-9999",
+      "emergency_phone": "+65 6555-9999",
+      "emergency_sla_minutes": 25,
+      "routine_sla_minutes": 180,
+      "coverage": "24/7",
+      "auto_dispatch": true
+    },
+    "lift": {
+      "vendor_name": "Schindler Express Response",
+      "phone": "+65 6888-4321",
+      "emergency_phone": "+65 6888-4321",
+      "emergency_sla_minutes": 20,
+      "routine_sla_minutes": 120,
+      "coverage": "24/7",
+      "auto_dispatch": true
+    },
+    "default": {
+      "vendor_name": "Estate Maintenance Team",
+      "phone": "+65 6222-1111",
+      "emergency_phone": "+65 6222-1111",
+      "emergency_sla_minutes": 30,
+      "routine_sla_minutes": 240,
+      "coverage": "08:00 - 20:00",
+      "auto_dispatch": false
+    }
+  },
+  "security": {
+    "default": {
+      "vendor_name": "Main Guardhouse & Patrol",
+      "phone": "+65 6444-2222",
+      "emergency_phone": "+65 6444-2222",
+      "emergency_sla_minutes": 5,
+      "routine_sla_minutes": 15,
+      "coverage": "24/7",
+      "auto_dispatch": true
+    }
+  },
+  "cleanliness": {
+    "default": {
+      "vendor_name": "CleanSweep Estate Services",
+      "phone": "+65 6333-1111",
+      "emergency_phone": "+65 6333-1111",
+      "emergency_sla_minutes": 60,
+      "routine_sla_minutes": 240,
+      "coverage": "07:00 - 21:00",
+      "auto_dispatch": false
+    }
+  },
+  "facilities": {
+    "default": {
+      "vendor_name": "Clubhouse Management Office",
+      "phone": "+65 6222-0000",
+      "emergency_phone": "+65 6222-0000",
+      "emergency_sla_minutes": 120,
+      "routine_sla_minutes": 480,
+      "coverage": "09:00 - 18:00",
+      "auto_dispatch": false
+    }
+  },
+  "noise": {
+    "default": {
+      "vendor_name": "Resident Relations & Security Patrol",
+      "phone": "+65 6444-2222",
+      "emergency_phone": "+65 6444-2222",
+      "emergency_sla_minutes": 15,
+      "routine_sla_minutes": 45,
+      "coverage": "24/7",
+      "auto_dispatch": false
+    }
+  },
+  "parking": {
+    "default": {
+      "vendor_name": "Carpark Enforcement & Barrier Control",
+      "phone": "+65 6444-2222",
+      "emergency_phone": "+65 6444-2222",
+      "emergency_sla_minutes": 15,
+      "routine_sla_minutes": 60,
+      "coverage": "24/7",
+      "auto_dispatch": false
+    }
+  },
+  "billing": {
+    "default": {
+      "vendor_name": "Condo Accounts & Finance",
+      "phone": "+65 6111-5555",
+      "emergency_phone": "+65 6111-5555",
+      "emergency_sla_minutes": 240,
+      "routine_sla_minutes": 1440,
+      "coverage": "09:00 - 18:00 (Mon-Fri)",
+      "auto_dispatch": false
+    }
+  },
+  "general_enquiry": {
+    "default": {
+      "vendor_name": "Condo Concierge Desk",
+      "phone": "+65 6111-5555",
+      "emergency_phone": "+65 6111-5555",
+      "emergency_sla_minutes": 240,
+      "routine_sla_minutes": 1440,
+      "coverage": "08:00 - 20:00",
+      "auto_dispatch": false
+    }
+  }
+}
