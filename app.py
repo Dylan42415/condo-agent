@@ -82,9 +82,9 @@ with st.sidebar:
         )
     st.divider()
     st.markdown("**Current scope**")
-    st.caption("Classify · Triage · Review")
+    st.caption("Classify · Triage · Auto-Dispatch")
     st.caption(
-        "Staff review is the focus of this prototype. Operational integrations are future work."
+        "Live operations hub with SQLite state, auto-contractor dispatch, and Telegram alerts."
     )
 
 
@@ -392,7 +392,10 @@ with single_tab:
                     placeholder="Block / unit / area",
                 )
             submitted = st.form_submit_button("Classify request", type="primary", width="stretch")
-        st.caption("Classification only. No tickets, messages, payments or approvals are created.")
+        st.caption(
+            "Classification inference sandbox. Live tickets and contractor dispatches "
+            "are managed in the Live Operations Hub."
+        )
         if submitted:
             st.session_state.pop("single_result", None)
             try:

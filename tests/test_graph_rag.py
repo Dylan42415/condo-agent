@@ -118,3 +118,32 @@ def test_parking_wheel_clamp_policy():
     assert "By-law §12 - Security and Access Control" in result.expanded_nodes
     assert "$100" in result.answer
     assert "wheel" in result.answer.lower()
+
+
+def test_dynamic_extraction_from_arbitrary_new_bylaw(tmp_path):
+    """
+    Integrity Verification Test:
+    Proves that the RAG engine extracts arbitrary text and tables from brand new notes
+    with zero prior knowledge or hardcoded keyword branches.
+    """
+    from condo_classifier.graph_rag import EstateVaultGraph
+
+    fake_note = tmp_path / "By-law §99 - Trampoline Acrobatics.md"
+    fake_note.write_text(
+        "---\n"
+        "title: By-law §99 - Trampoline Acrobatics\n"
+        "type: ByLaw\n"
+        "category: Facility Booking\n"
+        "---\n"
+        "## Summary\n"
+        "Residents must register all trampoline acrobatics.\n\n"
+        "| Activity | Security Deposit | Permitted Hours |\n"
+        "| :--- | :--- | :--- |\n"
+        "| Trampoline Jumps | $875 deposit | 03:30 AM to 04:45 AM |\n",
+        encoding="utf-8",
+    )
+
+    custom_vault = EstateVaultGraph(vault_dir=tmp_path)
+    result = custom_vault.query("What is the trampoline deposit and permitted hours?")
+    assert "$875" in result.answer
+    assert "03:30 AM" in result.answer

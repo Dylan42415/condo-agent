@@ -500,7 +500,7 @@ class EstateVaultGraph:
                 f"Retrieved Estate Knowledge:\n{context}\n\n"
                 f"Resident Question: {query}\n\nAnswer:"
             )
-            for m in ["gemini-2.0-flash", "gemini-3.5-flash", "gemini-flash-latest"]:
+            for m in ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"]:
                 try:
                     res = client.models.generate_content(model=m, contents=prompt)
                     if res.text and len(res.text.strip()) > 30:
@@ -568,38 +568,35 @@ class EstateVaultGraph:
                     elif len(table_header) < 2:
                         table_header.append(line)
                     else:
-                        line_lower = line.lower()
-                        is_relevant = any(tok in line_lower for tok in q_tokens) or any(
-                            keyword in line_lower
-                            for keyword in [
-                                "prohibited",
-                                "penalty",
-                                "deposit",
-                                "fee",
-                                "hour",
-                                "leak",
-                                "presumption",
-                                "clamp",
-                                "mon",
-                                "sat",
-                                "sun",
-                            ]
-                        )
-                        if is_relevant or len(table_rows) < 4:
-                            table_rows.append(line)
+                        table_rows.append(line)
                 elif in_table:
                     in_table = False
 
             card = f"📋 **[[{title}]]** ({note.category})\n{summary_text}\n"
             if table_header and table_rows:
-                card += "\n" + "\n".join(table_header + table_rows[:5]) + "\n"
+                # Dynamically rank table rows by token overlap with query
+                ranked_rows = sorted(
+                    table_rows,
+                    key=lambda r: sum(1 for tok in q_tokens if tok in r.lower()),
+                    reverse=True,
+                )
+                card += "\n" + "\n".join(table_header + ranked_rows[:5]) + "\n"
             sections.append(card)
 
         infra_relationships = []
         for title, note in sorted_items:
             for rel, target in note.relationships:
                 if target in subgraph or any(
-                    k in rel for k in ["DIRECTLY", "ISOLATED", "FED", "GOVERNS"]
+                    k in rel
+                    for k in [
+                        "BELOW",
+                        "ABOVE",
+                        "ISOLATED",
+                        "FED",
+                        "GOVERNS",
+                        "CONNECTED",
+                        "SERVICES",
+                    ]
                 ):
                     infra_relationships.append(f"- **[[{title}]]** `{rel}` → **[[{target}]]**")
 

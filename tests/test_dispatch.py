@@ -21,6 +21,12 @@ def test_resolve_vendor_assignment():
     electric = resolve_vendor_assignment("maintenance", "Electric sparks from power socket")
     assert electric["vendor_name"] == "VoltCare Electrical Hotline"
 
+    # Compound request: Electrical keywords outweigh water keyword
+    compound = resolve_vendor_assignment(
+        "maintenance", "Water heater electrical wiring sparks and power tripped"
+    )
+    assert compound["vendor_name"] == "VoltCare Electrical Hotline"
+
     sec = resolve_vendor_assignment("security", "Intruder spotted near boundary wall")
     assert sec["vendor_name"] == "Main Guardhouse & Patrol"
 

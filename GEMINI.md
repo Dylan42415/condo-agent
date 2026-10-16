@@ -13,3 +13,10 @@ Whenever a new feature, bugfix, or enhancement is implemented:
 - Always use `uv` commands (`uv run`, `uv add`, `uv sync`).
 - Never run global `pip install`.
 - Preserve environment secrets in `.env` (never hardcode tokens or API keys).
+
+### 3. Zero Hardcoded Domain Heuristics & Fake Fallbacks
+- **No Keyword Branching**: Never introduce scenario-specific `if/else` keyword branches (`if "bbq" in text:`, `if "leak" in query:`) in core service code.
+- **Dynamic Data Integrity**: All data extraction must be 100% dynamic — parsed from files/database via generic parsers or synthesized live via LLM.
+- **Strict Separation of Mocks**: Test mocks and stubs must NEVER reside in `condo_classifier/` runtime code. They must live exclusively in `tests/` or use `unittest.mock`.
+- **Arbitrary Data Verification**: Whenever writing RAG or extraction tests, verify against arbitrary generated data so hardcoded logic fails immediately.
+

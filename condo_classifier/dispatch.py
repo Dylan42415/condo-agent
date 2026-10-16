@@ -46,19 +46,25 @@ def resolve_vendor_assignment(
         # Fallback to general maintenance
         cat_vendors = directory.get("maintenance", {})
 
-    # Detect subtopic keywords within maintenance
+    # Dynamically score vendors within category based on keywords defined in vendors.json
     text_lower = message_text.lower()
-    if cat_lower == "maintenance":
-        plumbing_words = ["pipe", "leak", "flood", "water", "plumb", "sink", "toilet", "tap"]
-        if any(w in text_lower for w in plumbing_words):
-            return cat_vendors.get("plumbing", cat_vendors.get("default", {}))
-        if any(w in text_lower for w in ["lift", "elevator", "stuck", "entrap"]):
-            return cat_vendors.get("lift", cat_vendors.get("default", {}))
-        electrical_words = ["electric", "power", "spark", "blackout", "circuit", "fuse"]
-        if any(w in text_lower for w in electrical_words):
-            return cat_vendors.get("electrical", cat_vendors.get("default", {}))
+    words = set(re.findall(r"\w+", text_lower))
 
-    return cat_vendors.get("default", {})
+    best_vendor = cat_vendors.get("default", {})
+    best_score = 0
+
+    for subtrade, vendor_info in cat_vendors.items():
+        if subtrade == "default" or not isinstance(vendor_info, dict):
+            continue
+        vendor_keywords = set(w.lower() for w in vendor_info.get("keywords", []))
+        if not vendor_keywords:
+            continue
+        score = len(words & vendor_keywords)
+        if score > best_score:
+            best_score = score
+            best_vendor = vendor_info
+
+    return best_vendor
 
 
 def generate_guardhouse_pass(unit_number: str | None = None) -> str:
@@ -99,9 +105,10 @@ def trigger_auto_dispatch(
     channel: str = "SMS",
     condo_name: str = "Oceanfront Residences",
     db_path: Path | str = DEFAULT_DB_PATH,
+    assigned_vendor: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Automates vendor routing, guardhouse pass generation, and dispatch persistence."""
-    vendor = resolve_vendor_assignment(category, raw_message)
+    vendor = assigned_vendor or resolve_vendor_assignment(category, raw_message)
     vendor_name = vendor.get("vendor_name", "Duty Emergency Contractor")
     phone = vendor.get(
         "emergency_phone" if priority.lower() == "emergency" else "phone", "+65 6000-0000"

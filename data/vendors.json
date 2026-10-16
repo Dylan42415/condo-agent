@@ -7,7 +7,8 @@
       "emergency_sla_minutes": 25,
       "routine_sla_minutes": 120,
       "coverage": "24/7",
-      "auto_dispatch": true
+      "auto_dispatch": true,
+      "keywords": ["pipe", "leak", "flood", "water", "plumb", "sink", "toilet", "tap", "drain", "sewage", "burst", "ceiling", "dripping"]
     },
     "electrical": {
       "vendor_name": "VoltCare Electrical Hotline",
@@ -16,7 +17,8 @@
       "emergency_sla_minutes": 25,
       "routine_sla_minutes": 180,
       "coverage": "24/7",
-      "auto_dispatch": true
+      "auto_dispatch": true,
+      "keywords": ["electric", "electrical", "power", "spark", "blackout", "circuit", "fuse", "wiring", "short", "smoke", "fire", "socket", "tripped"]
     },
     "lift": {
       "vendor_name": "Schindler Express Response",
@@ -25,7 +27,8 @@
       "emergency_sla_minutes": 20,
       "routine_sla_minutes": 120,
       "coverage": "24/7",
-      "auto_dispatch": true
+      "auto_dispatch": true,
+      "keywords": ["lift", "elevator", "stuck", "entrap", "trapped", "hoist", "level", "door", "shaft", "elevator"]
     },
     "default": {
       "vendor_name": "Estate Maintenance Team",

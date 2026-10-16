@@ -41,7 +41,11 @@ from condo_classifier.database import (
     list_tickets,
     record_resident_feedback,
 )
-from condo_classifier.dispatch import resolve_vendor_assignment, trigger_auto_dispatch
+from condo_classifier.dispatch import (
+    load_vendor_directory,
+    resolve_vendor_assignment,
+    trigger_auto_dispatch,
+)
 from condo_classifier.graph_rag import get_estate_vault
 from condo_classifier.schema import ResidentRequest
 from condo_classifier.service import Classifier
@@ -63,7 +67,7 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 GEMINI_MODELS = [
     os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),
     "gemini-2.0-flash",
-    "gemini-3.5-flash",
+    "gemini-1.5-flash",
     "gemini-flash-latest",
 ]
 GEMINI_MODEL = GEMINI_MODELS[0]
@@ -97,24 +101,31 @@ class TriageDecision(BaseModel):
     )
 
 
-TRIAGE_SYSTEM_PROMPT = """
-You are the AI Emergency Coordinator and Triage Agent for Oceanfront Luxury Condominium.
-Your job is to assess resident requests (text/photos), classify incidents, and assign vendors.
+def build_triage_system_prompt() -> str:
+    """Builds the triage system prompt dynamically from vendors.json."""
+    directory = load_vendor_directory()
+    vendor_lines = []
+    for cat, vendors in directory.items():
+        if isinstance(vendors, dict):
+            for sub, v in vendors.items():
+                if isinstance(v, dict) and "vendor_name" in v:
+                    phone = v.get("emergency_phone") or v.get("phone", "N/A")
+                    sla = v.get("emergency_sla_minutes") or v.get("routine_sla_minutes", 30)
+                    vendor_lines.append(
+                        f"- {cat.title()} ({sub}): '{v['vendor_name']}' "
+                        f"(Phone: {phone}, SLA: ~{sla} mins)"
+                    )
+    v_text = "\n".join(vendor_lines) if vendor_lines else "- Default Contractor (+65 6000-0000)"
 
-VENDOR DIRECTORY:
-- Plumbing & Flooding: 'Apex 24/7 Rapid Plumbing' (Phone: +65 6789-0123, Emergency SLA: 20-30 mins)
-- Lift & Escalators: 'Schindler Express Response' (Phone: +65 6888-4321, Emergency SLA: 15-20 mins)
-- Electrical / Fire: 'VoltCare Electrical Hotline' (Phone: +65 6555-9999, Emergency SLA: 25 mins)
-- Security / Noise: 'Main Guardhouse & Patrol' (Phone: +65 6444-2222, Immediate)
-- Cleaning & Hygiene: 'CleanSweep Estate Services' (Phone: +65 6333-1111, SLA: 2 hours)
-- Facilities & Bookings: 'Clubhouse Management Office' (Phone: +65 6222-0000, SLA: 4 hours)
-- General Inquiries: 'Condo Concierge' (Phone: +65 6111-5555, Next business day)
-
-RULES:
-1. Active water leaks, burst pipes, stuck lifts, fire hazards, or intruders are EMERGENCY.
-2. Provide actionable, practical safety instructions when water, electricity, or lift faults occur.
-3. If resident includes their unit number (e.g. #08-14 or Block B 1201), capture it accurately.
-"""
+    return (
+        "You are the AI Emergency Coordinator and Triage Agent for Oceanfront Luxury Condominium.\n"
+        "Assess resident requests (text/photos), classify incidents, and assign vendors.\n\n"
+        f"VENDOR DIRECTORY (Loaded dynamically from vendors.json):\n{v_text}\n\n"
+        "RULES:\n"
+        "1. Active water leaks, burst pipes, stuck lifts, fire hazards are EMERGENCY.\n"
+        "2. Provide actionable safety instructions when water or lift faults occur.\n"
+        "3. If resident includes unit number (e.g. #08-14), capture it accurately.\n"
+    )
 
 
 def generate_work_order_id() -> str:
@@ -228,11 +239,11 @@ async def mytickets_command(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     user_tickets = [t for t in all_tickets if t.get("telegram_chat_id") == chat_id]
 
     if not user_tickets:
-        # Fallback to recent tickets for PoC display
-        user_tickets = all_tickets[:5]
-
-    if not user_tickets:
-        await message.reply_text("You have no active tickets.")
+        await message.reply_text(
+            "📋 <b>You currently have no active work orders submitted from this chat.</b>\n\n"
+            "To report an issue or emergency, send a message or photo describing the problem.",
+            parse_mode=ParseMode.HTML,
+        )
         return
 
     body = "📋 <b>Your Recent Condominium Tickets:</b>\n\n"
@@ -297,7 +308,7 @@ async def process_triage(text: str, photo_bytes: bytes | None = None) -> TriageD
                 model=model_name,
                 contents=contents,
                 config=types.GenerateContentConfig(
-                    system_instruction=TRIAGE_SYSTEM_PROMPT,
+                    system_instruction=build_triage_system_prompt(),
                     response_mime_type="application/json",
                     response_schema=TriageDecision,
                     temperature=0.1,
@@ -368,6 +379,13 @@ async def handle_resident_message(update: Update, context: ContextTypes.DEFAULT_
         # Trigger automated contractor dispatch and guardhouse clearance if emergency
         guardhouse_pass = None
         if decision.is_emergency:
+            assigned_dict = {
+                "vendor_name": decision.assigned_entity,
+                "phone": decision.entity_contact,
+                "emergency_phone": decision.entity_contact,
+                "emergency_sla_minutes": decision.eta_minutes,
+                "routine_sla_minutes": decision.eta_minutes,
+            }
             dispatch_res = trigger_auto_dispatch(
                 ticket_id=work_order,
                 category=decision.category,
@@ -375,6 +393,7 @@ async def handle_resident_message(update: Update, context: ContextTypes.DEFAULT_
                 issue_summary=decision.issue_summary,
                 raw_message=text,
                 unit_number=decision.unit_number,
+                assigned_vendor=assigned_dict,
             )
             guardhouse_pass = dispatch_res.get("passcode")
 
@@ -494,12 +513,25 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
 
     data = query.data or ""
     if data == "guide_water":
+        vault = get_estate_vault()
+        rag_res = vault.query("emergency water isolation shutoff valve leak protocol", hops=1)
+        infra_mention = ""
+        if rag_res.affected_infrastructure:
+            infra_list = ", ".join(f"<code>{i}</code>" for i in rag_res.affected_infrastructure[:3])
+            infra_mention = f"• <b>Estate Infrastructure:</b> {infra_list}\n"
+        bylaw_mention = ""
+        if rag_res.by_laws_cited:
+            bylaw_mention = f"• <b>Governing By-Law:</b> {', '.join(rag_res.by_laws_cited[:2])}\n"
+
         await query.message.reply_text(
-            "🚰 <b>Emergency Water Isolation Steps:</b>\n\n"
-            "1. Locate main shutoff valve (under kitchen sink or hallway riser).\n"
+            "🚰 <b>Estate Water Isolation & Emergency Guide</b>\n\n"
+            "1. Locate your unit's main isolation valve in the service riser or beneath the sink.\n"
             "2. Turn the circular valve handle clockwise until tightly closed.\n"
-            "3. Turn on a cold water faucet to relieve residual water pressure.\n"
-            "4. Keep front door unlocked for incoming emergency technicians.",
+            "3. Relieve residual water pressure by opening a cold water tap.\n"
+            "4. Keep main door unlocked for dispatched emergency technicians.\n\n"
+            f"{infra_mention}"
+            f"{bylaw_mention}"
+            "📞 <b>Emergency Hotline:</b> <code>+65 6789-0123</code> (Apex 24/7 Rapid Plumbing)",
             parse_mode=ParseMode.HTML,
         )
     elif data.startswith("call_"):
@@ -511,15 +543,30 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
     elif data.startswith("view_"):
         wo_id = data.replace("view_", "").strip()
         ticket = get_ticket(wo_id)
-        current_status = ticket["status"] if ticket else "Dispatched & En Route 🚗"
-        assigned = ticket.get("assigned_entity") if ticket else "On-Call Contractor"
+        if not ticket:
+            await query.message.reply_text(
+                f"❌ <b>Work Order <code>{html.escape(wo_id)}</code> not found in database.</b>",
+                parse_mode=ParseMode.HTML,
+            )
+            return
 
+        clearance = (
+            "Pre-cleared at Guardhouse ✅"
+            if ticket.get("priority") == "emergency"
+            else "Standard Entry"
+        )
+        cat_name = ticket["category"].title()
+        prio_name = ticket["priority"].upper()
+        team_name = ticket.get("assigned_entity") or "Pending Assignment"
+        phone_contact = ticket.get("entity_contact") or "N/A"
         await query.message.reply_text(
             f"📋 <b>Work Order Status: {html.escape(wo_id)}</b>\n\n"
-            f"• <b>Live Status:</b> {html.escape(current_status)}\n"
-            f"• <b>Assigned Team:</b> {html.escape(assigned)}\n"
-            "• <b>Guardhouse Clearance:</b> Granted ✅\n"
-            f"• <b>Audited by:</b> {html.escape(GEMINI_MODEL)} Agent",
+            f"• <b>Live Status:</b> {html.escape(ticket['status'])}\n"
+            f"• <b>Assigned Team:</b> {html.escape(team_name)}\n"
+            f"• <b>Contact:</b> <code>{html.escape(phone_contact)}</code>\n"
+            f"• <b>Guardhouse Clearance:</b> {clearance}\n"
+            f"• <b>Category:</b> {html.escape(cat_name)} | "
+            f"<b>Priority:</b> {html.escape(prio_name)}",
             parse_mode=ParseMode.HTML,
         )
     elif data.startswith("rate_"):
