@@ -15,7 +15,7 @@ Governs permissible working hours, acoustic limitations, and compliance deposits
 
 | Regulation Item | Permitted Period / Parameter | Benchmark / Limit | Penalty for Breach |
 |---|---|---|---|
-| General Renovation Work | Mon - Fri, 9:00 AM - 5:00 PM | Non-intrusive interior works | Stop-work order |
+| General Renovation Work | Monday to Friday (9:00 AM - 5:00 PM) | Non-intrusive interior works | Stop-work order |
 | Heavy Drilling / Hacking | Mon - Fri, 10:00 AM - 4:00 PM | Max continuous noise 75 dBA | $500 security deposit forfeiture |
 | Saturday, Sunday & Public Holidays | STRICTLY PROHIBITED | Zero tolerance for renovation | Immediate security shutdown & $500 fine |
 | Renovation Security Deposit | Mandatory prior to works | $2,000 refundable escrow | Deductions for common property damage |

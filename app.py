@@ -501,7 +501,7 @@ with graph_tab:
         "🚗 My visitor parked overnight in a resident lot, is there a wheel clamp fee?",
         "🐕 What are the rules on keeping pets and dogs in common areas?",
     ]
-    selected_preset = st.selectbox("Quick Query Presets", preset_scenarios, index=1)
+    selected_preset = st.selectbox("Quick Query Presets", preset_scenarios, index=0)
 
     default_q = ""
     if selected_preset != "Select a test query...":
@@ -517,7 +517,7 @@ with graph_tab:
         st.write("")
         run_rag = st.button("🚀 Run Hybrid Graph RAG Query", type="primary")
 
-    if user_rag_query and (run_rag or selected_preset != "Select a test query..."):
+    if user_rag_query and run_rag:
         with st.spinner("Traversing estate knowledge graph..."):
             rag_result = vault.query(user_rag_query, hops=rag_hops, max_notes=12)
 

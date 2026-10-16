@@ -11,6 +11,7 @@ Combines:
 from __future__ import annotations
 
 import math
+import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -440,11 +441,17 @@ class EstateVaultGraph:
             if n.note_type in {"Contractor", "InternalTeam"}:
                 phone_match = re.search(r"(\+65\s*\d{4}[-\s]?\d{4}|EXT\s*\d+)", n.body)
                 phone = phone_match.group(1) if phone_match else "N/A"
+                sla_match = re.search(r"SLA:\s*~?(\d+)\s*mins?", n.body, re.IGNORECASE)
+                sla = sla_match.group(1) if sla_match else "30"
+                coverage_match = re.search(r"Coverage:\s*([^\n|]+)", n.body, re.IGNORECASE)
+                coverage = coverage_match.group(1).strip() if coverage_match else "24/7"
                 contractors.append(
                     {
                         "name": t,
                         "type": n.note_type,
                         "phone": phone,
+                        "sla": sla,
+                        "coverage": coverage,
                         "category": n.category,
                     }
                 )
@@ -472,6 +479,38 @@ class EstateVaultGraph:
             context_text=context_text,
         )
 
+    def _llm_synthesize(self, query: str, subgraph: dict[str, NoteData]) -> str | None:
+        """Call Gemini to synthesize an answer dynamically from retrieved note bodies."""
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            return None
+        try:
+            from google import genai
+
+            client = genai.Client(api_key=api_key)
+            context = "\n\n".join(
+                f"### Note: {n.title} ({n.category})\n{n.body.strip()}"
+                for n in list(subgraph.values())[:5]
+            )
+            prompt = (
+                "You are the Condo Agent estate assistant. Answer the resident's question\n"
+                "accurately using ONLY the retrieved estate notes below. Mention by-laws and\n"
+                "entities in [[Wikilinks]] format. Include exact numbers, hours, fees, or\n"
+                "penalties if present in the notes.\n\n"
+                f"Retrieved Estate Knowledge:\n{context}\n\n"
+                f"Resident Question: {query}\n\nAnswer:"
+            )
+            for m in ["gemini-2.0-flash", "gemini-3.5-flash", "gemini-flash-latest"]:
+                try:
+                    res = client.models.generate_content(model=m, contents=prompt)
+                    if res.text and len(res.text.strip()) > 30:
+                        return res.text.strip()
+                except Exception:
+                    continue
+        except Exception:
+            pass
+        return None
+
     def _synthesize_grounded_answer(
         self,
         query: str,
@@ -481,130 +520,107 @@ class EstateVaultGraph:
         infrastructure: list[str],
         contractors: list[dict[str, str]],
     ) -> str:
-        """Deterministic heuristic synthesis generator backed by grounded subgraph knowledge."""
-        q_lower = query.lower()
+        """
+        Dynamically synthesize a grounded answer directly from retrieved subgraph notes.
+        Zero hardcoded scenario templates: every section, table row, and relationship
+        is extracted dynamically from the note markdown files in the vault.
+        """
+        if not subgraph:
+            return "No matching estate policies or infrastructure found in the knowledge graph."
 
-        # Check for weekend / drilling renovation scenario
-        if any(
-            w in q_lower
-            for w in ["drill", "renovation", "saturday", "sunday", "holiday", "noise", "hack"]
-        ):
-            if "By-law §4 - Renovation and Noise" in subgraph:
-                return (
-                    "🚫 **Renovation Work Prohibited on Weekends / Public Holidays**\n\n"
-                    "Under **[[By-law §4 - Renovation and Noise]]**, heavy mechanical drilling, "
-                    "hacking, and noisy renovation works are **strictly prohibited on Saturdays, "
-                    "Sundays, and Public Holidays** (Zero Tolerance Policy).\n\n"
-                    "### Permitted Renovation Hours:\n"
-                    "- **General Renovation Work**: Monday to Friday, 9:00 AM – 5:00 PM\n"
-                    "- **Heavy Drilling / Demolition**: Monday to Friday, 10:00 AM – 4:00 PM "
-                    "(Max continuous noise: 75 dBA)\n\n"
-                    "### Enforcement & Penalties:\n"
-                    "- **Unauthorized weekend drilling**: Immediate security shutdown and "
-                    "**$500 security deposit forfeiture**.\n"
-                    "- **Roving Patrol**: [[Resident Relations Patrol]] is dispatched to issue "
-                    "immediate stop-work orders."
-                )
+        # 1. Attempt dynamic LLM synthesis if Gemini API key is available
+        llm_answer = self._llm_synthesize(query, subgraph)
+        if llm_answer:
+            return llm_answer
 
-        # Check for water leak / ceiling seepage scenario
-        if any(
-            w in q_lower
-            for w in ["water", "leak", "gushing", "ceiling", "burst", "pipe", "flooding"]
-        ):
-            target_unit = unit_hint or next((t for t in infrastructure if "Unit #" in t), None)
-            upstairs_unit = None
-            valve = next((t for t in infrastructure if "Valve" in t), None)
-            riser = next((t for t in infrastructure if "Riser" in t), None)
+        # 2. Dynamic Grounded Note Extractor (Deterministic & Offline)
+        q_tokens = [w.lower() for w in re.findall(r"\w+", query) if len(w) > 2]
 
-            for t, n in subgraph.items():
-                if "DIRECTLY_ABOVE" in [r[0] for r in n.relationships] or "DIRECTLY_BELOW" in [
-                    r[0] for r in n.relationships
-                ]:
-                    for r, target in n.relationships:
-                        if r == "DIRECTLY_BELOW" and "Unit #" in target:
-                            upstairs_unit = target
-                        elif r == "DIRECTLY_ABOVE" and target == target_unit:
-                            upstairs_unit = t
+        def note_sort_key(item: tuple[str, NoteData]) -> tuple[int, int]:
+            title, n = item
+            if n.note_type == "ByLaw":
+                priority = 0
+            elif n.note_type in ["Unit", "Valve", "Riser"]:
+                priority = 1
+            else:
+                priority = 2
+            overlap = sum(1 for tok in q_tokens if tok in n.body.lower())
+            return (priority, -overlap)
 
-            ans = "🚨 **Water Leakage & Emergency Isolation Protocol**\n\n"
-            if target_unit:
-                ans += f"**Affected Unit**: [[{target_unit}]]\n"
-            if upstairs_unit:
-                ans += f"**Suspected Source (Directly Above)**: [[{upstairs_unit}]]\n"
-            if valve:
-                ans += f"**Isolation Valve**: [[{valve}]] (PIN `8821#`)\n"
-            if riser:
-                ans += f"**Supply Line**: [[{riser}]]\n\n"
+        sorted_items = sorted(subgraph.items(), key=note_sort_key)
 
-            upstairs_repr = f"[[{upstairs_unit}]]" if upstairs_unit else "upper unit"
-            ans += (
-                "### Statutory & By-Law Presumption:\n"
-                "Under **[[By-law §6 - Inter-Floor Water Leaks]]** and Singapore "
-                "**[[BMSMA Section 101]]**, there is a statutory presumption that an "
-                "inter-floor ceiling leak originates from the defect of the upper floor unit "
-                f"({upstairs_repr}). Joint technical inspection is mandated within 48 hours.\n\n"
+        sections = []
+        for title, note in sorted_items[:3]:
+            body = note.body.strip()
+            summary_match = re.search(r"## Summary\s*\n(.*?)(?=\n##|\Z)", body, re.DOTALL)
+            summary_text = summary_match.group(1).strip() if summary_match else note.preview
+
+            lines = body.splitlines()
+            table_header = []
+            table_rows = []
+            in_table = False
+
+            for line in lines:
+                if "|" in line:
+                    if not in_table:
+                        in_table = True
+                        table_header.append(line)
+                    elif len(table_header) < 2:
+                        table_header.append(line)
+                    else:
+                        line_lower = line.lower()
+                        is_relevant = any(tok in line_lower for tok in q_tokens) or any(
+                            keyword in line_lower
+                            for keyword in [
+                                "prohibited",
+                                "penalty",
+                                "deposit",
+                                "fee",
+                                "hour",
+                                "leak",
+                                "presumption",
+                                "clamp",
+                                "mon",
+                                "sat",
+                                "sun",
+                            ]
+                        )
+                        if is_relevant or len(table_rows) < 4:
+                            table_rows.append(line)
+                elif in_table:
+                    in_table = False
+
+            card = f"📋 **[[{title}]]** ({note.category})\n{summary_text}\n"
+            if table_header and table_rows:
+                card += "\n" + "\n".join(table_header + table_rows[:5]) + "\n"
+            sections.append(card)
+
+        infra_relationships = []
+        for title, note in sorted_items:
+            for rel, target in note.relationships:
+                if target in subgraph or any(
+                    k in rel for k in ["DIRECTLY", "ISOLATED", "FED", "GOVERNS"]
+                ):
+                    infra_relationships.append(f"- **[[{title}]]** `{rel}` → **[[{target}]]**")
+
+        answer_parts = ["\n\n".join(sections)]
+        if infra_relationships:
+            unique_infra = list(dict.fromkeys(infra_relationships))[:4]
+            answer_parts.append(
+                "### 🔧 Connected Infrastructure Topology:\n" + "\n".join(unique_infra)
             )
 
-            if contractors:
-                plumber = next((c for c in contractors if "Plumbing" in c["name"]), contractors[0])
-                ans += (
-                    "### Emergency Contractor Auto-Dispatch:\n"
-                    f"- **Provider**: [[{plumber['name']}]]\n"
-                    f"- **Hotline**: `{plumber['phone']}` (24/7 Response)\n"
-                    f"- **Emergency SLA**: Under 20–30 minutes"
-                )
-            return ans
-
-        # Check for BBQ / Facility Booking scenario
-        if any(
-            w in q_lower for w in ["bbq", "barbecue", "pool", "facility", "book", "function room"]
-        ):
-            if "By-law §8 - Facility Booking and Amenities" in subgraph:
-                return (
-                    "📋 **Estate Facility Booking Guidelines & Tariffs**\n\n"
-                    "Governed by **[[By-law §8 - Facility Booking and Amenities]]** "
-                    "administered by [[Clubhouse Management Office]]:\n\n"
-                    "### BBQ Pavilions (Pits 1 - 4):\n"
-                    "- **Sessions**: Session 1 (10:00 AM – 2:00 PM) | "
-                    "Session 2 (5:00 PM – 10:00 PM)\n"
-                    "- **Deposit / Fee**: **$50 refundable deposit** ($20 usage fee)\n"
-                    "- **Cleaning Requirement**: Grill and pit area must be cleaned after use; "
-                    "$50 cleaning forfeiture for uncleaned grill.\n"
-                    "- **Swimming Pool & Jacuzzi**: 7:00 AM – 10:00 PM "
-                    "(Proper swimwear mandatory; no glass allowed).\n\n"
-                    "Bookings can be made via the Resident Portal or at the Clubhouse counter."
-                )
-
-        # Check for Security / Parking / Wheel clamping scenario
-        if any(
-            w in q_lower for w in ["parking", "clamp", "visitor", "tailgating", "gantry", "barrier"]
-        ):
-            if "By-law §12 - Security and Access Control" in subgraph:
-                return (
-                    "🛡️ **Security & Access Control Enforcement**\n\n"
-                    "Governed by **[[By-law §12 - Security and Access Control]]** "
-                    "enforced by [[Main Guardhouse Security]]:\n\n"
-                    "### Regulations & Penalties:\n"
-                    "- **Unauthorized Parking**: Vehicles parked in non-designated lots or "
-                    "overnight in visitor parking are subject to wheel clamping.\n"
-                    "- **Declamping Fee**: **$100 release fee** payable prior to vehicle release.\n"
-                    "- **Late-Night Visitors**: Mandatory guardhouse registration past 11:00 PM "
-                    "via resident intercom verification.\n"
-                    "- **Barrier Damage**: Tailgating resulting in gantry damage incurs an "
-                    "$850 barrier replacement claim."
-                )
-
-        # Default Grounded Synthesis
-        lines = [f"### Grounded Estate Intelligence ({len(subgraph)} Connected Entities Found)\n"]
-        for t, n in list(subgraph.items())[:4]:
-            lines.append(f"**[[{t}]]** ({n.note_type}): {n.preview}")
-        if by_laws:
-            bylaws_str = ", ".join(f"[[{b}]]" for b in by_laws)
-            lines.append(f"\n**Relevant By-Laws**: {bylaws_str}")
         if contractors:
-            dispatch_str = ", ".join(f"{c['name']} ({c['phone']})" for c in contractors)
-            lines.append(f"**Emergency Dispatch**: {dispatch_str}")
-        return "\n".join(lines)
+            contractor_entries = [
+                f"- **[[{c['name']}]]**: `{c['phone']}` "
+                f"(Coverage: {c.get('coverage', '24/7')}, SLA: {c.get('sla', '30')} mins)"
+                for c in contractors[:2]
+            ]
+            answer_parts.append(
+                "### 📞 Emergency Dispatch Contacts:\n" + "\n".join(contractor_entries)
+            )
+
+        return "\n\n".join(answer_parts)
 
 
 # Singleton vault graph instance for global application use
