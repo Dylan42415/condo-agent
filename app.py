@@ -547,10 +547,7 @@ with graph_tab:
 
             if rag_result.edges:
                 edge_df = pd.DataFrame(
-                    [
-                        {"Source": s, "Relationship": r, "Target": t}
-                        for s, r, t in rag_result.edges
-                    ]
+                    [{"Source": s, "Relationship": r, "Target": t} for s, r, t in rag_result.edges]
                 )
                 st.dataframe(edge_df, use_container_width=True, hide_index=True)
             else:

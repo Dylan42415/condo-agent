@@ -445,13 +445,18 @@ async def handle_resident_message(update: Update, context: ContextTypes.DEFAULT_
         estate_rag = get_estate_vault().query(text, unit_hint=decision.unit_number, hops=2)
         if estate_rag.grounded:
             # If the user asked a question or it is an inquiry, include the direct policy answer
-            is_inquiry = decision.priority.lower() == "low" or decision.category.lower() in [
-                "general_enquiry",
-                "other",
-                "facilities",
-                "noise",
-                "renovation",
-            ] or "?" in text
+            is_inquiry = (
+                decision.priority.lower() == "low"
+                or decision.category.lower()
+                in [
+                    "general_enquiry",
+                    "other",
+                    "facilities",
+                    "noise",
+                    "renovation",
+                ]
+                or "?" in text
+            )
             if is_inquiry and estate_rag.answer:
                 safe_ans = html.escape(estate_rag.answer.strip())
                 formatted_ans = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", safe_ans)
