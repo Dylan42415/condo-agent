@@ -139,17 +139,38 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         "I am your 24/7 AI Property Coordinator. I help you report issues, request services, "
         "and automatically dispatch on-call contractors for emergencies.\n\n"
         "💡 <b>Commands & Usage:</b>\n"
-        "• Send a message describing your problem "
-        "(e.g., <i>'Water pipe burst in kitchen #08-14!'</i>)\n"
-        "• Or send a <b>photo</b> of the issue with a caption\n"
-        "• <code>/ask &lt;QUESTION&gt;</code> - Ask estate by-laws & risers (Graph RAG)\n"
+        "• <code>/report &lt;ISSUE&gt;</code> - Report a defect or maintenance issue (Triage & Contractor Dispatch)\n"
+        "• <code>/ask &lt;QUESTION&gt;</code> - Inquire about by-laws, tariffs, & house rules (Semantic RAG)\n"
         "• <code>/status &lt;TICKET_ID&gt;</code> - Check status of a work order\n"
         "• <code>/mytickets</code> - View your active tickets\n"
         "• <code>/help</code> - Show this guidance message\n\n"
-        "🚨 <i>For urgent emergencies (burst pipes, lift faults), help is auto-dispatched.</i>"
+        "<i>💡 Tip: You can also simply type your problem or send a photo anytime without a command.</i>\n\n"
+        "🚨 <i>For urgent emergencies (burst pipes, lift faults), help is auto-dispatched immediately.</i>"
     )
     if update.message:
         await update.message.reply_text(welcome_text, parse_mode=ParseMode.HTML)
+
+
+async def report_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Explicit command to report an issue, defect, or emergency for contractor dispatch."""
+    message = update.message
+    if not message:
+        return
+
+    issue_text = " ".join(context.args) if context.args else ""
+    if not issue_text and not message.photo:
+        await message.reply_text(
+            "🚨 <b>Report an Estate Defect or Incident</b>\n\n"
+            "Please describe the problem after <code>/report</code>, or send a photo with a caption.\n\n"
+            "<b>Examples:</b>\n"
+            "• <code>/report Water pipe burst in kitchen #08-14, flooding floor!</code>\n"
+            "• <code>/report Lift B stuck at Level 4 with passengers inside</code>\n"
+            "• <code>/report Noisy drilling next door at unit #12-03</code>",
+            parse_mode=ParseMode.HTML,
+        )
+        return
+
+    await handle_resident_message(update, context, text_override=issue_text)
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -178,20 +199,29 @@ async def ask_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         return
 
     await message.chat.send_action(ChatAction.TYPING)
-    semantic_rag = get_semantic_rag()
-    result = await asyncio.to_thread(semantic_rag.query, query_text)
+    try:
+        semantic_rag = get_semantic_rag()
+        result = await asyncio.to_thread(semantic_rag.query, query_text)
 
-    # Format cleanly for Telegram HTML
-    safe_answer = html.escape(result.answer)
-    formatted_body = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", safe_answer)
-    formatted_body = re.sub(r"### (.*?)\n", r"\n<b>\1</b>\n", formatted_body)
+        # Format cleanly for Telegram HTML
+        safe_answer = html.escape(result.answer)
+        formatted_body = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", safe_answer)
+        formatted_body = re.sub(r"### (.*?)\n", r"\n<b>\1</b>\n", formatted_body)
 
-    response_text = (
-        f"🏛️ <b>Estate Knowledge Base (Semantic RAG)</b>\n\n"
-        f"{formatted_body}\n\n"
-        f"<i>🔍 Grounded Context: {len(result.retrieved_chunks)} semantic chunks retrieved ({result.latency_seconds:.2f}s)</i>"
-    )
-    await message.reply_text(response_text, parse_mode=ParseMode.HTML)
+        response_text = (
+            f"🏛️ <b>Estate Knowledge Base (Semantic RAG)</b>\n\n"
+            f"{formatted_body}\n\n"
+            f"<i>🔍 Grounded Context: {len(result.retrieved_chunks)} semantic chunks retrieved ({result.latency_seconds:.2f}s)</i>"
+        )
+        if len(response_text) > 4000:
+            response_text = response_text[:3950] + "...\n\n<i>[Response truncated]</i>"
+        await message.reply_text(response_text, parse_mode=ParseMode.HTML)
+    except Exception as exc:
+        logger.error(f"Error querying Semantic RAG in ask_command: {exc}")
+        await message.reply_text(
+            "⚠️ Unable to query estate by-laws at the moment. Please contact the Management Office at +65 6789 0200.",
+            parse_mode=ParseMode.HTML,
+        )
 
 
 async def status_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -339,12 +369,16 @@ async def process_triage(text: str, photo_bytes: bytes | None = None) -> TriageD
     return fallback_triage()
 
 
-async def handle_resident_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def handle_resident_message(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+    text_override: str | None = None,
+) -> None:
     message = update.message
     if not message:
         return
 
-    text = message.text or message.caption or ""
+    text = text_override if text_override is not None else (message.text or message.caption or "")
     photo_bytes = None
     saved_photo_path = None
 
@@ -459,38 +493,40 @@ async def handle_resident_message(update: Update, context: ContextTypes.DEFAULT_
             reply_body += f"\n💡 <b>Immediate Resident Guidance:</b>\n<i>{safe_instruction}</i>\n"
 
         # Enrich with Estate Semantic RAG (By-Laws, Hours, Fines & Policy Answers)
-        try:
-            estate_rag = await asyncio.to_thread(
-                get_semantic_rag().query, text
-            )
-            if estate_rag.grounded:
-                # If the user asked a question or it is an inquiry, include the direct policy answer
-                is_inquiry = (
-                    decision.priority.lower() == "low"
-                    or decision.category.lower()
-                    in [
-                        "general_enquiry",
-                        "other",
-                        "facilities",
-                        "noise",
-                        "renovation",
-                    ]
-                    or "?" in text
+        # Note: Bypassed for active life-safety emergencies to guarantee instantaneous sub-second response
+        if not decision.is_emergency:
+            try:
+                estate_rag = await asyncio.to_thread(
+                    get_semantic_rag().query, text
                 )
-                if is_inquiry and estate_rag.answer:
-                    safe_ans = html.escape(estate_rag.answer.strip())
-                    formatted_ans = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", safe_ans)
-                    formatted_ans = re.sub(r"### (.*?)\n", r"\n<b>\1</b>\n", formatted_ans)
-                    reply_body += f"\n📖 <b>Estate Policy Intelligence:</b>\n{formatted_ans}\n"
+                if estate_rag.grounded:
+                    # If the user asked a question or it is an inquiry, include the direct policy answer
+                    is_inquiry = (
+                        decision.priority.lower() == "low"
+                        or decision.category.lower()
+                        in [
+                            "general_enquiry",
+                            "other",
+                            "facilities",
+                            "noise",
+                            "renovation",
+                        ]
+                        or "?" in text
+                    )
+                    if is_inquiry and estate_rag.answer:
+                        safe_ans = html.escape(estate_rag.answer.strip())
+                        formatted_ans = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", safe_ans)
+                        formatted_ans = re.sub(r"### (.*?)\n", r"\n<b>\1</b>\n", formatted_ans)
+                        reply_body += f"\n📖 <b>Estate Policy Intelligence:</b>\n{formatted_ans}\n"
 
-                if getattr(estate_rag, "source_sections", None):
-                    safe_sources = html.escape(", ".join(estate_rag.source_sections[:2]))
-                    reply_body += f"\n📑 <b>Source By-law:</b> {safe_sources}\n"
-                if estate_rag.by_laws_cited:
-                    safe_bylaws = html.escape(", ".join(estate_rag.by_laws_cited[:2]))
-                    reply_body += f"⚖️ <b>Governing By-Law:</b> {safe_bylaws}\n"
-        except Exception as rag_err:
-            logger.warning(f"Semantic RAG enrichment skipped: {rag_err}")
+                    if getattr(estate_rag, "source_sections", None):
+                        safe_sources = html.escape(", ".join(estate_rag.source_sections[:2]))
+                        reply_body += f"\n📑 <b>Source By-law:</b> {safe_sources}\n"
+                    if estate_rag.by_laws_cited:
+                        safe_bylaws = html.escape(", ".join(estate_rag.by_laws_cited[:2]))
+                        reply_body += f"⚖️ <b>Governing By-Law:</b> {safe_bylaws}\n"
+            except Exception as rag_err:
+                logger.warning(f"Semantic RAG enrichment skipped: {rag_err}")
 
         if decision.is_emergency:
             reply_body += (
@@ -522,6 +558,9 @@ async def handle_resident_message(update: Update, context: ContextTypes.DEFAULT_
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
+        if len(reply_body) > 4000:
+            reply_body = reply_body[:3950] + "...\n\n<i>[Message truncated]</i>"
+
         await message.reply_text(reply_body, parse_mode=ParseMode.HTML, reply_markup=reply_markup)
 
     except Exception as exc:
@@ -542,12 +581,21 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
 
     data = query.data or ""
     if data == "guide_water":
-        sem_rag = get_semantic_rag()
-        rag_res = sem_rag.query("emergency water isolation shutoff valve leak protocol")
         bylaw_mention = ""
-        if rag_res.by_laws_cited:
-            safe_bylaws = html.escape(", ".join(rag_res.by_laws_cited[:2]))
-            bylaw_mention = f"• <b>Governing By-Law:</b> {safe_bylaws}\n"
+        try:
+            sem_rag = get_semantic_rag()
+            rag_res = await asyncio.to_thread(
+                sem_rag.query, "emergency water isolation shutoff valve leak protocol"
+            )
+            if rag_res.by_laws_cited:
+                safe_bylaws = html.escape(", ".join(rag_res.by_laws_cited[:2]))
+                bylaw_mention = f"• <b>Governing By-Law:</b> {safe_bylaws}\n"
+        except Exception as e:
+            logger.warning(f"Error retrieving water isolation guide by-law: {e}")
+
+        vendor = resolve_vendor_assignment("maintenance", "pipe burst")
+        v_name = html.escape(vendor.get("vendor_name", "Apex 24/7 Rapid Plumbing"))
+        v_phone = html.escape(vendor.get("emergency_phone", "+65 6789-0123"))
 
         await query.message.reply_text(
             "🚰 <b>Estate Water Isolation & Emergency Guide</b>\n\n"
@@ -556,7 +604,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             "3. Relieve residual water pressure by opening a cold water tap.\n"
             "4. Keep main door unlocked for dispatched emergency technicians.\n\n"
             f"{bylaw_mention}"
-            "📞 <b>Emergency Hotline:</b> <code>+65 6789-0123</code> (Apex 24/7 Rapid Plumbing)",
+            f"📞 <b>Emergency Hotline:</b> <code>{v_phone}</code> ({v_name})",
             parse_mode=ParseMode.HTML,
         )
     elif data.startswith("call_"):
@@ -636,11 +684,12 @@ def main() -> None:
     app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start_command))
     app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("report", report_command))
     app.add_handler(CommandHandler("ask", ask_command))
     app.add_handler(CommandHandler("status", status_command))
     app.add_handler(CommandHandler("mytickets", mytickets_command))
     app.add_handler(
-        MessageHandler(filters.TEXT | filters.PHOTO & ~filters.COMMAND, handle_resident_message)
+        MessageHandler((filters.TEXT | filters.PHOTO) & ~filters.COMMAND, handle_resident_message)
     )
     app.add_handler(CallbackQueryHandler(handle_callback_query))
 

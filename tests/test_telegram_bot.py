@@ -68,6 +68,38 @@ async def test_ask_command():
 
 
 @pytest.mark.anyio
+async def test_report_command(mock_db):
+    # 1. /report without args shows guidance
+    update_no_args = MagicMock()
+    update_no_args.message = AsyncMock()
+    update_no_args.message.photo = None
+    context_no_args = MagicMock()
+    context_no_args.args = []
+
+    await telegram_bot.report_command(update_no_args, context_no_args)
+    update_no_args.message.reply_text.assert_awaited_once()
+    assert "Report an Estate Defect" in update_no_args.message.reply_text.call_args[0][0]
+
+    # 2. /report with issue text triggers triage and creates ticket
+    update_report = MagicMock()
+    update_report.message = AsyncMock()
+    update_report.message.photo = []
+    update_report.message.chat = AsyncMock()
+    update_report.message.chat.id = 998877
+    update_report.message.chat_id = 998877
+    update_report.message.from_user = MagicMock()
+    update_report.message.from_user.full_name = "Alice Test"
+    context_report = MagicMock()
+    context_report.args = ["Water", "pipe", "burst", "in", "#08-14!"]
+
+    await telegram_bot.report_command(update_report, context_report)
+    update_report.message.reply_text.assert_awaited_once()
+    reply = update_report.message.reply_text.call_args[0][0]
+    assert "Ticket:" in reply
+    assert "Plumbing" in reply or "Maintenance" in reply
+
+
+@pytest.mark.anyio
 async def test_status_command(mock_db):
     update = MagicMock()
     update.message = AsyncMock()

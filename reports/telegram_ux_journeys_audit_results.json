@@ -1,0 +1,53 @@
+{
+  "Journey_1": {
+    "command": "/report Water pipe burst in kitchen #08-14, flooding floor!",
+    "reply": "\ud83d\ude80 <b>AUTOMATIC DISPATCH CONFIRMED</b>\n\n<b>Ticket:</b> <code>WO-20261104-4434</code>\n<b>Status:</b> \ud83d\udea8 <b>CRITICAL EMERGENCY</b>\n<b>Category:</b> Maintenance\n<b>Summary:</b> Water pipe burst in kitchen causing flooding.\n<b>Unit:</b> <code>#08-14</code>\n\ud83d\udee1\ufe0f <b>Guardhouse Clearance:</b> <code>PASS-0814-401269</code> (Pre-cleared)\n\n\ud83d\udd27 <b>Assigned Entity:</b> Apex 24/7 Rapid Plumbing\n\ud83d\udcde <b>Contact:</b> <code>+65 6789-0123</code>\n\u23f1\ufe0f <b>Estimated Arrival / SLA:</b> ~25 minutes\n\n\ud83d\udca1 <b>Immediate Resident Guidance:</b>\n<i>Please immediately turn off the main water supply valve in your unit and move electrical appliances away from the water to prevent short circuits.</i>\n\n\ud83d\udcf2 <i>Dispatched via on-call contractor SMS & guardhouse alert.</i>\n\u26a0\ufe0f <i>[PROTOTYPE DISPATCH: For actual life-threatening emergencies, call 995/999 immediately.]</i>",
+    "emergency_triage": true,
+    "ticket_created": true,
+    "ticket_id": "WO-20261104-4434",
+    "unit_extracted": "#08-14",
+    "contractor_dispatched": true,
+    "assigned_contractor": "Apex 24/7 Rapid Plumbing",
+    "guardhouse_pass": true,
+    "trello_sync_present": false,
+    "trello_note": "Trello sync is handled in condo_classifier/trello.py and condo_classifier/telegram_bot.py; telegram_bot.py relies on central SQLite ticket store and auto-dispatch table.",
+    "verdict": "PASS"
+  },
+  "Journey_2": {
+    "command": "/ask Can my visitor park overnight? What is the tariff?",
+    "reply": "\ud83c\udfdb\ufe0f <b>Estate Knowledge Base (Semantic RAG)</b>\n\n1. <b>RULING</b>: <b>PERMITTED</b> (Subject to strict registration requirements).\n\n2. <b>BY-LAW &amp; STATUTORY AUTHORITY</b>: Marina Heights Condominium (MCST 4291) Resident Handbook &amp; By-laws, Section 5.2 (Visitor Parking &amp; Wheel-Clamping Enforcement).\n\n3. <b>EXACT CONSTRAINTS &amp; TARIFFS</b>:\n*   <b>Registration Deadline</b>: Must be registered at the Guardhouse by <b>22:00</b>.\n*   <b>Tariff</b>: <b>S$15.00 per night</b>.\n*   <b>Prohibited Hours</b>: Overnight parking is strictly prohibited between <b>00:00 and 06:00</b> if not pre-registered.\n*   <b>Penalty</b>: Vehicles overstaying or parking without authorization in restricted areas are subject to wheel-clamping. The <b>Unclamping Administrative Fee is S$107.00</b> (inclusive of GST).\n\n4. <b>ACTIONABLE NEXT STEPS &amp; CONTACTS</b>:\n*   <b>Registration</b>: Proceed to the Main Guardhouse to register your visitor&#x27;s vehicle and pay the required fee before the 22:00 deadline.\n*   <b>Contact for Assistance</b>: For parking inquiries or to report issues, contact the <b>Main Guardhouse &amp; Patrol</b> at <b>+65 6444-2222</b> (available 24/7).\n*   <b>Important Note</b>: Visitor lots are intended for temporary guest use only and may not be used by residents to evade season parking fees. Please ensure your visitor displays the valid pass issued by the Guardhouse. Failure to register by 22:00 will result in the vehicle being considered unauthorized during the 00:00\u201306:00 restricted window, which may lead to immediate wheel-clamping without prior warning.\n\n<i>\ud83d\udd0d Grounded Context: 3 semantic chunks retrieved (4.23s)</i>",
+    "invoked_semantic_rag": true,
+    "has_overnight_rule": true,
+    "tariff_found": true,
+    "guardhouse_contact_present": true,
+    "citations_present": true,
+    "verdict": "PASS"
+  },
+  "Journey_3": {
+    "command": "/report",
+    "reply": "\ud83d\udea8 <b>Report an Estate Defect or Incident</b>\n\nPlease describe the problem after <code>/report</code>, or send a photo with a caption.\n\n<b>Examples:</b>\n\u2022 <code>/report Water pipe burst in kitchen #08-14, flooding floor!</code>\n\u2022 <code>/report Lift B stuck at Level 4 with passengers inside</code>\n\u2022 <code>/report Noisy drilling next door at unit #12-03</code>",
+    "has_helpful_guidance": true,
+    "has_examples": true,
+    "clarity": "High - provides 3 bulleted real-world examples covering burst pipe, lift entrapment, and noise.",
+    "verdict": "PASS"
+  },
+  "Journey_4": {
+    "text": "Lift B is stuck between levels 3 and 4",
+    "reply": "\ud83d\ude80 <b>AUTOMATIC DISPATCH CONFIRMED</b>\n\n<b>Ticket:</b> <code>WO-20261104-2821</code>\n<b>Status:</b> \ud83d\udea8 <b>CRITICAL EMERGENCY</b>\n<b>Category:</b> Maintenance\n<b>Summary:</b> Lift B is stuck between levels 3 and 4\n\ud83d\udee1\ufe0f <b>Guardhouse Clearance:</b> <code>PASS-ESTATE-494038</code> (Pre-cleared)\n\n\ud83d\udd27 <b>Assigned Entity:</b> Schindler Express Response\n\ud83d\udcde <b>Contact:</b> <code>+65 6888-4321</code>\n\u23f1\ufe0f <b>Estimated Arrival / SLA:</b> ~20 minutes\n\n\ud83d\udca1 <b>Immediate Resident Guidance:</b>\n<i>Do not attempt to force the doors open. Stay calm and wait for the technician to arrive. Use the emergency intercom inside the lift to communicate with the guardhouse.</i>\n\n\ud83d\udcf2 <i>Dispatched via on-call contractor SMS & guardhouse alert.</i>\n\u26a0\ufe0f <i>[PROTOTYPE DISPATCH: For actual life-threatening emergencies, call 995/999 immediately.]</i>",
+    "auto_triaged": true,
+    "emergency_dispatch": true,
+    "assigned_entity": "Schindler Express Response",
+    "safety_instructions": true,
+    "verdict": "PASS"
+  },
+  "Journey_5": {
+    "status_query": "/status WO-20261104-4434",
+    "status_reply": "\ud83d\udccb <b>Work Order Status:</b> <code>WO-20261104-4434</code>\n\n\u2022 <b>Status:</b> \ud83d\ude80 <b>DISPATCHED</b>\n\u2022 <b>Category:</b> Maintenance\n\u2022 <b>Priority:</b> EMERGENCY\n\u2022 <b>Summary:</b> Water pipe burst in kitchen causing flooding.\n\u2022 <b>Assigned Entity:</b> Apex 24/7 Rapid Plumbing\n\u2022 <b>Created:</b> 2026-11-03 16:35:45\n",
+    "mytickets_reply": "\ud83d\udccb <b>Your Recent Condominium Tickets:</b>\n\n\u2022 <code>WO-20261104-4434</code> | <b>DISPATCHED</b>\n  Water pipe burst in kitchen causing flooding....\n\nUse <code>/status &lt;TICKET_ID&gt;</code> for details.",
+    "invalid_ticket_reply": "\u274c Ticket <code>WO-99999999-0000</code> not found.",
+    "shows_live_status": true,
+    "shows_assigned_entity": true,
+    "mytickets_lists_recent": true,
+    "verdict": "PASS"
+  }
+}
