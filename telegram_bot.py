@@ -46,8 +46,8 @@ from condo_classifier.dispatch import (
     resolve_vendor_assignment,
     trigger_auto_dispatch,
 )
-from condo_classifier.graph_rag import get_estate_vault
 from condo_classifier.schema import ResidentRequest
+from condo_classifier.semantic_rag import get_semantic_rag
 from condo_classifier.service import Classifier
 from condo_classifier.signals import safety_signal
 
@@ -172,8 +172,8 @@ async def ask_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         return
 
     await message.chat.send_action(ChatAction.TYPING)
-    vault = get_estate_vault()
-    result = vault.query(query_text, hops=2, max_notes=12)
+    semantic_rag = get_semantic_rag()
+    result = await asyncio.to_thread(semantic_rag.query, query_text)
 
     # Format cleanly for Telegram HTML
     safe_answer = html.escape(result.answer)
@@ -181,9 +181,9 @@ async def ask_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     formatted_body = re.sub(r"### (.*?)\n", r"\n<b>\1</b>\n", formatted_body)
 
     response_text = (
-        f"🏛️ <b>Estate Knowledge Graph Intelligence</b>\n\n"
+        f"🏛️ <b>Estate Knowledge Base (Semantic RAG)</b>\n\n"
         f"{formatted_body}\n\n"
-        f"<i>🔍 Subgraph Context: {len(result.expanded_nodes)} connected entities traversed</i>"
+        f"<i>🔍 Grounded Context: {len(result.retrieved_chunks)} semantic chunks retrieved ({result.latency_seconds:.2f}s)</i>"
     )
     await message.reply_text(response_text, parse_mode=ParseMode.HTML)
 
@@ -445,9 +445,9 @@ async def handle_resident_message(update: Update, context: ContextTypes.DEFAULT_
             safe_instruction = html.escape(decision.safety_instruction)
             reply_body += f"\n💡 <b>Immediate Resident Guidance:</b>\n<i>{safe_instruction}</i>\n"
 
-        # Enrich with Estate Knowledge Graph RAG (Valves, Risers, By-Laws & Policy Answers)
+        # Enrich with Estate Semantic RAG (By-Laws, Hours, Fines & Policy Answers)
         estate_rag = await asyncio.to_thread(
-            get_estate_vault().query, text, unit_hint=decision.unit_number, hops=2
+            get_semantic_rag().query, text
         )
         if estate_rag.grounded:
             # If the user asked a question or it is an inquiry, include the direct policy answer
@@ -524,12 +524,8 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
 
     data = query.data or ""
     if data == "guide_water":
-        vault = get_estate_vault()
-        rag_res = vault.query("emergency water isolation shutoff valve leak protocol", hops=1)
-        infra_mention = ""
-        if rag_res.affected_infrastructure:
-            infra_list = ", ".join(f"<code>{i}</code>" for i in rag_res.affected_infrastructure[:3])
-            infra_mention = f"• <b>Estate Infrastructure:</b> {infra_list}\n"
+        sem_rag = get_semantic_rag()
+        rag_res = sem_rag.query("emergency water isolation shutoff valve leak protocol")
         bylaw_mention = ""
         if rag_res.by_laws_cited:
             bylaw_mention = f"• <b>Governing By-Law:</b> {', '.join(rag_res.by_laws_cited[:2])}\n"

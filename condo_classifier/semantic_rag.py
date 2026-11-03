@@ -595,3 +595,16 @@ class SemanticRAGEngine:
         # General excerpt fallback
         first_source = context.split("\n\n---\n\n")[0] if context else ""
         return f"Based on estate guidelines:\n\n{first_source[:400]}...", cited
+
+
+_DEFAULT_SEMANTIC_ENGINE: SemanticRAGEngine | None = None
+
+
+def get_semantic_rag(kb_path: Path | str | None = None) -> SemanticRAGEngine:
+    """Singleton getter for the estate Semantic RAG Engine."""
+    global _DEFAULT_SEMANTIC_ENGINE
+    if _DEFAULT_SEMANTIC_ENGINE is None:
+        _DEFAULT_SEMANTIC_ENGINE = SemanticRAGEngine(kb_path=kb_path)
+        _DEFAULT_SEMANTIC_ENGINE.initialize()
+    return _DEFAULT_SEMANTIC_ENGINE
+

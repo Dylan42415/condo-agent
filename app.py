@@ -22,8 +22,8 @@ from condo_classifier.database import (
 )
 from condo_classifier.dispatch import calculate_sla_metrics
 from condo_classifier.evaluation import evaluate
-from condo_classifier.graph_rag import get_estate_vault
 from condo_classifier.schema import ResidentRequest
+from condo_classifier.semantic_rag import get_semantic_rag
 from condo_classifier.service import Classifier
 from condo_classifier.taxonomy import LABELS
 
@@ -121,11 +121,11 @@ st.html(
     "with clear reasons for review.</p>"
 )
 st.caption("10 categories  ·  English starter dataset  ·  Human review built in")
-live_tab, single_tab, graph_tab, batch_tab, evaluation_tab, guide_tab, showcase_tab = st.tabs(
+live_tab, single_tab, rag_tab, batch_tab, evaluation_tab, guide_tab, showcase_tab = st.tabs(
     [
         "Live Operations & Dispatch",
         "Classify a request",
-        "Estate Knowledge Graph & RAG",
+        "Estate Knowledge Base & Semantic RAG",
         "Batch review",
         "Evaluation",
         "Category guide",
@@ -471,37 +471,34 @@ with single_tab:
                 "application/json",
             )
 
-with graph_tab:
-    st.subheader("Estate Knowledge Graph & Hybrid RAG Explorer")
+with rag_tab:
+    st.subheader("Estate Knowledge Base & Semantic Chunking RAG Explorer")
     st.caption(
-        "Interactive Knowledge Graph RAG over estate by-laws, vertical stacks, risers, and SLAs. "
-        "Performs bidirectional BFS expansion across Wikilinks."
+        "Production Semantic Chunking RAG pipeline over condominium by-laws, facility booking rules, and incident protocols. "
+        "Splits documents via LangChain MarkdownHeaderTextSplitter with semantic breakpoint detection."
     )
 
-    vault = get_estate_vault()
+    sem_engine = get_semantic_rag()
+    chunks = sem_engine.index.chunks
 
     g_m1, g_m2, g_m3, g_m4 = st.columns(4)
-    g_m1.metric("Vault Notes", len(vault.notes))
-    bylaw_count = sum(1 for n in vault.notes.values() if n.note_type == "ByLaw")
-    g_m2.metric("By-Laws & Rules", bylaw_count)
-    unit_count = sum(
-        1 for n in vault.notes.values() if n.note_type in {"Unit", "Stack", "Building"}
-    )
-    g_m3.metric("Physical Assets", unit_count)
-    contractor_count = sum(
-        1 for n in vault.notes.values() if n.note_type in {"Contractor", "InternalTeam"}
-    )
-    g_m4.metric("Contractors / Teams", contractor_count)
+    g_m1.metric("Indexed Chunks", len(chunks))
+    section_count = len({c.section for c in chunks if c.section})
+    g_m2.metric("Topic Sections", section_count)
+    table_count = sum(1 for c in chunks if c.has_table)
+    g_m3.metric("Atomic GFM Tables", table_count)
+    g_m4.metric("Chunking Method", "LangChain + Semantic")
 
     st.divider()
 
-    st.markdown("### 🔍 Test Multi-Hop Estate RAG")
+    st.markdown("### 🔍 Test Semantic Chunking RAG")
     preset_scenarios = [
         "Select a test query...",
-        "🚨 Water is leaking from ceiling in #08-04",
-        "🚫 Can my contractor do drilling tomorrow Saturday?",
-        "🍖 How much is the deposit to book BBQ Pit 1 and what are the hours?",
+        "🚫 Can my contractor do drilling works on Saturday afternoon?",
+        "💰 How much is the fine for noisy renovation without approval?",
+        "🍖 What are the operating hours and deposit for booking BBQ Pit 1?",
         "🚗 My visitor parked overnight in a resident lot, is there a wheel clamp fee?",
+        "💧 There is water dripping from my ceiling from unit #09-04 above. Who is responsible?",
         "🐕 What are the rules on keeping pets and dogs in common areas?",
     ]
     selected_preset = st.selectbox("Quick Query Presets", preset_scenarios, index=0)
@@ -510,25 +507,25 @@ with graph_tab:
     if selected_preset != "Select a test query...":
         default_q = selected_preset.split(" ", 1)[1] if " " in selected_preset else selected_preset
 
-    user_rag_query = st.text_input("Resident Question or Incident Query", value=default_q)
+    user_rag_query = st.text_input("Resident Question or By-Law Inquiry", value=default_q)
 
-    hop_col, btn_col = st.columns([1, 2])
-    with hop_col:
-        rag_hops = st.slider("Graph Expansion Hops (BFS)", 1, 3, 2)
+    topk_col, btn_col = st.columns([1, 2])
+    with topk_col:
+        top_k = st.slider("Top Chunks to Retrieve (k)", 1, 5, 3)
     with btn_col:
         st.write("")
         st.write("")
-        run_rag = st.button("🚀 Run Hybrid Graph RAG Query", type="primary")
+        run_rag = st.button("🚀 Run Semantic Chunking RAG Query", type="primary")
 
     if user_rag_query and run_rag:
-        with st.spinner("Traversing estate knowledge graph..."):
-            rag_result = vault.query(user_rag_query, hops=rag_hops, max_notes=12)
+        with st.spinner("Retrieving semantic chunks and synthesizing answer..."):
+            rag_result = sem_engine.query(user_rag_query, top_k=top_k)
 
         st.success(
-            f"Grounded Subgraph Retrieved ({len(rag_result.expanded_nodes)} Connected Entities)"
+            f"Grounded Context Retrieved ({len(rag_result.retrieved_chunks)} Semantic Chunks in {rag_result.latency_seconds:.2f}s)"
         )
 
-        ans_col, graph_col = st.columns([1.1, 0.9])
+        ans_col, chunk_col = st.columns([1.1, 0.9])
         with ans_col:
             st.markdown("#### Grounded Answer Synthesis")
             st.markdown(rag_result.answer)
@@ -536,56 +533,35 @@ with graph_tab:
             if rag_result.by_laws_cited:
                 b_str = ", ".join(f"`{b}`" for b in rag_result.by_laws_cited)
                 st.markdown(f"**Cited By-Laws:** {b_str}")
-            if rag_result.affected_infrastructure:
-                i_str = ", ".join(f"`{i}`" for i in rag_result.affected_infrastructure)
-                st.markdown(f"**Affected Assets:** {i_str}")
+            if rag_result.source_sections:
+                s_str = ", ".join(f"`{s}`" for s in rag_result.source_sections)
+                st.markdown(f"**Source Sections:** {s_str}")
 
-        with graph_col:
-            st.markdown("#### Connected Subgraph Traversal")
-            st.caption(f"Seeds: {', '.join(rag_result.seed_nodes)}")
-            st.caption(f"Traversed Nodes: {', '.join(rag_result.expanded_nodes)}")
+        with chunk_col:
+            st.markdown("#### Retrieved Semantic Chunks")
+            for i, c in enumerate(rag_result.retrieved_chunks, 1):
+                with st.expander(f"Chunk {i}: {c.header_breadcrumb}", expanded=(i == 1)):
+                    st.caption(f"Source: `{c.source_file}` | Tokens: ~{c.token_count} | Has Table: {c.has_table}")
+                    st.markdown(c.content)
 
-            if rag_result.edges:
-                edge_df = pd.DataFrame(
-                    [{"Source": s, "Relationship": r, "Target": t} for s, r, t in rag_result.edges]
-                )
-                st.dataframe(edge_df, use_container_width=True, hide_index=True)
-            else:
-                st.info("No inter-node edges in current subgraph scope.")
-
-        with st.expander("Inspect Raw Grounded Subgraph Prompt Context"):
+        with st.expander("Inspect Raw Grounded Context Prompt"):
             st.code(rag_result.context_text, language="markdown")
 
     st.divider()
-    st.markdown("### 📚 Estate Vault Knowledge Base Browser")
-    selected_note_title = st.selectbox(
-        "Browse Note Details",
-        sorted(vault.notes.keys()),
-        index=0,
-    )
-    if selected_note_title and selected_note_title in vault.notes:
-        note_obj = vault.notes[selected_note_title]
-        nb1, nb2 = st.columns([1, 1])
-        with nb1:
-            st.markdown(f"**Type:** `{note_obj.note_type}` | **Category:** `{note_obj.category}`")
-            if note_obj.aliases:
-                st.caption(f"Aliases: {', '.join(note_obj.aliases)}")
-            st.markdown(note_obj.body)
-        with nb2:
-            st.markdown("**Outgoing Relationships:**")
-            if note_obj.relationships:
-                for rel, tgt in note_obj.relationships:
-                    st.markdown(f"• **{rel}** ➔ `[[{tgt}]]`")
-            else:
-                st.caption("No outgoing relationships recorded.")
-
-            st.markdown("**Incoming Backlinks:**")
-            in_edges = vault.incoming_edges.get(selected_note_title, set())
-            if in_edges:
-                for rel, src in in_edges:
-                    st.markdown(f"• `[[{src}]]` ➔ **{rel}**")
-            else:
-                st.caption("No incoming backlinks recorded.")
+    st.markdown("### 📚 Estate Knowledge Base Chunks Browser")
+    if chunks:
+        chunk_options = [f"[{c.chunk_id}] {c.header_breadcrumb}" for c in chunks]
+        selected_chunk_idx = st.selectbox(
+            "Browse Indexed Chunk",
+            range(len(chunks)),
+            format_func=lambda idx: chunk_options[idx],
+            index=0,
+        )
+        if selected_chunk_idx is not None:
+            sel_chunk = chunks[selected_chunk_idx]
+            st.markdown(f"**Section Breadcrumb:** `{sel_chunk.header_breadcrumb}`")
+            st.caption(f"File: `{sel_chunk.source_file}` | Words: {sel_chunk.token_count} | Has Table: {sel_chunk.has_table}")
+            st.markdown(sel_chunk.content)
 
 with batch_tab:
     st.subheader("Classify requests together")
