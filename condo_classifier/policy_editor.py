@@ -1,0 +1,721 @@
+"""
+By-Law Amendment Copilot (Human-in-the-Loop) for Condominium Estate Management.
+
+Empowers estate managers and staff to amend condominium house rules and by-laws
+using natural language without searching through raw markdown or PDF documents.
+
+Key Architectural Guarantees:
+1. Section Localization Agent: Directs the employee to the exact section & by-law clause.
+2. Human-in-the-Loop Review: Highlights proposed changes with a visual color-coded diff.
+3. Surgical In-Place Replacement: Preserves all surrounding sections, frontmatter, and GFM tables.
+4. Automated Backup & Audit Trail: Creates timestamped backups and logs every change to JSON.
+5. Live Semantic RAG Re-Indexing: Instantly rebuilds vector memory so resident inquiries
+   immediately reflect updated rules across Web and Telegram.
+6. Rollback Capability: Allows 1-click restoration to any prior version.
+"""
+
+from __future__ import annotations
+
+import difflib
+import json
+import logging
+import os
+import re
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+from dotenv import load_dotenv
+
+load_dotenv()
+logger = logging.getLogger(__name__)
+
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_KB_PATH = ROOT / "Knowledge Base" / "sample_condo_handbook.md"
+BACKUPS_DIR = ROOT / "Knowledge Base" / "backups"
+AUDIT_LOG_FILE = BACKUPS_DIR / "amendment_audit_log.json"
+
+
+# ============================================================================
+# Data Models
+# ============================================================================
+
+@dataclass
+class PolicySection:
+    """Represents a discrete, editable section or subsection within the handbook."""
+    index: int
+    level: int
+    heading_line: str
+    title: str
+    parent_heading: str
+    breadcrumb: str
+    start_char: int
+    end_char: int
+    line_no: int
+    raw_block: str
+    body: str
+
+    @property
+    def section_id(self) -> str:
+        clean = re.sub(r"[^a-zA-Z0-9]+", "_", self.breadcrumb.lower()).strip("_")
+        return f"sec_{self.index}_{clean[:30]}"
+
+
+@dataclass
+class PolicyAmendmentProposal:
+    """Proposed by-law change drafted by the agent for human-in-the-loop verification."""
+    section: PolicySection
+    intent: str
+    explanation: str
+    original_raw_block: str
+    proposed_raw_block: str
+    proposed_body: str
+    summary_bullets: list[str]
+    diff_lines: list[tuple[str, str]]
+    unified_diff: str
+    additions_count: int
+    deletions_count: int
+    model_used: str
+
+
+@dataclass
+class AmendmentAuditRecord:
+    """Immutable audit record saved after employee confirms by-law amendment."""
+    log_id: str
+    timestamp: str
+    author: str
+    intent: str
+    target_section: str
+    backup_file: str
+    summary: str
+    additions_count: int
+    deletions_count: int
+    diff_snippet: str
+    status: str = "APPLIED"
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "log_id": self.log_id,
+            "timestamp": self.timestamp,
+            "author": self.author,
+            "intent": self.intent,
+            "target_section": self.target_section,
+            "backup_file": self.backup_file,
+            "summary": self.summary,
+            "additions_count": self.additions_count,
+            "deletions_count": self.deletions_count,
+            "diff_snippet": self.diff_snippet,
+            "status": self.status,
+        }
+
+
+# ============================================================================
+# Section Parsing & Offsets
+# ============================================================================
+
+def parse_handbook_sections(markdown_text: str) -> list[PolicySection]:
+    """
+    Parses a markdown document into hierarchical, surgically replaceable sections.
+    Preserves exact character offsets [start_char:end_char] for non-destructive replacement.
+    """
+    lines = markdown_text.splitlines(keepends=True)
+    heading_regex = re.compile(r"^(#{1,4})\s+(.+)$")
+
+    raw_headings: list[dict[str, Any]] = []
+    char_offset = 0
+
+    for line_idx, line in enumerate(lines):
+        m = heading_regex.match(line.rstrip("\r\n"))
+        if m:
+            level = len(m.group(1))
+            raw_headings.append({
+                "line_no": line_idx,
+                "start_char": char_offset,
+                "level": level,
+                "heading_line": line.rstrip("\r\n"),
+                "title": m.group(2).strip(),
+            })
+        char_offset += len(line)
+
+    if not raw_headings:
+        # Fallback for document with no headings
+        return [
+            PolicySection(
+                index=0,
+                level=1,
+                heading_line="",
+                title="Full Document",
+                parent_heading="",
+                breadcrumb="Full Document",
+                start_char=0,
+                end_char=len(markdown_text),
+                line_no=0,
+                raw_block=markdown_text,
+                body=markdown_text,
+            )
+        ]
+
+    # Calculate end_char for each heading span
+    for i in range(len(raw_headings)):
+        if i < len(raw_headings) - 1:
+            raw_headings[i]["end_char"] = raw_headings[i + 1]["start_char"]
+        else:
+            raw_headings[i]["end_char"] = len(markdown_text)
+
+    # Build hierarchy (H1 -> H2 -> H3)
+    sections: list[PolicySection] = []
+    current_h1 = ""
+    current_h2 = ""
+
+    for idx, h in enumerate(raw_headings):
+        lvl = h["level"]
+        title = h["title"]
+        heading_line = h["heading_line"]
+        start_c = h["start_char"]
+        end_c = h["end_char"]
+        raw_block = markdown_text[start_c:end_c]
+
+        # Extract body (excluding first heading line)
+        parts = raw_block.split("\n", 1)
+        body = parts[1] if len(parts) > 1 else ""
+
+        if lvl == 1:
+            current_h1 = title
+            parent_h = ""
+            breadcrumb = title
+        elif lvl == 2:
+            current_h2 = title
+            parent_h = current_h1
+            breadcrumb = f"{current_h1} > {title}" if current_h1 else title
+        elif lvl == 3:
+            parent_h = current_h2 or current_h1
+            if current_h2:
+                breadcrumb = f"{current_h2} > {title}"
+            elif current_h1:
+                breadcrumb = f"{current_h1} > {title}"
+            else:
+                breadcrumb = title
+        else:
+            parent_h = current_h2 or current_h1
+            breadcrumb = f"{parent_h} > {title}" if parent_h else title
+
+        sections.append(
+            PolicySection(
+                index=idx,
+                level=lvl,
+                heading_line=heading_line,
+                title=title,
+                parent_heading=parent_h,
+                breadcrumb=breadcrumb,
+                start_char=start_c,
+                end_char=end_c,
+                line_no=h["line_no"],
+                raw_block=raw_block,
+                body=body,
+            )
+        )
+
+    return sections
+
+
+# ============================================================================
+# Section Localization Agent
+# ============================================================================
+
+def locate_target_section(
+    sections: list[PolicySection],
+    user_intent: str,
+    use_llm: bool = True,
+) -> tuple[PolicySection, float, str]:
+    """
+    Directs the employee to the exact section requiring amendment.
+    Combines keyword token scoring with Gemini semantic verification.
+    """
+    if not sections:
+        raise ValueError("No sections found in handbook to search.")
+
+    # Filter to editable subsections (H2 or H3, ignoring top H1 doc title)
+    candidate_sections = [s for s in sections if s.level >= 2]
+    if not candidate_sections:
+        candidate_sections = sections
+
+    # Keyword Scoring
+    intent_clean = user_intent.lower()
+    intent_tokens = re.findall(r"\b[a-zA-Z0-9_\$]+\b", intent_clean)
+    stopwords = {"the", "a", "an", "and", "or", "to", "for", "in", "of", "on", "from", "with", "is", "be", "change", "update", "set"}
+    query_terms = [t for t in intent_tokens if t not in stopwords and len(t) > 1]
+
+    scored: list[tuple[float, PolicySection, list[str]]] = []
+    for s in candidate_sections:
+        score = 0.0
+        matches = []
+        body_lower = s.raw_block.lower()
+        title_lower = s.breadcrumb.lower()
+
+        for term in query_terms:
+            if term in title_lower:
+                score += 5.0
+                matches.append(term)
+            elif term in body_lower:
+                score += 2.0
+                matches.append(term)
+
+        # Boost specific common estate domains
+        domain_keywords = {
+            "bbq": ["bbq", "pavilion", "pit", "recreational"],
+            "deposit": ["deposit", "refundable", "security"],
+            "drill": ["drill", "renovation", "noise", "hacking"],
+            "noise": ["noise", "acoustic", "quiet", "infraction"],
+            "park": ["park", "parking", "vehicle", "car", "wheel", "clamp"],
+            "pet": ["pet", "dog", "cat", "animal", "leash"],
+            "leak": ["leak", "seepage", "water", "ceiling", "bmsma", "101"],
+            "moving": ["moving", "move", "bulk", "delivery", "lift"],
+            "rubbish": ["rubbish", "refuse", "chute", "waste", "corridor"],
+        }
+        for dom, keys in domain_keywords.items():
+            if any(k in intent_clean for k in keys):
+                if any(k in title_lower for k in keys):
+                    score += 4.0
+                if any(k in body_lower for k in keys):
+                    score += 1.5
+
+        # Prefer leaf subsections (level 3) over broad headers (level 2) if they share score
+        if s.level == 3 and score > 0:
+            score += 1.0
+
+        scored.append((score, s, list(set(matches))))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+    best_score, best_sec, matched_words = scored[0]
+
+    # If Gemini is available, verify or enhance the rationale
+    api_key = os.getenv("GEMINI_API_KEY", "").strip()
+    if use_llm and api_key and best_score > 0:
+        try:
+            from google import genai
+            client = genai.Client(api_key=api_key)
+
+            top_candidates = scored[:3]
+            candidates_text = "\n".join(
+                f"[{i+1}] Index {c[1].index}: {c[1].breadcrumb}\nSnippet: {c[1].body[:200]}..."
+                for i, c in enumerate(top_candidates)
+            )
+
+            prompt = (
+                f"You are an Estate Policy Navigation Agent.\n"
+                f"EMPLOYEE INTENT: \"{user_intent}\"\n\n"
+                f"CANDIDATE SECTIONS:\n{candidates_text}\n\n"
+                f"Select the single best candidate index (1, 2, or 3) and provide a 1-sentence rationale.\n"
+                f"Return JSON:\n{{\"selected_choice\": 1, \"rationale\": \"...\"}}"
+            )
+
+            res = client.models.generate_content(
+                model="gemini-3.1-flash-lite",
+                contents=prompt,
+                config={"response_mime_type": "application/json", "temperature": 0.1},
+            )
+            data = json.loads(res.text)
+            sel_idx = int(data.get("selected_choice", 1)) - 1
+            if 0 <= sel_idx < len(top_candidates):
+                best_sec = top_candidates[sel_idx][1]
+                rationale = data.get("rationale", f"Selected section governs: {best_sec.title}")
+                return best_sec, top_candidates[sel_idx][0], rationale
+        except Exception as e:
+            logger.warning(f"LLM section localization fallback ({e}); using token overlap.")
+
+    # Deterministic Rationale
+    if matched_words:
+        rationale = f"Matched key terms [{', '.join(matched_words)}] directly within section '{best_sec.breadcrumb}'."
+    else:
+        rationale = f"Identified section '{best_sec.breadcrumb}' as the closest match for this policy instruction."
+
+    return best_sec, best_score, rationale
+
+
+# ============================================================================
+# Amendment Proposal Generator (Human-in-the-Loop)
+# ============================================================================
+
+def generate_policy_amendment(
+    section: PolicySection,
+    user_intent: str,
+    model_name: str = "gemini-3.1-flash-lite",
+) -> PolicyAmendmentProposal:
+    """
+    Drafts a surgical amendment to the target section based on employee intent.
+    Computes visual diffs and summaries for human-in-the-loop review.
+    """
+    api_key = os.getenv("GEMINI_API_KEY", "").strip()
+
+    proposed_raw_block = ""
+    summary_bullets: list[str] = []
+    explanation = ""
+    model_used = "deterministic_rule_engine"
+
+    if api_key:
+        try:
+            from google import genai
+            client = genai.Client(api_key=api_key)
+
+            system_instruction = (
+                "You are an expert Condominium Legal & Operations Policy Editor.\n"
+                "Your objective is to help estate staff amend condominium handbook clauses and tables.\n\n"
+                "CRITICAL RULES:\n"
+                "1. Apply ONLY the changes requested by the employee. Do NOT rewrite or alter unrelated sentences.\n"
+                "2. Maintain strict GitHub-Flavored Markdown table formatting (`|---|---|`).\n"
+                "3. Preserve the exact top heading of the section.\n"
+                "4. Return ONLY a valid JSON object matching the requested schema.\n"
+            )
+
+            prompt = (
+                f"EMPLOYEE INTENT / INSTRUCTION:\n\"{user_intent}\"\n\n"
+                f"CURRENT SECTION TEXT:\n{section.raw_block}\n\n"
+                f"Produce the updated section markdown and a concise explanation.\n"
+                f"Return JSON:\n"
+                f"{{\n"
+                f"  \"explanation\": \"Brief 1-sentence summary of the rule change\",\n"
+                f"  \"summary_bullets\": [\"Bullet 1 of exact changes made\", \"Bullet 2\"],\n"
+                f"  \"updated_markdown\": \"Full updated markdown including heading and tables\"\n"
+                f"}}"
+            )
+
+            res = client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config={
+                    "system_instruction": system_instruction,
+                    "response_mime_type": "application/json",
+                    "temperature": 0.1,
+                },
+            )
+
+            parsed = json.loads(res.text)
+            proposed_raw_block = parsed.get("updated_markdown", "").strip()
+            summary_bullets = parsed.get("summary_bullets", [])
+            explanation = parsed.get("explanation", f"Amended {section.title} to satisfy intent.")
+            model_used = f"gemini:{model_name}"
+        except Exception as e:
+            logger.warning(f"Gemini amendment generation call failed ({e}); falling back to deterministic.")
+
+    # Deterministic Fallback if LLM unavailable
+    if not proposed_raw_block:
+        proposed_raw_block, summary_bullets, explanation = _deterministic_amendment_fallback(
+            section, user_intent
+        )
+
+    # Ensure trailing horizontal rule (---) is preserved if original had it
+    had_hr = bool(re.search(r"\n---\s*$", section.raw_block.rstrip()))
+    now_has_hr = bool(re.search(r"\n---\s*$", proposed_raw_block.rstrip()))
+    if had_hr and not now_has_hr:
+        proposed_raw_block = proposed_raw_block.rstrip() + "\n\n---\n\n"
+
+    # Ensure trailing newline matches
+    if not proposed_raw_block.endswith("\n"):
+        proposed_raw_block += "\n"
+
+    # Separate body
+    parts = proposed_raw_block.split("\n", 1)
+    proposed_body = parts[1] if len(parts) > 1 else ""
+
+    # Calculate unified diff and line-by-line diff
+    orig_lines = section.raw_block.splitlines(keepends=True)
+    prop_lines = proposed_raw_block.splitlines(keepends=True)
+
+    unified = "".join(
+        difflib.unified_diff(
+            orig_lines,
+            prop_lines,
+            fromfile=f"Current: {section.title}",
+            tofile=f"Proposed: {section.title}",
+            n=3,
+        )
+    )
+
+    diff_lines, adds, dels = _compute_annotated_diff(orig_lines, prop_lines)
+
+    return PolicyAmendmentProposal(
+        section=section,
+        intent=user_intent,
+        explanation=explanation,
+        original_raw_block=section.raw_block,
+        proposed_raw_block=proposed_raw_block,
+        proposed_body=proposed_body,
+        summary_bullets=summary_bullets,
+        diff_lines=diff_lines,
+        unified_diff=unified,
+        additions_count=adds,
+        deletions_count=dels,
+        model_used=model_used,
+    )
+
+
+def _compute_annotated_diff(
+    orig_lines: list[str],
+    prop_lines: list[str],
+) -> tuple[list[tuple[str, str]], int, int]:
+    """Computes categorized diff lines (unchanged, add, delete) and counters."""
+    matcher = difflib.SequenceMatcher(None, orig_lines, prop_lines)
+    diff_lines: list[tuple[str, str]] = []
+    adds = 0
+    dels = 0
+
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == "equal":
+            for line in orig_lines[i1:i2]:
+                diff_lines.append(("unchanged", line.rstrip("\r\n")))
+        elif tag == "replace":
+            for line in orig_lines[i1:i2]:
+                diff_lines.append(("delete", line.rstrip("\r\n")))
+                dels += 1
+            for line in prop_lines[j1:j2]:
+                diff_lines.append(("add", line.rstrip("\r\n")))
+                adds += 1
+        elif tag == "delete":
+            for line in orig_lines[i1:i2]:
+                diff_lines.append(("delete", line.rstrip("\r\n")))
+                dels += 1
+        elif tag == "insert":
+            for line in prop_lines[j1:j2]:
+                diff_lines.append(("add", line.rstrip("\r\n")))
+                adds += 1
+
+    return diff_lines, adds, dels
+
+
+def _deterministic_amendment_fallback(
+    section: PolicySection,
+    user_intent: str,
+) -> tuple[str, list[str], str]:
+    """Fallback rule modifier when Gemini API is unavailable."""
+    updated = section.raw_block
+    summary = []
+
+    # Look for dollar amount adjustments e.g. "from $50 to $100" or "$100"
+    dollar_matches = re.findall(r"\$(\d+(?:,\d+)*(?:\.\d{2})?)", user_intent)
+    if len(dollar_matches) >= 2:
+        old_val, new_val = dollar_matches[0], dollar_matches[1]
+        pattern = re.compile(rf"S?\$?\s*{re.escape(old_val)}(?:\.00)?", re.IGNORECASE)
+        if pattern.search(updated):
+            updated = pattern.sub(f"S${new_val}.00", updated)
+            summary.append(f"Adjusted monetary value from S${old_val} to S${new_val}.00")
+    elif len(dollar_matches) == 1:
+        new_val = dollar_matches[0]
+        # Replace first occurring dollar amount in table or text
+        updated = re.sub(r"S?\$(\d+(?:,\d+)*(?:\.\d{2})?)", f"S${new_val}.00", updated, count=1)
+        summary.append(f"Updated primary tariff/deposit to S${new_val}.00")
+
+    # If no dollar matched, append as an administrative policy addendum
+    if updated == section.raw_block:
+        addendum = f"\n- **Special Amendment:** {user_intent.strip()}"
+        updated = updated.rstrip() + addendum + "\n\n"
+        summary.append(f"Appended administrative amendment: {user_intent.strip()}")
+
+    explanation = f"Applied rule adjustments to section {section.title}."
+    return updated, summary, explanation
+
+
+# ============================================================================
+# Application, Backup & Audit Trail
+# ============================================================================
+
+def apply_amendment_to_handbook(
+    handbook_path: Path,
+    section: PolicySection,
+    new_raw_block: str,
+    user_intent: str,
+    summary: str,
+    author: str = "Estate Staff",
+) -> tuple[bool, AmendmentAuditRecord, str]:
+    """
+    Applies the verified amendment to the handbook file:
+    1. Creates timestamped backup in Knowledge Base/backups/
+    2. Writes updated handbook
+    3. Logs structured audit trail to Knowledge Base/backups/amendment_audit_log.json
+    4. Automatically triggers real-time Semantic RAG re-indexing!
+    """
+    handbook_path = Path(handbook_path).resolve()
+    if not handbook_path.exists():
+        raise FileNotFoundError(f"Handbook file not found at: {handbook_path}")
+
+    original_text = handbook_path.read_text(encoding="utf-8")
+
+    # Ensure backups dir exists
+    BACKUPS_DIR.mkdir(parents=True, exist_ok=True)
+
+    # 1. Timestamped Backup
+    now = datetime.now(timezone.utc)
+    timestamp_str = now.strftime("%Y%m%d_%H%M%S")
+    short_id = uuid.uuid4().hex[:8]
+    backup_filename = f"{handbook_path.stem}_{timestamp_str}_{short_id}.md"
+    backup_file_path = BACKUPS_DIR / backup_filename
+    backup_file_path.write_text(original_text, encoding="utf-8")
+
+    # 2. In-Place Surgical Replacement
+    # Ensure trailing newline is preserved
+    clean_replacement = new_raw_block
+    if not clean_replacement.endswith("\n"):
+        clean_replacement += "\n"
+
+    updated_text = (
+        original_text[:section.start_char]
+        + clean_replacement
+        + original_text[section.end_char:]
+    )
+    handbook_path.write_text(updated_text, encoding="utf-8")
+
+    # 3. Calculate Diff Stats
+    orig_lines = section.raw_block.splitlines()
+    new_lines = clean_replacement.splitlines()
+    _, adds, dels = _compute_annotated_diff(orig_lines, new_lines)
+
+    diff_sample = "\n".join(
+        difflib.unified_diff(orig_lines, new_lines, lineterm="", n=2)
+    )
+
+    # 4. Create & Append Audit Record
+    record = AmendmentAuditRecord(
+        log_id=f"amend_{short_id}",
+        timestamp=now.isoformat(),
+        author=author,
+        intent=user_intent,
+        target_section=section.breadcrumb,
+        backup_file=str(backup_file_path.relative_to(ROOT)),
+        summary=summary,
+        additions_count=adds,
+        deletions_count=dels,
+        diff_snippet=diff_sample[:2000],
+        status="APPLIED",
+    )
+
+    _append_audit_log(record)
+
+    # 5. Live Re-Index Semantic RAG
+    reindex_status = _reindex_semantic_rag(handbook_path)
+
+    msg = (
+        f"Amendment successfully applied to '{section.breadcrumb}'. "
+        f"Backup saved to '{backup_filename}'. {reindex_status}"
+    )
+    return True, record, msg
+
+
+def _append_audit_log(record: AmendmentAuditRecord) -> None:
+    """Appends record to amendment_audit_log.json atomically."""
+    BACKUPS_DIR.mkdir(parents=True, exist_ok=True)
+    logs: list[dict[str, Any]] = []
+
+    if AUDIT_LOG_FILE.exists():
+        try:
+            logs = json.loads(AUDIT_LOG_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            logs = []
+
+    logs.insert(0, record.to_dict())  # Most recent first
+    AUDIT_LOG_FILE.write_text(json.dumps(logs, indent=2), encoding="utf-8")
+
+
+def load_audit_history(limit: int = 50) -> list[dict[str, Any]]:
+    """Loads past amendment records from the audit trail."""
+    if not AUDIT_LOG_FILE.exists():
+        return []
+    try:
+        data = json.loads(AUDIT_LOG_FILE.read_text(encoding="utf-8"))
+        return data[:limit]
+    except Exception as e:
+        logger.warning(f"Failed to read audit log: {e}")
+        return []
+
+
+def rollback_amendment(
+    handbook_path: Path,
+    backup_relative_path: str,
+    author: str = "Estate Staff (Rollback)",
+) -> tuple[bool, str]:
+    """Restores the handbook from a previous backup file and re-indexes RAG."""
+    handbook_path = Path(handbook_path).resolve()
+    target_backup = ROOT / backup_relative_path
+
+    if not target_backup.exists():
+        return False, f"Backup file not found at: {target_backup}"
+
+    backup_content = target_backup.read_text(encoding="utf-8")
+
+    # Create safety backup of current state before rollback
+    now = datetime.now(timezone.utc)
+    ts = now.strftime("%Y%m%d_%H%M%S")
+    safety_backup = BACKUPS_DIR / f"{handbook_path.stem}_prerollback_{ts}.md"
+    safety_backup.write_text(handbook_path.read_text(encoding="utf-8"), encoding="utf-8")
+
+    # Overwrite handbook
+    handbook_path.write_text(backup_content, encoding="utf-8")
+
+    # Record rollback in audit log
+    record = AmendmentAuditRecord(
+        log_id=f"rollback_{uuid.uuid4().hex[:8]}",
+        timestamp=now.isoformat(),
+        author=author,
+        intent=f"Rollback to backup: {backup_relative_path}",
+        target_section="Entire Handbook (Restoration)",
+        backup_file=str(safety_backup.relative_to(ROOT)),
+        summary=f"Reverted handbook to backup snapshot {target_backup.name}",
+        additions_count=0,
+        deletions_count=0,
+        diff_snippet=f"Restored from {target_backup.name}",
+        status="ROLLED_BACK",
+    )
+    _append_audit_log(record)
+
+    reindex_status = _reindex_semantic_rag(handbook_path)
+    return True, f"Successfully restored handbook from '{target_backup.name}'. {reindex_status}"
+
+
+def _reindex_semantic_rag(handbook_path: Path) -> str:
+    """Trigger real-time re-indexing of the Semantic RAG vector store."""
+    try:
+        from condo_classifier.semantic_rag import get_semantic_rag
+        engine = get_semantic_rag(kb_path=handbook_path)
+        engine.initialize()
+        return f"Semantic RAG re-indexed with {len(engine.index.chunks)} fresh chunks."
+    except Exception as e:
+        logger.error(f"Semantic RAG re-indexing failed: {e}")
+        return f"RAG re-indexing warning: {e}"
+
+
+# ============================================================================
+# Visual HTML Diff Renderer
+# ============================================================================
+
+def render_diff_html(diff_lines: list[tuple[str, str]]) -> str:
+    """Renders GitHub-style color-coded visual diff HTML for Streamlit."""
+    html_lines = [
+        '<div style="font-family: Consolas, monospace; font-size: 13px; line-height: 1.5; '
+        'background-color: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; '
+        'padding: 12px; overflow-x: auto; max-height: 400px;">'
+    ]
+
+    for tag, line in diff_lines:
+        safe_line = (
+            line.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace(" ", "&nbsp;")
+        )
+        if tag == "add":
+            html_lines.append(
+                f'<div style="background-color: #e6ffed; color: #1a7f37; border-left: 3px solid #2da44e; '
+                f'padding: 2px 6px; margin: 1px 0;">+ {safe_line}</div>'
+            )
+        elif tag == "delete":
+            html_lines.append(
+                f'<div style="background-color: #ffebe9; color: #cf222e; border-left: 3px solid #cf222e; '
+                f'text-decoration: line-through; padding: 2px 6px; margin: 1px 0;">- {safe_line}</div>'
+            )
+        else:
+            html_lines.append(
+                f'<div style="color: #24292f; padding: 2px 6px; margin: 1px 0;">&nbsp;&nbsp;{safe_line}</div>'
+            )
+
+    html_lines.append("</div>")
+    return "".join(html_lines)

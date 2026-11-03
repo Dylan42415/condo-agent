@@ -107,3 +107,34 @@ def test_streamlit_batch_processing_tab():
     assert not app.exception
     assert app.session_state.get("batch_result") is not None
 
+
+def test_streamlit_bylaw_amendment_copilot():
+    app = AppTest.from_file(ROOT / "app.py", default_timeout=30).run()
+    assert not app.exception
+
+    # Find preset template
+    copilot_sb = next(s for s in app.selectbox if s.label == "Quick Amendment Templates")
+    assert len(copilot_sb.options) > 1
+    copilot_sb.select(copilot_sb.options[1]).run()
+    assert not app.exception
+
+    # Directly set or ensure text area has intent
+    intent_area = next(t for t in app.text_area if "Describe the by-law" in t.label)
+    if not intent_area.value:
+        intent_area.set_value(copilot_sb.options[1]).run()
+
+    # Click Guide Me & Draft Changes
+    draft_btn = next(b for b in app.button if "Guide Me" in b.label)
+    draft_btn.click().run()
+    assert not app.exception
+
+    proposal = app.session_state.get("copilot_proposal")
+    assert proposal is not None
+    assert proposal.section is not None
+    assert len(proposal.diff_lines) > 0
+
+    # Verify Confirm button is available
+    confirm_btn = next((b for b in app.button if "Confirm & Apply" in b.label), None)
+    assert confirm_btn is not None
+
+

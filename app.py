@@ -23,6 +23,17 @@ from condo_classifier.database import (
 from condo_classifier.dispatch import calculate_sla_metrics
 from condo_classifier.evaluation import evaluate
 from condo_classifier.schema import ResidentRequest
+from condo_classifier.policy_editor import (
+    DEFAULT_KB_PATH,
+    PolicyAmendmentProposal,
+    apply_amendment_to_handbook,
+    generate_policy_amendment,
+    load_audit_history,
+    locate_target_section,
+    parse_handbook_sections,
+    render_diff_html,
+    rollback_amendment,
+)
 from condo_classifier.semantic_rag import get_semantic_rag
 from condo_classifier.service import Classifier
 from condo_classifier.taxonomy import LABELS
@@ -519,6 +530,164 @@ with rag_tab:
                 c_c3.metric("Tables Extracted", conv_res.table_count)
                 c_c4.metric("Engine Used", conv_res.engine_used)
                 st.rerun()
+
+    with st.expander("⚖️ AI By-Law Amendment Copilot (Human-in-the-Loop)", expanded=False):
+        st.markdown("**Amend Rules, Tariffs & By-Laws in Natural Language:**")
+        st.caption(
+            "Instead of manually searching and editing raw markdown handbook files, tell the agent what rule to change. "
+            "The agent guides you to the exact by-law section, drafts surgical amendments, and highlights the changes (diff) "
+            "for human review before applying. Automated timestamped backup and audit logging are maintained for complete compliance."
+        )
+
+        active_kb_path = Path(getattr(sem_engine, "kb_path", DEFAULT_KB_PATH))
+        if not active_kb_path.exists():
+            active_kb_path = DEFAULT_KB_PATH
+
+        st.caption(f"Active Handbook: `{active_kb_path.name}`")
+
+        # Quick preset suggestions
+        copilot_presets = [
+            "Select an amendment instruction preset...",
+            "Increase BBQ Pavilion deposit from $50 to $100 and allow booking 45 days in advance",
+            "Increase unapproved Sunday drilling penalty from $1,000 to $2,000 with 72-hour pass suspension",
+            "Increase overnight visitor parking fee from $15 to $25 per night",
+            "Increase common corridor unleashed pet fine from $100 to $200",
+            "Allow moving in on Saturdays up to 15:00 instead of 13:00",
+        ]
+        def _load_copilot_preset() -> None:
+            preset = st.session_state.get("copilot_preset_select")
+            if preset and preset != "Select an amendment instruction preset...":
+                st.session_state.copilot_intent_input = preset
+
+        selected_copilot_preset = st.selectbox(
+            "Quick Amendment Templates",
+            copilot_presets,
+            index=0,
+            key="copilot_preset_select",
+            on_change=_load_copilot_preset,
+        )
+
+        if "copilot_intent_input" not in st.session_state:
+            st.session_state.copilot_intent_input = ""
+
+        user_intent_input = st.text_area(
+            "Describe the by-law or house rule amendment:",
+            key="copilot_intent_input",
+            placeholder="e.g. Increase BBQ pit deposit to $100 and require booking 3 days in advance",
+            height=80,
+        )
+
+        col_draft, col_clear = st.columns([1.5, 1])
+        with col_draft:
+            draft_clicked = st.button("🧭 1. Guide Me to Section & Draft Changes", type="primary", key="btn_draft_amendment")
+        with col_clear:
+            if st.button("🔄 Reset Draft", key="btn_reset_draft"):
+                st.session_state.pop("copilot_proposal", None)
+                st.session_state.pop("copilot_applied_msg", None)
+                st.rerun()
+
+        if draft_clicked and user_intent_input.strip():
+            with st.spinner("Agent analyzing handbook, locating target section, and drafting proposal..."):
+                hb_text = active_kb_path.read_text(encoding="utf-8")
+                sections = parse_handbook_sections(hb_text)
+                target_sec, match_score, rationale = locate_target_section(sections, user_intent_input.strip())
+                proposal = generate_policy_amendment(target_sec, user_intent_input.strip())
+                st.session_state.copilot_proposal = proposal
+                st.session_state.copilot_rationale = rationale
+
+        # Display Proposal for Human-in-the-Loop Verification
+        proposal: PolicyAmendmentProposal | None = st.session_state.get("copilot_proposal")
+        if proposal:
+            st.divider()
+            st.markdown("#### 🎯 Step 2: Agent Guidance & Human Review")
+            st.info(f"📍 **Target Section Located:** `{proposal.section.breadcrumb}`")
+            if "copilot_rationale" in st.session_state:
+                st.caption(f"💡 **Agent Rationale:** {st.session_state.copilot_rationale}")
+
+            st.markdown(f"**Proposed Amendment Summary:** {proposal.explanation}")
+            if proposal.summary_bullets:
+                for b in proposal.summary_bullets:
+                    st.markdown(f"- {b}")
+
+            # Diff Highlighting
+            st.markdown("##### 🔍 Proposed Changes Diff (GitHub-Style)")
+            d_col1, d_col2, d_col3 = st.columns([1, 1, 2])
+            d_col1.metric("Lines Added", f"+{proposal.additions_count}")
+            d_col2.metric("Lines Removed", f"-{proposal.deletions_count}")
+            d_col3.caption(f"Engine: `{proposal.model_used}` · Human-in-the-Loop review active")
+
+            st.markdown(render_diff_html(proposal.diff_lines), unsafe_allow_html=True)
+
+            with st.expander("✏️ Human-in-the-Loop: Inspect & Fine-Tune Markdown Before Applying", expanded=False):
+                edited_markdown = st.text_area(
+                    "You can tweak the proposed markdown below before saving:",
+                    value=proposal.proposed_raw_block,
+                    height=220,
+                    key="copilot_edited_markdown",
+                )
+
+            # Confirm and Apply Button
+            col_apply, col_discard = st.columns([2, 1])
+            with col_apply:
+                apply_clicked = st.button(
+                    "✅ 2. Confirm & Apply Changes to Handbook",
+                    type="primary",
+                    key="btn_confirm_amendment",
+                )
+            with col_discard:
+                if st.button("❌ Discard", key="btn_discard_draft"):
+                    st.session_state.pop("copilot_proposal", None)
+                    st.rerun()
+
+            if apply_clicked:
+                with st.spinner("Creating timestamped backup, updating handbook, and re-indexing Semantic RAG..."):
+                    text_to_save = st.session_state.get("copilot_edited_markdown", proposal.proposed_raw_block)
+                    ok, record, msg = apply_amendment_to_handbook(
+                        handbook_path=active_kb_path,
+                        section=proposal.section,
+                        new_raw_block=text_to_save,
+                        user_intent=proposal.intent,
+                        summary=proposal.explanation,
+                        author="Estate Staff (UI)",
+                    )
+                    if ok:
+                        st.session_state.copilot_applied_msg = {
+                            "text": msg,
+                            "backup": record.backup_file,
+                            "log_id": record.log_id,
+                        }
+                        st.session_state.pop("copilot_proposal", None)
+                        st.rerun()
+
+        if "copilot_applied_msg" in st.session_state:
+            applied_info = st.session_state.copilot_applied_msg
+            st.success(f"🎉 **{applied_info['text']}**")
+            st.caption(f"Audit Log ID: `{applied_info['log_id']}` · Backup File: `{applied_info['backup']}`")
+
+        # Audit History & Rollback Sub-Expander
+        with st.expander("📜 Amendment Audit Trail & Version Rollback", expanded=False):
+            history = load_audit_history(limit=10)
+            if not history:
+                st.caption("No amendments recorded in this session yet.")
+            else:
+                for item in history:
+                    with st.container(border=True):
+                        h_col1, h_col2 = st.columns([3, 1])
+                        with h_col1:
+                            st.markdown(f"**{item.get('status', 'APPLIED')}** — `{item.get('log_id')}` ({item.get('timestamp')[:19]})")
+                            st.markdown(f"**Intent:** {item.get('intent')}")
+                            st.caption(f"Section: `{item.get('target_section')}` · Author: `{item.get('author')}`")
+                            st.caption(f"Summary: {item.get('summary')}")
+                        with h_col2:
+                            st.caption(f"+{item.get('additions_count', 0)} / -{item.get('deletions_count', 0)} lines")
+                            if item.get("status") != "ROLLED_BACK" and item.get("backup_file"):
+                                if st.button(f"↩️ Rollback", key=f"rb_{item['log_id']}"):
+                                    rb_ok, rb_msg = rollback_amendment(active_kb_path, item["backup_file"])
+                                    if rb_ok:
+                                        st.success(rb_msg)
+                                        st.rerun()
+                                    else:
+                                        st.error(rb_msg)
 
     st.divider()
 
