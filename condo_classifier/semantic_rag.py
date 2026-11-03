@@ -464,9 +464,9 @@ class SemanticRAGEngine:
         self.index = HybridSemanticIndex(embedding_provider=self.embedding_provider)
         self._initialized = False
 
-    def initialize(self) -> None:
+    def initialize(self, force: bool = False) -> None:
         """Loads and indexes the knowledge base."""
-        if self._initialized:
+        if self._initialized and not force:
             return
 
         if not self.kb_path.exists():
@@ -484,6 +484,12 @@ class SemanticRAGEngine:
         self.index.index_chunks(chunks)
         self._initialized = True
         logger.info(f"Initialized Semantic RAG with {len(chunks)} chunks from {self.kb_path.name}")
+
+    def reindex(self, kb_path: Path | str | None = None) -> None:
+        """Forces immediate re-parsing and re-indexing of the knowledge base."""
+        if kb_path:
+            self.kb_path = Path(kb_path)
+        self.initialize(force=True)
 
     def expand_query(self, query: str) -> str:
         """
@@ -751,4 +757,6 @@ def get_semantic_rag(kb_path: Path | str | None = None) -> SemanticRAGEngine:
     if _DEFAULT_SEMANTIC_ENGINE is None:
         _DEFAULT_SEMANTIC_ENGINE = SemanticRAGEngine(kb_path=kb_path)
         _DEFAULT_SEMANTIC_ENGINE.initialize()
+    elif kb_path and Path(kb_path).resolve() != _DEFAULT_SEMANTIC_ENGINE.kb_path.resolve():
+        _DEFAULT_SEMANTIC_ENGINE.reindex(kb_path)
     return _DEFAULT_SEMANTIC_ENGINE

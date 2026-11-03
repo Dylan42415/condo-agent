@@ -17,3 +17,6 @@ data/evidence/
 .build/
 Management_Agent-Stakeholder_Deck.pdf
 graphify-out/
+
+Knowledge Base/backups/*.md
+Knowledge Base/backups/*.json

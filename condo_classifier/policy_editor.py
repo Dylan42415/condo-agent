@@ -125,18 +125,26 @@ def parse_handbook_sections(markdown_text: str) -> list[PolicySection]:
 
     raw_headings: list[dict[str, Any]] = []
     char_offset = 0
+    in_code_block = False
 
     for line_idx, line in enumerate(lines):
-        m = heading_regex.match(line.rstrip("\r\n"))
-        if m:
-            level = len(m.group(1))
-            raw_headings.append({
-                "line_no": line_idx,
-                "start_char": char_offset,
-                "level": level,
-                "heading_line": line.rstrip("\r\n"),
-                "title": m.group(2).strip(),
-            })
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_code_block = not in_code_block
+            char_offset += len(line)
+            continue
+
+        if not in_code_block:
+            m = heading_regex.match(line.rstrip("\r\n"))
+            if m:
+                level = len(m.group(1))
+                raw_headings.append({
+                    "line_no": line_idx,
+                    "start_char": char_offset,
+                    "level": level,
+                    "heading_line": line.rstrip("\r\n"),
+                    "title": m.group(2).strip(),
+                })
         char_offset += len(line)
 
     if not raw_headings:
@@ -166,10 +174,31 @@ def parse_handbook_sections(markdown_text: str) -> list[PolicySection]:
 
     # Build hierarchy (H1 -> H2 -> H3)
     sections: list[PolicySection] = []
+
+    # If frontmatter or introductory text exists before the first heading, preserve it as section 0
+    if raw_headings[0]["start_char"] > 0:
+        preamble = markdown_text[0 : raw_headings[0]["start_char"]]
+        sections.append(
+            PolicySection(
+                index=0,
+                level=1,
+                heading_line="",
+                title="Frontmatter & Metadata",
+                parent_heading="",
+                breadcrumb="Frontmatter & Metadata",
+                start_char=0,
+                end_char=raw_headings[0]["start_char"],
+                line_no=0,
+                raw_block=preamble,
+                body=preamble,
+            )
+        )
+
     current_h1 = ""
     current_h2 = ""
 
-    for idx, h in enumerate(raw_headings):
+    for h in raw_headings:
+        idx = len(sections)
         lvl = h["level"]
         title = h["title"]
         heading_line = h["heading_line"]
@@ -183,6 +212,7 @@ def parse_handbook_sections(markdown_text: str) -> list[PolicySection]:
 
         if lvl == 1:
             current_h1 = title
+            current_h2 = ""  # Reset lower-level subsection hierarchy
             parent_h = ""
             breadcrumb = title
         elif lvl == 2:
@@ -236,15 +266,18 @@ def locate_target_section(
     if not sections:
         raise ValueError("No sections found in handbook to search.")
 
+    if not user_intent or not user_intent.strip():
+        return sections[0], 0.0, "No query intent provided."
+
     # Filter to editable subsections (H2 or H3, ignoring top H1 doc title)
     candidate_sections = [s for s in sections if s.level >= 2]
     if not candidate_sections:
         candidate_sections = sections
 
-    # Keyword Scoring
+    # Keyword Scoring (Unicode-aware)
     intent_clean = user_intent.lower()
-    intent_tokens = re.findall(r"\b[a-zA-Z0-9_\$]+\b", intent_clean)
-    stopwords = {"the", "a", "an", "and", "or", "to", "for", "in", "of", "on", "from", "with", "is", "be", "change", "update", "set"}
+    intent_tokens = re.findall(r"\w+", intent_clean, re.UNICODE)
+    stopwords = {"the", "a", "an", "and", "or", "to", "for", "in", "of", "on", "from", "with", "is", "be", "change", "update", "set", "can", "please", "make"}
     query_terms = [t for t in intent_tokens if t not in stopwords and len(t) > 1]
 
     scored: list[tuple[float, PolicySection, list[str]]] = []
@@ -262,28 +295,9 @@ def locate_target_section(
                 score += 2.0
                 matches.append(term)
 
-        # Boost specific common estate domains
-        domain_keywords = {
-            "bbq": ["bbq", "pavilion", "pit", "recreational"],
-            "deposit": ["deposit", "refundable", "security"],
-            "drill": ["drill", "renovation", "noise", "hacking"],
-            "noise": ["noise", "acoustic", "quiet", "infraction"],
-            "park": ["park", "parking", "vehicle", "car", "wheel", "clamp"],
-            "pet": ["pet", "dog", "cat", "animal", "leash"],
-            "leak": ["leak", "seepage", "water", "ceiling", "bmsma", "101"],
-            "moving": ["moving", "move", "bulk", "delivery", "lift"],
-            "rubbish": ["rubbish", "refuse", "chute", "waste", "corridor"],
-        }
-        for dom, keys in domain_keywords.items():
-            if any(k in intent_clean for k in keys):
-                if any(k in title_lower for k in keys):
-                    score += 4.0
-                if any(k in body_lower for k in keys):
-                    score += 1.5
-
         # Prefer leaf subsections (level 3) over broad headers (level 2) if they share score
         if s.level == 3 and score > 0:
-            score += 1.0
+            score += 0.5
 
         scored.append((score, s, list(set(matches))))
 
@@ -292,7 +306,7 @@ def locate_target_section(
 
     # If Gemini is available, verify or enhance the rationale
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
-    if use_llm and api_key and best_score > 0:
+    if use_llm and api_key and user_intent.strip():
         try:
             from google import genai
             client = genai.Client(api_key=api_key)
@@ -496,20 +510,37 @@ def _deterministic_amendment_fallback(
     dollar_matches = re.findall(r"\$(\d+(?:,\d+)*(?:\.\d{2})?)", user_intent)
     if len(dollar_matches) >= 2:
         old_val, new_val = dollar_matches[0], dollar_matches[1]
-        pattern = re.compile(rf"S?\$?\s*{re.escape(old_val)}(?:\.00)?", re.IGNORECASE)
+        pattern = re.compile(rf"(?<!\d)S?\$?\s*{re.escape(old_val)}(?:\.00)?(?!\d)", re.IGNORECASE)
         if pattern.search(updated):
             updated = pattern.sub(f"S${new_val}.00", updated)
             summary.append(f"Adjusted monetary value from S${old_val} to S${new_val}.00")
     elif len(dollar_matches) == 1:
         new_val = dollar_matches[0]
-        # Replace first occurring dollar amount in table or text
-        updated = re.sub(r"S?\$(\d+(?:,\d+)*(?:\.\d{2})?)", f"S${new_val}.00", updated, count=1)
+        # Contextual replacement: if user mentions keywords like "deposit", "fee", "fine"
+        lines = updated.splitlines()
+        replaced = False
+        target_hints = [t for t in re.findall(r"\b\w+\b", user_intent.lower()) if t in ["deposit", "fee", "fine", "penalty", "parking", "drilling", "clean", "bbq", "unclamping", "car", "pet"]]
+        for i, line in enumerate(lines):
+            line_l = line.lower()
+            if any(hint in line_l for hint in target_hints):
+                new_line = re.sub(r"(?<!\d)S?\$(\d+(?:,\d+)*(?:\.\d{2})?)(?!\d)", f"S${new_val}.00", line, count=1)
+                if new_line != line:
+                    lines[i] = new_line
+                    replaced = True
+                    break
+        if not replaced:
+            updated = re.sub(r"(?<!\d)S?\$(\d+(?:,\d+)*(?:\.\d{2})?)(?!\d)", f"S${new_val}.00", updated, count=1)
+        else:
+            updated = "\n".join(lines)
         summary.append(f"Updated primary tariff/deposit to S${new_val}.00")
 
     # If no dollar matched, append as an administrative policy addendum
     if updated == section.raw_block:
-        addendum = f"\n- **Special Amendment:** {user_intent.strip()}"
-        updated = updated.rstrip() + addendum + "\n\n"
+        addendum = f"- **Special Amendment:** {user_intent.strip()}"
+        if re.search(r"\n---\s*$", updated.rstrip()):
+            updated = re.sub(r"(\n---\s*)$", rf"\n\n{addendum}\1", updated.rstrip()) + "\n\n"
+        else:
+            updated = updated.rstrip() + f"\n\n{addendum}\n\n"
         summary.append(f"Appended administrative amendment: {user_intent.strip()}")
 
     explanation = f"Applied rule adjustments to section {section.title}."
@@ -544,13 +575,24 @@ def apply_amendment_to_handbook(
     # Ensure backups dir exists
     BACKUPS_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Verify section offsets have not drifted due to concurrent file changes
+    current_slice = original_text[section.start_char : section.end_char]
+    if current_slice != section.raw_block:
+        re_parsed = parse_handbook_sections(original_text)
+        matching = [s for s in re_parsed if s.heading_line == section.heading_line and s.title == section.title]
+        if not matching:
+            raise ValueError(
+                f"Handbook content changed concurrently; cannot locate section '{section.title}'. Please refresh."
+            )
+        section = matching[0]
+
     # 1. Timestamped Backup
     now = datetime.now(timezone.utc)
     timestamp_str = now.strftime("%Y%m%d_%H%M%S")
     short_id = uuid.uuid4().hex[:8]
     backup_filename = f"{handbook_path.stem}_{timestamp_str}_{short_id}.md"
     backup_file_path = BACKUPS_DIR / backup_filename
-    backup_file_path.write_text(original_text, encoding="utf-8")
+    backup_file_path.write_text(original_text, encoding="utf-8", newline="\n")
 
     # 2. In-Place Surgical Replacement
     # Ensure trailing newline is preserved
@@ -563,7 +605,7 @@ def apply_amendment_to_handbook(
         + clean_replacement
         + original_text[section.end_char:]
     )
-    handbook_path.write_text(updated_text, encoding="utf-8")
+    handbook_path.write_text(updated_text, encoding="utf-8", newline="\n")
 
     # 3. Calculate Diff Stats
     orig_lines = section.raw_block.splitlines()
@@ -635,7 +677,10 @@ def rollback_amendment(
 ) -> tuple[bool, str]:
     """Restores the handbook from a previous backup file and re-indexes RAG."""
     handbook_path = Path(handbook_path).resolve()
-    target_backup = ROOT / backup_relative_path
+    target_backup = (ROOT / backup_relative_path).resolve()
+
+    if not target_backup.is_relative_to(BACKUPS_DIR.resolve()):
+        return False, "Access denied: Backup path must reside within the designated backups directory."
 
     if not target_backup.exists():
         return False, f"Backup file not found at: {target_backup}"
@@ -646,10 +691,10 @@ def rollback_amendment(
     now = datetime.now(timezone.utc)
     ts = now.strftime("%Y%m%d_%H%M%S")
     safety_backup = BACKUPS_DIR / f"{handbook_path.stem}_prerollback_{ts}.md"
-    safety_backup.write_text(handbook_path.read_text(encoding="utf-8"), encoding="utf-8")
+    safety_backup.write_text(handbook_path.read_text(encoding="utf-8"), encoding="utf-8", newline="\n")
 
     # Overwrite handbook
-    handbook_path.write_text(backup_content, encoding="utf-8")
+    handbook_path.write_text(backup_content, encoding="utf-8", newline="\n")
 
     # Record rollback in audit log
     record = AmendmentAuditRecord(
@@ -676,7 +721,12 @@ def _reindex_semantic_rag(handbook_path: Path) -> str:
     try:
         from condo_classifier.semantic_rag import get_semantic_rag
         engine = get_semantic_rag(kb_path=handbook_path)
-        engine.initialize()
+        if hasattr(engine, "reindex"):
+            engine.reindex(handbook_path)
+        else:
+            engine._initialized = False
+            engine.kb_path = Path(handbook_path)
+            engine.initialize()
         return f"Semantic RAG re-indexed with {len(engine.index.chunks)} fresh chunks."
     except Exception as e:
         logger.error(f"Semantic RAG re-indexing failed: {e}")
