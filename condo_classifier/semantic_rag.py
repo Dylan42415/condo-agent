@@ -606,7 +606,8 @@ class SemanticRAGEngine:
                     "1. **RULING**: Start with a direct verdict: **PERMITTED**, **PROHIBITED**, or **ACTION REQUIRED**.\n"
                     "2. **BY-LAW & STATUTORY AUTHORITY**: Cite specific By-laws and legal acts (e.g., By-law §4, By-law §10, BMSMA Section 101).\n"
                     "3. **EXACT CONSTRAINTS & TARIFFS**: Quote exact schedules, permissible hours, dollar fines ($500, $1,000, $107), deposits ($2,000, $50), and notice periods from the context.\n"
-                    "4. **ACTIONABLE NEXT STEPS & CONTACTS**: Give practical instructions, specific phone numbers, and guardhouse/management locations.\n\n"
+                    "4. **ACTIONABLE NEXT STEPS & CONTACTS**: Give practical instructions, specific phone numbers, and guardhouse/management locations. "
+                    "Always include an **'Important Note'** detailing the legitimate estate rules, proper booking/registration procedures and fees (e.g., overnight visitor parking registration deadlines and tariffs, grace periods) mentioned in the context so the resident understands future compliance.\n\n"
                     "Ground your answer strictly on the provided context without speculating."
                 )
 
@@ -631,7 +632,7 @@ class SemanticRAGEngine:
                 res = client.models.generate_content(
                     model=self.model_name,
                     contents=prompt,
-                    config={"system_instruction": system_prompt, "temperature": 0.1}
+                    config={"system_instruction": system_prompt, "temperature": 0.0}
                 )
                 answer_text = res.text.strip()
                 cited = self._extract_citations(answer_text + "\n" + context)
