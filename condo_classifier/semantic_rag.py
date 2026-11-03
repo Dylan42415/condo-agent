@@ -120,12 +120,15 @@ class EmbeddingProvider:
         if self._client:
             try:
                 embeddings: list[list[float]] = []
-                for text in texts:
+                batch_size = 32
+                for i in range(0, len(texts), batch_size):
+                    batch = [t[:8000] for t in texts[i:i + batch_size]]
                     res = self._client.models.embed_content(
                         model=self.model,
-                        contents=text[:8000]
+                        contents=batch
                     )
-                    embeddings.append(res.embeddings[0].values)
+                    for emb in res.embeddings:
+                        embeddings.append(emb.values)
                 return embeddings
             except Exception as e:
                 logger.warning(f"Gemini embedding API call failed: {e}. Falling back to deterministic embedding.")
@@ -601,14 +604,16 @@ class SemanticRAGEngine:
                     "Ground your answer strictly on the provided context without speculating."
                 )
 
-                directory_context = (
-                    "OFFICIAL ESTATE DIRECTORY & CONTACTS:\n"
-                    "- 24/7 Security Guardhouse: Main Entrance Gate | Tel: +65 6789 0100\n"
-                    "- Management Office: Clubhouse Level 1, #01-01 | Tel: +65 6789 0200 (Mon–Fri 09:00–17:00, Sat 09:00–13:00)\n"
-                    "- 24/7 Lift Maintenance (Schindler Express Hotline): 1800-543-8888\n"
-                    "- 24/7 Emergency Plumber (Apex Rapid Plumbing): +65 6333 4455\n"
-                    "- Emergency Electrical (VoltCare Hotline): +65 6444 8899\n"
-                )
+                from condo_classifier.dispatch import load_vendor_directory
+                vendors = load_vendor_directory()
+                lines = ["OFFICIAL ESTATE DIRECTORY & CONTACTS:"]
+                for cat, vdata in vendors.items():
+                    if isinstance(vdata, dict):
+                        for sub, v in vdata.items():
+                            if isinstance(v, dict) and "vendor_name" in v and "phone" in v:
+                                cov = f" ({v.get('coverage', '')})" if v.get("coverage") else ""
+                                lines.append(f"- {v['vendor_name']}: {v['phone']}{cov}")
+                directory_context = "\n".join(lines)
 
                 prompt = (
                     f"{directory_context}\n\n"
@@ -643,68 +648,98 @@ class SemanticRAGEngine:
         return list(dict.fromkeys(citations))
 
     def _deterministic_synthesis(self, query: str, context: str) -> tuple[str, list[str]]:
-        """Fallback grounded response extraction when offline."""
-        q_lower = query.lower()
+        """
+        Dynamic rule extraction and structured synthesis when offline.
+        Strictly parses retrieved context lines and tables rather than using hardcoded scenario branches.
+        """
         cited = self._extract_citations(context)
+        if not context.strip():
+            return "No relevant estate by-laws found in handbook.", cited
 
-        # Drilling / Renovation noise query
-        if "drill" in q_lower or "renovat" in q_lower or "hack" in q_lower:
-            return (
-                "**RULING**: **PROHIBITED**\n\n"
-                "**BY-LAW AUTHORITY**: By-law §4 (Renovation Works & Noise Control)\n\n"
-                "**EXACT CONSTRAINTS & TARIFFS**:\n"
-                "- Heavy mechanical drilling and hacking are strictly restricted to Monday to Friday, 10:00 to 16:00 (capped at 4 hours daily).\n"
-                "- Drilling is strictly PROHIBITED on Saturdays, Sundays, and Public Holidays.\n"
-                "- Violations incur a S$500 penalty deducted from the renovation deposit; unapproved Sunday drilling incurs an immediate S$1,000 fine.\n\n"
-                "**ACTIONABLE NEXT STEPS**:\n"
-                "Contact the 24/7 Security Guardhouse at +65 6789 0100 to report unauthorized weekend drilling.",
-                ["By-law §4 - Renovation Works & Noise Control"]
-            )
+        # Extract candidate lines and table rows from context
+        lines = [line.strip() for line in context.splitlines() if line.strip() and not line.strip().startswith("#")]
 
-        # BBQ pit booking query
-        if "bbq" in q_lower or "barbecue" in q_lower:
-            return (
-                "**RULING**: **PERMITTED** (with advance booking)\n\n"
-                "**BY-LAW AUTHORITY**: By-law §4.1 / By-law §8 (Facility Booking and Amenities)\n\n"
-                "**EXACT CONSTRAINTS & TARIFFS**:\n"
-                "- Operating hours: Lunch (10:00–14:00) and Dinner (17:00–22:00).\n"
-                "- Booking fee: S$20.00 per session with a refundable security deposit of S$50.00.\n"
-                "- Music must stop promptly at 22:00. Uncleaned grills incur a S$50 cleaning fee.\n\n"
-                "**ACTIONABLE NEXT STEPS**:\n"
-                "Book via the Resident App or at the Clubhouse Management Office (Level 1, #01-01).",
-                ["By-law §8 - Facility Booking and Amenities"]
-            )
+        # Tokenize query for dynamic relevance scoring
+        q_tokens = set(re.findall(r"\w+", query.lower()))
+        stopwords = {"can", "we", "i", "is", "the", "a", "an", "for", "on", "in", "to", "at", "my", "our", "what", "how", "who", "when", "does"}
+        informative_tokens = q_tokens - stopwords
 
-        # Water leak query
-        if "leak" in q_lower or "water" in q_lower or "ceiling" in q_lower:
-            return (
-                "**RULING**: **ACTION REQUIRED**\n\n"
-                "**STATUTORY AUTHORITY**: Section 101 of the Building Maintenance and Strata Management Act (BMSMA)\n\n"
-                "**EXACT CONSTRAINTS & LIABILITY**:\n"
-                "- Water seepage is legally presumed to originate from the upper unit, and the upper owner is responsible for waterproofing repairs.\n"
-                "- Management Office conducts a joint site inspection within 24 hours of reporting.\n\n"
-                "**ACTIONABLE NEXT STEPS**:\n"
-                "Report immediately to the Management Office (+65 6789 0200) or emergency plumbing hotline (+65 6333 4455).",
-                ["BMSMA Section 101", "By-law §6 - Inter-Floor Water Leaks"]
-            )
+        # Score each context line/row by token overlap
+        scored_lines: list[tuple[float, str]] = []
+        for line in lines:
+            line_tokens = set(re.findall(r"\w+", line.lower()))
+            overlap = len(informative_tokens & line_tokens)
+            if overlap > 0:
+                has_numbers = bool(re.search(r"\$\d+|\d{1,2}:\d{2}|\b\d+\s*(?:days|hours|sessions)\b", line))
+                score = overlap + (1.5 if has_numbers else 0.0)
+                scored_lines.append((score, line))
 
-        # Parking / Wheel clamp query
-        if "park" in q_lower or "clamp" in q_lower or "car" in q_lower:
-            return (
-                "**RULING**: **ACTION REQUIRED**\n\n"
-                "**BY-LAW AUTHORITY**: By-law §5.2 / By-law §12 (Security and Access Control)\n\n"
-                "**EXACT CONSTRAINTS & TARIFFS**:\n"
-                "- Unauthorized parking or overstaying will result in vehicle wheel-clamping.\n"
-                "- Unclamping fee: S$107.00 (inclusive of GST).\n"
-                "- SLA: Unclamping is executed within 30 minutes of payment.\n\n"
-                "**ACTIONABLE NEXT STEPS**:\n"
-                "Proceed to the 24/7 Security Guardhouse at the main gate (+65 6789 0100) to pay the unclamping fee.",
-                ["By-law §12 - Security and Access Control"]
-            )
+        scored_lines.sort(key=lambda x: x[0], reverse=True)
+        top_relevant = [l for _, l in scored_lines[:5]]
 
-        # General excerpt fallback
-        first_source = context.split("\n\n---\n\n")[0] if context else ""
-        return f"Based on estate guidelines:\n\n{first_source[:400]}...", cited
+        # Determine dynamic ruling from relevant context lines
+        ruling = "**ACTION REQUIRED**"
+        context_window = " ".join(top_relevant).lower() if top_relevant else context.lower()
+        if any(w in context_window for w in ["strictly prohibited", "not permitted", "prohibited", "penalty", "clamp"]):
+            if "with prior" in context_window or "permit required" in context_window or "upon application" in context_window:
+                ruling = "**PERMITTED (WITH PERMIT / CONDITIONS)**"
+            else:
+                ruling = "**PROHIBITED**"
+        elif any(w in context_window for w in ["permitted", "allowed", "may be booked", "open daily", "complimentary"]):
+            ruling = "**PERMITTED**"
+
+        # By-law authority: cite detected sections or top citation
+        if cited:
+            authority = ", ".join(cited)
+        else:
+            headers = re.findall(r"#+\s*(.+)", context)
+            authority = headers[0] if headers else "Estate By-laws & Regulations"
+
+        # Constraints: format top relevant lines/table rows
+        constraint_bullets: list[str] = []
+        for line in top_relevant:
+            if line.startswith("|") and line.endswith("|"):
+                cells = [c.strip() for c in line.split("|")[1:-1] if c.strip()]
+                if cells and not all(c.startswith("-") for c in cells):
+                    constraint_bullets.append("- " + " — ".join(cells))
+            else:
+                constraint_bullets.append(f"- {line}")
+
+        if not constraint_bullets:
+            constraint_bullets = [f"- {lines[0]}"] if lines else ["- Refer to management handbook."]
+
+        constraints_str = "\n".join(constraint_bullets[:4])
+
+        # Actionable steps: dynamically find contacts from vendor directory
+        from condo_classifier.dispatch import load_vendor_directory
+        vendors = load_vendor_directory()
+        contact_items: list[str] = []
+        for cat, data in vendors.items():
+            if isinstance(data, dict):
+                for sub, item in data.items():
+                    if isinstance(item, dict) and "phone" in item and "vendor_name" in item:
+                        vname = item["vendor_name"]
+                        phone = item["phone"]
+                        if any(kw in query.lower() for kw in item.get("keywords", [])):
+                            contact_items.append(f"Contact {vname} at {phone} for immediate assistance.")
+
+        if not contact_items:
+            sec = vendors.get("security", {}).get("default", {})
+            sec_name = sec.get("vendor_name", "Guardhouse")
+            sec_phone = sec.get("phone", "+65 6444-2222")
+            contact_items.append(f"Report or verify with {sec_name} ({sec_phone}).")
+
+        action_str = "\n".join(dict.fromkeys(contact_items[:2]))
+
+        structured_response = (
+            f"**RULING**: {ruling}\n\n"
+            f"**BY-LAW AUTHORITY**: {authority}\n\n"
+            f"**EXACT CONSTRAINTS & DETAILS**:\n"
+            f"{constraints_str}\n\n"
+            f"**ACTIONABLE NEXT STEPS**:\n"
+            f"{action_str}"
+        )
+        return structured_response, cited
 
 
 _DEFAULT_SEMANTIC_ENGINE: SemanticRAGEngine | None = None

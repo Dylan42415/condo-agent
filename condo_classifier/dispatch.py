@@ -104,7 +104,7 @@ def trigger_auto_dispatch(
     unit_number: str | None = None,
     channel: str = "SMS",
     condo_name: str = "Oceanfront Residences",
-    db_path: Path | str = DEFAULT_DB_PATH,
+    db_path: Path | str | None = None,
     assigned_vendor: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Automates vendor routing, guardhouse pass generation, and dispatch persistence."""

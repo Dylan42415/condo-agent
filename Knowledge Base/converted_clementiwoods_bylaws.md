@@ -2,27 +2,27 @@
 source_document: clementiwoods_bylaws.pdf
 page_count: 11
 table_count: 0
-word_count: 4201
+word_count: 4101
 engine: local_pymupdf
 ---
 
-**<u>BY­LAWS OF THE MANAGEMENT CORPORATION STRATA TITLE PLAN NO. MCST­3656</u>** 
+**<u>BY-LAWS OF THE MANAGEMENT CORPORATION STRATA TITLE PLAN NO. MCST-3656</u>** 
 
-# <u>ANNEX ­ A</u> 
+# <u>ANNEX - A</u> 
 
-These By­Laws complement and are to be read in conjunction with the Prescribed By­Laws as set out in the Building Maintenance and Strata Management Act (2008). If there is a conflict between the By­Laws of the Management Corporation and the Prescribed By­Laws, the Prescribed By­Laws shall take precedence. 
+These By-Laws complement and are to be read in conjunction with the Prescribed By-Laws as set out in the Building Maintenance and Strata Management Act (2008). If there is a conflict between the By-Laws of the Management Corporation and the Prescribed By-Laws, the Prescribed By-Laws shall take precedence. 
 
-It is the responsibility of a Subsidiary Proprietor to ensure that all the occupants or tenants in their units are fully aware of the By­Laws. 
+It is the responsibility of a Subsidiary Proprietor to ensure that all the occupants or tenants in their units are fully aware of the By-Laws. 
 
 # 1. **_DEFINITIONS_** 
 
-The definitions in these by­laws shall mean, unless the context otherwise requires:­ 
+The definitions in these by-laws shall mean, unless the context otherwise requires:- 
 
 - a. “Subsidiary Proprietor” or “Owner” shall mean the person or persons holding legal titles to a housing unit or where separate titles are not issued yet, it includes purchasers whose names appear in the Sale and Purchase Agreement. 
 
 - b. “Management” refers to the Management Council of the Management Corporation, their representative such as the appointed Managing Agent. 
 
-- c. “Managing Agent” means a person or a company who is appointed by the Management Corporation to manage the day­to­day operation of the estate on behalf of the Management Corporation. 
+- c. “Managing Agent” means a person or a company who is appointed by the Management Corporation to manage the day-to-day operation of the estate on behalf of the Management Corporation. 
 
 - d. “Resident/Occupant” means the person or persons residing in the Housing Unit. 
 
@@ -40,19 +40,17 @@ The definitions in these by­laws shall mean, unless the context otherwise requi
 
    - ii. used or capable of being used or enjoyed by occupiers of 2 or more lots or proposed lots; or
 
-**<u>BY­LAWS OF THE MANAGEMENT CORPORATION STRATA TITLE PLAN NO. MCST­3656</u>** 
+- ii. in relation to any land and building such part of the land and building i. not comprised in any non-strata lot; and 
 
-      - ii. in relation to any land and building such part of the land and building i. not comprised in any non­strata lot; and 
+         - ii. used or capable of being used or enjoyed by occupiers of 2 or more non-strata lots within that land and building. 
 
-         - ii. used or capable of being used or enjoyed by occupiers of 2 or more non­strata lots within that land and building. 
-
-   - iii. unless otherwise described specifically as comprised in any lot in a strata title plan and shown as capable of being comprised in such lots, includes­ 
+   - iii. unless otherwise described specifically as comprised in any lot in a strata title plan and shown as capable of being comprised in such lots, includes- 
 
       - i. foundations, columns, beams, supports, walls, roofs, entrances and exits of the building and windows installed in the external walls of the building 
 
       - ii. Car parks, recreational or community facilities, gardens, roofs, storage spaces and rooms approved by the relevant authority for the use of a management corporation and its member; 
 
-      - iii. Central and appurtenant installations for services such as power, light, gas, hot and cold water, heating, refrigeration, air­conditioning and incinerators; 
+      - iii. Central and appurtenant installations for services such as power, light, gas, hot and cold water, heating, refrigeration, air-conditioning and incinerators; 
 
       - iv. water pipes, drainage pipes, sewerage pipes, gas pipes and electrical cables which serve 2 or more lots; 
 
@@ -64,21 +62,19 @@ The definitions in these by­laws shall mean, unless the context otherwise requi
 
 2. **_Use of Housing Units and Common Area_** 
 
-   1. All Subsidiary Proprietors are fully responsible for the conduct and behavior of their pets, children, guests, and occupants including tenants in the case of leased­out units and are liable to the Management Corporation and/or affected Subsidiary Proprietors and/or residents in respect of any damage or injury caused by them and will keep the Management Corporation fully indemnified in respect of any action, claims or demand arising by reason of their act or default. 
+   1. All Subsidiary Proprietors are fully responsible for the conduct and behavior of their pets, children, guests, and occupants including tenants in the case of leased-out units and are liable to the Management Corporation and/or affected Subsidiary Proprietors and/or residents in respect of any damage or injury caused by them and will keep the Management Corporation fully indemnified in respect of any action, claims or demand arising by reason of their act or default. 
 
    2. Residents/occupants shall not create any noise or engage in offensive conduct or activity(s) that disturbs or annoys other residents. A resident using the common property of the estate shall do so as quietly as possible and not cause any inconvenience, disturbance or annoyance to others. 
 
-   3. Residents/occupants shall ensure that their radios, hi­fi equipment, television sets, musical instruments and other such equipment are not played at a volume which
-
-**<u>BY­LAWS OF THE MANAGEMENT CORPORATION STRATA TITLE PLAN NO. MCST­3656</u>** 
+   3. Residents/occupants shall ensure that their radios, hi-fi equipment, television sets, musical instruments and other such equipment are not played at a volume which
 
 causes inconvenience, disturbance or annoyance to others. 
 
 4. Repair activities in units carried out by a subsidiary proprietor or resident/occupants that create noise shall be carried out only between 9 AM and 5 PM on weekdays and between 9 AM and 1 PM on Saturdays. Permitted timings for following activities shall be as follows : 
 
-   - a. House­Moving In/Out ­   During Weekdays: Between 9.00 AM to 5.50 PM Saturdays: Between 9.00 AM to 1.00 PM Sundays & PH: Not permitted 
+   - a. House-Moving In/Out -   During Weekdays: Between 9.00 AM to 5.50 PM Saturdays: Between 9.00 AM to 1.00 PM Sundays & PH: Not permitted 
 
-   - b. Renovation Works        ­   During Weekdays: Between 9.00 AM to 12.00 NOON Between 1.00 PM to 5.00 PM 
+   - b. Renovation Works        -   During Weekdays: Between 9.00 AM to 12.00 NOON Between 1.00 PM to 5.00 PM 
 
    - Saturdays: Between 9.00 AM to 12.00 NOON Sundays & PH: Not permitted 
 
@@ -88,15 +84,13 @@ causes inconvenience, disturbance or annoyance to others.
 
 7. Residents/occupants shall maintain their plants in their planter boxes so that they do not protrude outside their units or balconies and ensure that leaves and flowers do not fall on to the property of residents staying below. Residents/occupants shall also ensure that potted plants, clothes hangers or any other objects are not placed on balconies or windows in a way that they could fall and cause bodily harm to persons below or damage to their property. 
 
-8. Residents/occupants shall ensure that run­off from their units does not land on the property of residents staying below. Foldable umbrellas or retractable parasols shall be placed or extended well within their units (a clear gap of at least 500 mm shall be maintained from the edge of the balcony) to prevent run­off from these objects falling on to units below. Planters, air­con compressor ledges and balcony areas shall be maintained well to prevent drains clogging and/or discharging onto lower floors. 
+8. Residents/occupants shall ensure that run-off from their units does not land on the property of residents staying below. Foldable umbrellas or retractable parasols shall be placed or extended well within their units (a clear gap of at least 500 mm shall be maintained from the edge of the balcony) to prevent run-off from these objects falling on to units below. Planters, air-con compressor ledges and balcony areas shall be maintained well to prevent drains clogging and/or discharging onto lower floors. 
 
 9. Roller/other blinds installed on balcony (subjected to approval) have to be within the unit premises and are not allowed to be hung outside the premises when they are lowered. 
 
-10. Residents/occupants of units installed with outdoor Spa shall ensure that water in the spa or on the spa cover does not remain stagnant in order to prevent breeding of mosquitoes. Residents/occupants must also ensure that there are no stagnant water in their air­con ledges. 
+10. Residents/occupants of units installed with outdoor Spa shall ensure that water in the spa or on the spa cover does not remain stagnant in order to prevent breeding of mosquitoes. Residents/occupants must also ensure that there are no stagnant water in their air-con ledges. 
 
 11. Residents/occupants shall not store or leave unattended bicycles, prams, cabinets, flowerpots or other items in the common areas, including lift lobbies, corridors and
-
-**<u>BY­LAWS OF THE MANAGEMENT CORPORATION STRATA TITLE PLAN NO. MCST­3656</u>** 
 
 staircases. The Management shall not accept any liabilities whatsoever for loss or damage to such goods or items left at the common areas. 
 
@@ -118,13 +112,11 @@ staircases. The Management shall not accept any liabilities whatsoever for loss 
 
       - 1.The swimming pool/ Lap Pool & Woods Spa will be open for use from 7am to 10pm daily. 
 
-      - 2.No life­guard is available. All residents using the pools or the Spa do so at their own risk. 
+      - 2.No life-guard is available. All residents using the pools or the Spa do so at their own risk. 
 
       - 3.All persons must shower before entering these areas. Persons suffering from any infections or contagious disease shall not use these facilities. Spitting, spouting, nose blowing and similar acts shall not be permitted in these facilities. 
 
-      - 4.Swimmers are not allowed in the pools without proper swimming attire. T­shirt and shorts are strictly prohibited in the pool.
-
-**<u>BY­LAWS OF THE MANAGEMENT CORPORATION STRATA TITLE PLAN NO. MCST­3656</u>** 
+      - 4.Swimmers are not allowed in the pools without proper swimming attire. T-shirt and shorts are strictly prohibited in the pool.
 
 - 5.All persons are advised to leave the pools during heavy rain and thunderstorms. 
 
@@ -152,11 +144,9 @@ staircases. The Management shall not accept any liabilities whatsoever for loss 
 
 - 5.Only residents/occupants and their families, and guests are allowed to use the tennis court. Guests using the tennis court must be accompanied by their hosts. The host must ensure that their guests comply with the Rules and Regulations contained herein. The maximum number of guests per Housing Unit who may use the tennis court shall not exceed three (3) at any one time.
 
-**<u>BY­LAWS OF THE MANAGEMENT CORPORATION STRATA TITLE PLAN NO. MCST­3656</u>** 
+- 6.An administrative and usage fee of $1.00 per hour during non-peak period and $2.00 per hour during peak period is applicable for all users of this facility 
 
-- 6.An administrative and usage fee of $1.00 per hour during non­peak period and $2.00 per hour during peak period is applicable for all users of this facility 
-
-Non­Peak Period : 7.00 am to 6.00 pm Peak Period ; 6.00 pm to 10.00 pm 
+Non-Peak Period : 7.00 am to 6.00 pm Peak Period ; 6.00 pm to 10.00 pm 
 
 - 7.The Management and its staff will not be held responsible for any injury, damage or loss of properties or lives that may arise out of using the court. 
 
@@ -184,17 +174,15 @@ Non­Peak Period : 7.00 am to 6.00 pm Peak Period ; 6.00 pm to 10.00 pm
 
    11. The gymnasium is not a TV viewing room or a lounge and residents/occupants or guests not involved in physical activity will be asked to leave by Security
 
-**<u>BY­LAWS OF THE MANAGEMENT CORPORATION STRATA TITLE PLAN NO. MCST­3656</u>** 
+12. Users should make sure the air-con, the lights and the equipment are turned off if they leave the gymnasium and no other users are present 
 
-   12. Users should make sure the air­con, the lights and the equipment are turned off if they leave the gymnasium and no other users are present 
-
-4. **_<u>Multi­Purpose Room (MPR)</u>_** 
+4. **_<u>Multi-Purpose Room (MPR)</u>_** 
 
    - 1.The MPR is opened for daily booking for the following two sessions: 
 
       - a. First Session:                     10am to 4pm b. Second Session:                 5pm to 11pm 
 
-   - 2.Booking can be made one month in advance on a first­come­first­served basis. 
+   - 2.Booking can be made one month in advance on a first-come-first-served basis. 
 
    - 3.The MPR will only be used for functions/birthday parties approved by the Management. Functions in connection with religious, political, illegal or immoral activities are not permitted. 
 
@@ -210,11 +198,9 @@ Non­Peak Period : 7.00 am to 6.00 pm Peak Period ; 6.00 pm to 10.00 pm
 
    - 9.The host(s) shall be liable for any damages incurred to the MPR or the furniture within the room. When taking charge of the MPR, residents are encouraged to report any damages they notice to the Security. 
 
-   10. A non­refundable administrative usage fee of $50.00 and a security deposit of $100.00 will be payable per session of use. These administrative and refundable fees will be subject to changes by the Management. 
+   10. A non-refundable administrative usage fee of $50.00 and a security deposit of $100.00 will be payable per session of use. These administrative and refundable fees will be subject to changes by the Management. 
 
    11. The Management reserves the right to forfeit or deduct part of the security deposit if any of the rules stated herein is violated or expenses are incurred to clean the MPR.
-
-**<u>BY­LAWS OF THE MANAGEMENT CORPORATION STRATA TITLE PLAN NO. MCST­3656</u>** 
 
 # 5. **<u>Barbeque Pits (Pit 1 & Pit 2)</u>** 
 
@@ -222,7 +208,7 @@ Non­Peak Period : 7.00 am to 6.00 pm Peak Period ; 6.00 pm to 10.00 pm
 
    - a. First Session:                     10am to 4pm b. Second Session:                5pm to 11pm 
 
-- 2.Booking can be made one month in advance on a first­come­first­served basis. 
+- 2.Booking can be made one month in advance on a first-come-first-served basis. 
 
 - 3.Each housing unit is entitled to book one session (1 pit only) per month, subject to availability of the Barbecue Pits. 
 
@@ -244,9 +230,7 @@ Non­Peak Period : 7.00 am to 6.00 pm Peak Period ; 6.00 pm to 10.00 pm
 
 12. The Management will not be held responsible for any mishap, injury or loss sustained by residents and their guests, howsoever caused, during the use of the Facilities. 
 
-13. A non­refundable administrative usage fee of $15.00 and a security deposit of $50.00 will be payable per pit per session of use. These administrative and refundable fees will be subject to changes by the Management.
-
-**<u>BY­LAWS OF THE MANAGEMENT CORPORATION STRATA TITLE PLAN NO. MCST­3656</u>** 
+13. A non-refundable administrative usage fee of $15.00 and a security deposit of $50.00 will be payable per pit per session of use. These administrative and refundable fees will be subject to changes by the Management.
 
 14. The Management reserves the right to forfeit or deduct part of the security deposit if any of the rules stated herein is violated or expenses are incurred to clean the BBQ Pits area. 
 
@@ -268,7 +252,7 @@ Non­Peak Period : 7.00 am to 6.00 pm Peak Period ; 6.00 pm to 10.00 pm
 
 - 7. **_<u>Steam Room</u>_** 
 
-   - 1.The Steam Room is not recommended for persons suffering from tuberculosis, angina, nose­bleeding and heart problems. It is also advisable for persons with high blood pressure or those who are not certain of their health conditions to consult their doctors before using the Steam Room. 
+   - 1.The Steam Room is not recommended for persons suffering from tuberculosis, angina, nose-bleeding and heart problems. It is also advisable for persons with high blood pressure or those who are not certain of their health conditions to consult their doctors before using the Steam Room. 
 
    - 2.The Steam Room is open for use from 7am to 10pm daily. 
 
@@ -282,8 +266,6 @@ Non­Peak Period : 7.00 am to 6.00 pm Peak Period ; 6.00 pm to 10.00 pm
 
    - 7.Eating, drinking and smoking in the Steam Room is strictly prohibited. Spitting,
 
-**<u>BY­LAWS OF THE MANAGEMENT CORPORATION STRATA TITLE PLAN NO. MCST­3656</u>** 
-
 nose blowing, nail clipping and similar acts shall not be permitted in these facilities. 
 
 - 8.Under no circumstances shall children below the age of sixteen (16) be permitted to enter or use the Steam Room. 
@@ -294,23 +276,21 @@ nose blowing, nail clipping and similar acts shall not be permitted in these fac
 
 # **4.0 Keeping of pets** 
 
-- 4.1 Residents may only keep household pets. Livestock, poultry and other non­household pets are not permitted to be kept in any part of the estate. Dogs, cats and other common household pets, not exceeding a reasonable number, may be kept by the residents in their respective units. 
+- 4.1 Residents may only keep household pets. Livestock, poultry and other non-household pets are not permitted to be kept in any part of the estate. Dogs, cats and other common household pets, not exceeding a reasonable number, may be kept by the residents in their respective units. 
 
-- 4.2 Residents are to ensure that the dogs are of the approved/permitted breed by Agri­Food & Veterinary Authority, AVA. 
+- 4.2 Residents are to ensure that the dogs are of the approved/permitted breed by Agri-Food & Veterinary Authority, AVA. 
 
 - _4.3_ All dogs must be kept on leash and muzzle (for breeds required under AVA rules and/or their dog are aggressive in behavior) and under the control of their owners/handlers who must be accompanying their pets at all times while on the common areas. 
 
 - _4.4_ Pets which cause nuisance or unreasonable disturbance shall be promptly removed from the estate upon notice given by the Management. The Management shall not be held liable for any loss, damages, injuries or other liabilities resulting indirectly or directly to the pets while under custody of the owner. 
 
-- 4.5 The recreational facilities, poolside surroundings, children’s playground and such designated areas are strictly out­of­bounds to pets. 
+- 4.5 The recreational facilities, poolside surroundings, children’s playground and such designated areas are strictly out-of-bounds to pets. 
 
 - 4.6 When in transit in lift, pets shall be carried or be put on a short leash and muzzle. 
 
 - 4.7 Dogs are only permitted in the common areas in order to pass directly between the owner’s unit and the exit to the condominium. Dog owners are not permitted to walk their pets around the common areas (including the walking path around the edge of the condominium grounds). Dogs should at all times be accompanied by a responsible adult and held on a leash while in the common areas. 
 
 - 4.8 Pets are not to urinate or defecate in the common areas and should this happen by accident, the adult accompanying the pet concerned shall remove all traces of waste, including urine left behind by the pet. If the pets urinate or defecate on the balcony or in the patio of the owner’s unit, waste should be removed immediately to avoid foul smell and the attraction of flies and other pests.
-
-**<u>BY­LAWS OF THE MANAGEMENT CORPORATION STRATA TITLE PLAN NO. MCST­3656</u>** 
 
 - 4.9 Pet owners/handlers shall not allow their pets to defecate in the common property. The pet owners/handlers must suitably dispose pets’ faeces immediately, failing which, the pet owner/handler shall pay a penalty sum of $50.00 per offence to the Management. 
 

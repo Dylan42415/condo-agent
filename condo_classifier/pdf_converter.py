@@ -40,14 +40,24 @@ class PDFConversionResult:
 def clean_markdown_artifacts(text: str) -> str:
     """
     Cleans layout noise without dropping any actual content:
+    - Normalizes soft hyphens, non-breaking spaces, and zero-width artifacts
     - Removes picture text wrappers (<!-- Start of picture text -->)
+    - Removes navigation anchor links (e.g. '**CONTENTS**', '**CONTENTS BACK**')
     - Removes running page numbers (e.g. 'Page 12 of 50', 'Page 12', '--- 12 ---')
     - Cleans duplicate blank lines
     - Preserves all tables (| ... |), headers (#, ##), and inline formatting
     """
+    # Normalize unicode noise
+    text = text.replace("\xad", "-")
+    text = text.replace("\xa0", " ")
+    text = text.replace("\u200b", "").replace("\ufeff", "")
+
     # Remove PyMuPDF picture text tags
     text = re.sub(r"<!--\s*Start of picture text\s*-->", "", text, flags=re.IGNORECASE)
     text = re.sub(r"<!--\s*End of picture text\s*-->", "", text, flags=re.IGNORECASE)
+
+    # Remove repeated navigation anchors (e.g. handbook bottom links)
+    text = re.sub(r"^\s*\*\*(?:CONTENTS|CONTENTS\s+BACK)\*\*\s*$", "", text, flags=re.IGNORECASE | re.MULTILINE)
 
     lines = text.splitlines()
     cleaned_lines: list[str] = []
@@ -79,8 +89,10 @@ def extract_headings(markdown_text: str) -> list[dict[str, Any]]:
         if match:
             level = len(match.group(1))
             title = match.group(2).strip()
-            # Clean markdown bold/italic in title
-            clean_title = re.sub(r"[\*_]", "", title)
+            # Clean HTML tags (e.g. <u>, </b>)
+            clean_title = re.sub(r"<[^>]+>", "", title)
+            # Clean markdown bold/italic/strikethrough and soft hyphens
+            clean_title = re.sub(r"[\*_~]", "", clean_title).replace("\xad", "-").strip()
             headings.append({"level": level, "title": clean_title})
     return headings
 
@@ -104,10 +116,19 @@ def convert_microsoft_markitdown(file_path: Path) -> PDFConversionResult:
     headings = extract_headings(cleaned)
     word_count = len(cleaned.split())
 
+    page_count = 1
+    try:
+        import pymupdf as fitz
+        doc = fitz.open(str(file_path))
+        page_count = len(doc)
+        doc.close()
+    except Exception:
+        pass
+
     return PDFConversionResult(
         source_path=str(file_path),
         markdown_text=cleaned,
-        page_count=1,
+        page_count=page_count,
         table_count=table_count,
         word_count=word_count,
         headings=headings,
@@ -118,7 +139,8 @@ def convert_microsoft_markitdown(file_path: Path) -> PDFConversionResult:
 
 def convert_local_pymupdf(pdf_path: Path) -> PDFConversionResult:
     """Fast, local deterministic conversion via pymupdf4llm."""
-    import fitz  # PyMuPDF
+    from collections import Counter
+    import pymupdf as fitz
     import pymupdf4llm
 
     doc = fitz.open(str(pdf_path))
@@ -131,9 +153,27 @@ def convert_local_pymupdf(pdf_path: Path) -> PDFConversionResult:
     pages: list[dict[str, Any]] = []
     full_text_parts: list[str] = []
 
-    for item in page_data:
+    # Detect repeated running headers across pages (appearing on >= 3 pages or >= 30% of pages)
+    repeated_headers: set[str] = set()
+    if len(page_data) >= 3:
+        first_lines: list[str] = []
+        for item in page_data:
+            lines = [ln.strip() for ln in item.get("text", "").splitlines() if ln.strip()]
+            if lines:
+                first_lines.append(lines[0])
+        counts = Counter(first_lines)
+        repeated_headers = {line for line, cnt in counts.items() if cnt >= 3 and len(line) > 5}
+
+    for idx, item in enumerate(page_data):
         p_num = item.get("metadata", {}).get("page", 0) + 1
         raw_text = item.get("text", "")
+
+        # Remove repeated running header on subsequent pages (keep on page 1 as document title)
+        if idx > 0 and repeated_headers:
+            lines = raw_text.splitlines()
+            filtered_lines = [ln for ln in lines if ln.strip() not in repeated_headers]
+            raw_text = "\n".join(filtered_lines)
+
         cleaned_p_text = clean_markdown_artifacts(raw_text)
         pages.append({"page_number": p_num, "text": cleaned_p_text})
         full_text_parts.append(cleaned_p_text)
@@ -165,6 +205,15 @@ def convert_gemini_vision(pdf_path: Path) -> PDFConversionResult:
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise ValueError("GEMINI_API_KEY is required for gemini vision conversion engine.")
+
+    page_count = 1
+    try:
+        import pymupdf as fitz
+        doc = fitz.open(str(pdf_path))
+        page_count = len(doc)
+        doc.close()
+    except Exception:
+        pass
 
     client = genai.Client(api_key=api_key)
     pdf_bytes = pdf_path.read_bytes()
@@ -219,7 +268,7 @@ def convert_gemini_vision(pdf_path: Path) -> PDFConversionResult:
     return PDFConversionResult(
         source_path=str(pdf_path),
         markdown_text=cleaned_markdown,
-        page_count=1,
+        page_count=page_count,
         table_count=table_count,
         word_count=word_count,
         headings=headings,
@@ -239,8 +288,10 @@ def convert_pdf_to_markdown(
 
     Args:
         pdf_path: Path to the PDF file.
-        engine: 'auto', 'local', or 'gemini'.
-            'auto' uses PyMuPDF4LLM, falling back to Gemini if scanned (< 50 chars/page).
+        engine: 'auto', 'local', 'markitdown', or 'gemini'.
+            'auto' uses PyMuPDF4LLM for structural headings and tables,
+            falling back to Gemini Vision OCR if scanned (< 10 words/page),
+            or MarkItDown if local PyMuPDF parsing fails.
         output_path: Optional path to save the resulting .md file.
         add_frontmatter: If True, adds YAML metadata header to saved markdown file.
 
@@ -261,14 +312,16 @@ def convert_pdf_to_markdown(
         result = convert_local_pymupdf(pdf_file)
     else:  # "auto"
         try:
-            # Try MarkItDown first if installed, then PyMuPDF
+            # Default to PyMuPDF4LLM for high-fidelity structural PDF parsing (headings, tables, page chunks)
             try:
-                result = convert_microsoft_markitdown(pdf_file)
-            except Exception:
                 result = convert_local_pymupdf(pdf_file)
-            # Low word density (< 10 words/page) indicates scanned document / images
+            except Exception as pe:
+                logger.info(f"PyMuPDF failed ({pe}), falling back to Microsoft MarkItDown...")
+                result = convert_microsoft_markitdown(pdf_file)
+
+            # Low word density (< 10 words/page or 0 words) indicates scanned document / images
             avg_words_per_page = result.word_count / max(1, result.page_count)
-            if avg_words_per_page < 10 and os.getenv("GEMINI_API_KEY"):
+            if (avg_words_per_page < 10 or result.word_count == 0) and os.getenv("GEMINI_API_KEY"):
                 logger.info(
                     f"Low text density ({avg_words_per_page:.1f} words/page) detected. "
                     "Switching to Gemini Vision OCR..."

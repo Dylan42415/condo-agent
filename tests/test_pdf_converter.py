@@ -119,3 +119,108 @@ Session 1 is 10:00 AM to 2:00 PM.
     assert "$500" in docs[0].page_content
     assert docs[1].metadata["Section"] == "By-law §8 - BBQ Pit Facilities"
     assert "$50" in docs[1].page_content
+
+
+def test_clean_unicode_and_navigation_artifacts():
+    """Verify normalization of soft hyphens, non-breaking spaces, and footer anchors."""
+    raw = "BY\xadLAWS of Estate\xa0MCST\xad3656\u200b\n\n**CONTENTS**\n\n## Section 1\n**CONTENTS BACK**"
+    cleaned = clean_markdown_artifacts(raw)
+
+    assert "\xad" not in cleaned
+    assert "BY-LAWS" in cleaned
+    assert "MCST-3656" in cleaned
+    assert "\u200b" not in cleaned
+    assert "**CONTENTS**" not in cleaned
+    assert "**CONTENTS BACK**" not in cleaned
+
+
+def test_extract_headings_with_html_tags():
+    """Verify that HTML tags and styling in headings are cleaned."""
+    md = "# <u>ANNEX ­ A</u>\n\n## 1. **_DEFINITIONS_**\n\n### <b>Permitted Hours</b>"
+    headings = extract_headings(md)
+
+    assert len(headings) == 3
+    assert headings[0] == {"level": 1, "title": "ANNEX - A"}
+    assert headings[1] == {"level": 2, "title": "1. DEFINITIONS"}
+    assert headings[2] == {"level": 3, "title": "Permitted Hours"}
+
+
+def test_table_preservation_fidelity():
+    """Verify markdown table headers, delimiters, and cells align properly without broken lines."""
+    table_md = """## Facility Schedule
+
+| Facility | Opening Hours | Deposit Fee | Max Capacity |
+|---|---|---|---|
+| Swimming Pool | 7:00 AM - 10:00 PM | $0 | 30 pax |
+| BBQ Pit 1 & 2 | 10:00 AM - 10:00 PM | $50 | 12 pax |
+| Tennis Court | 8:00 AM - 9:00 PM | $10 | 4 pax |
+
+End of schedule.
+"""
+    assert count_markdown_tables(table_md) == 1
+
+    # Check downstream LangChain compatibility
+    from langchain_text_splitters import MarkdownHeaderTextSplitter
+    splitter = MarkdownHeaderTextSplitter(headers_to_split_on=[("##", "Section")], strip_headers=False)
+    docs = splitter.split_text(table_md)
+
+    assert len(docs) == 1
+    content = docs[0].page_content
+    assert "| Facility | Opening Hours | Deposit Fee | Max Capacity |" in content
+    assert "|---|---|---|---|" in content
+    assert "| Swimming Pool | 7:00 AM - 10:00 PM | $0 | 30 pax |" in content
+
+
+def test_auto_engine_prefers_structural_pymupdf():
+    """Verify that auto engine retains font-based headings and accurate page counts."""
+    pdf_path = Path("output/slides/Condo_AI_Agent_Telegram_Bot.pdf")
+    if not pdf_path.exists():
+        pytest.skip("Test slide PDF not found")
+
+    res = convert_pdf_to_markdown(pdf_path, engine="auto")
+    assert res.engine_used == "local_pymupdf"
+    assert res.page_count == 10
+    assert len(res.headings) > 0
+    assert len(res.pages) == 10
+
+
+def test_semantic_rag_integration_with_converted_markdown(tmp_path: Path):
+    """Verify that converted markdown integrates seamlessly with SemanticRAGEngine."""
+    from condo_classifier.semantic_rag import SemanticRAGEngine
+
+    # Write a clean markdown document simulating PDF conversion output
+    sample_md = """---
+source_document: test_bylaws.pdf
+page_count: 2
+table_count: 1
+word_count: 85
+engine: local_pymupdf
+---
+
+# Marine Heights Rules
+
+## By-law §5 - Renovation Hours
+Renovation works involving hacking or drilling are strictly restricted:
+- Monday to Friday: 9:00 AM to 5:00 PM
+- Saturday: 9:00 AM to 1:00 PM
+- Sunday and Public Holidays: Strictly Prohibited
+
+| Work Category | Permitted Hours | Fine for Non-Compliance |
+|---|---|---|
+| Heavy Hacking | 10:00 AM - 4:00 PM | $500 |
+| General Works | 9:00 AM - 5:00 PM | $200 |
+"""
+    kb_file = tmp_path / "test_bylaws.md"
+    kb_file.write_text(sample_md, encoding="utf-8")
+
+    engine = SemanticRAGEngine(kb_path=kb_file)
+    engine.initialize()
+
+    assert len(engine.index.chunks) >= 1
+    # Retrieve query
+    matches = engine.index.retrieve("What is the fine for heavy hacking noise violation?")
+    assert len(matches) > 0
+    best_chunk = matches[0].chunk
+    assert "$500" in best_chunk.content
+    assert best_chunk.has_table is True
+

@@ -170,3 +170,43 @@ def test_semantic_rag_empty_or_no_match(tmp_path: Path):
     res = engine.query("What is the rocket launch schedule?")
     assert len(res.retrieved_chunks) >= 1  # Returns top retrieved chunk from doc
     assert res.latency_seconds > 0.0
+
+
+def test_semantic_rag_dynamic_arbitrary_unseen_rules(tmp_path: Path):
+    """
+    Anti-heuristic verification:
+    Ensures that an arbitrary, unseen by-law (e.g. Drone Racing with $450 deposit)
+    has its exact constraints parsed dynamically from the markdown context without hardcoded branches.
+    """
+    drone_md = tmp_path / "drone_policy.md"
+    drone_md.write_text(
+        """# Unseen Special By-law §99 - Drone Racing and Hologram Displays
+
+## 1. Drone Flight Restrictions
+Drone racing is strictly prohibited on rooftop gardens.
+Recreational drone flight is permitted in the open field from 04:00 to 05:30 AM daily with prior approval.
+
+## 2. Tariffs and Security Deposit
+| Activity | Deposit Required | Penalty for Overstay |
+|---|---|---|
+| Drone Arena Flight | S$450 deposit | S$220 penalty |
+| Hologram Projector | S$150 deposit | S$90 penalty |
+""",
+        encoding="utf-8",
+    )
+
+    engine = SemanticRAGEngine(kb_path=drone_md)
+    engine.initialize()
+
+    # Query unseen scenario
+    res = engine.query("Can I do drone racing on the rooftop garden?")
+    assert res.grounded is True
+    assert "PROHIBITED" in res.answer or "prohibited" in res.answer.lower()
+    assert "By-law §99" in " ".join(res.by_laws_cited) or "Drone" in res.answer
+
+    # Query unseen deposit fee
+    res_fee = engine.query("How much deposit is required for drone arena flight?")
+    assert res_fee.grounded is True
+    # Verify that the arbitrary S$450 was dynamically extracted from the table
+    assert "450" in res_fee.answer or "Drone Arena Flight" in res_fee.answer
+

@@ -144,11 +144,17 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         "• Or send a <b>photo</b> of the issue with a caption\n"
         "• <code>/ask &lt;QUESTION&gt;</code> - Ask estate by-laws & risers (Graph RAG)\n"
         "• <code>/status &lt;TICKET_ID&gt;</code> - Check status of a work order\n"
-        "• <code>/mytickets</code> - View your active tickets\n\n"
+        "• <code>/mytickets</code> - View your active tickets\n"
+        "• <code>/help</code> - Show this guidance message\n\n"
         "🚨 <i>For urgent emergencies (burst pipes, lift faults), help is auto-dispatched.</i>"
     )
     if update.message:
         await update.message.reply_text(welcome_text, parse_mode=ParseMode.HTML)
+
+
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Provides user guidance and command list."""
+    await start_command(update, context)
 
 
 async def ask_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -262,7 +268,14 @@ async def process_triage(text: str, photo_bytes: bytes | None = None) -> TriageD
     def fallback_triage() -> TriageDecision:
         # Fallback deterministic safety signals and vendor routing
         safety = safety_signal(text)
-        is_emergency = safety is not None
+        is_emergency_keyword = bool(
+            re.search(
+                r"\b(?:burst pipe|pipe burst|flooding|flooded|gas leak|fire|sparks|live wire|trapped|lift.*stuck|stuck.*lift)\b",
+                text,
+                re.I,
+            )
+        )
+        is_emergency = safety is not None or is_emergency_keyword
         try:
             classification = local_classifier.classify(ResidentRequest(text=text))
             category_str = classification.category.value
@@ -446,36 +459,38 @@ async def handle_resident_message(update: Update, context: ContextTypes.DEFAULT_
             reply_body += f"\n💡 <b>Immediate Resident Guidance:</b>\n<i>{safe_instruction}</i>\n"
 
         # Enrich with Estate Semantic RAG (By-Laws, Hours, Fines & Policy Answers)
-        estate_rag = await asyncio.to_thread(
-            get_semantic_rag().query, text
-        )
-        if estate_rag.grounded:
-            # If the user asked a question or it is an inquiry, include the direct policy answer
-            is_inquiry = (
-                decision.priority.lower() == "low"
-                or decision.category.lower()
-                in [
-                    "general_enquiry",
-                    "other",
-                    "facilities",
-                    "noise",
-                    "renovation",
-                ]
-                or "?" in text
+        try:
+            estate_rag = await asyncio.to_thread(
+                get_semantic_rag().query, text
             )
-            if is_inquiry and estate_rag.answer:
-                safe_ans = html.escape(estate_rag.answer.strip())
-                formatted_ans = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", safe_ans)
-                formatted_ans = re.sub(r"### (.*?)\n", r"\n<b>\1</b>\n", formatted_ans)
-                reply_body += f"\n📖 <b>Estate Policy Intelligence:</b>\n{formatted_ans}\n"
+            if estate_rag.grounded:
+                # If the user asked a question or it is an inquiry, include the direct policy answer
+                is_inquiry = (
+                    decision.priority.lower() == "low"
+                    or decision.category.lower()
+                    in [
+                        "general_enquiry",
+                        "other",
+                        "facilities",
+                        "noise",
+                        "renovation",
+                    ]
+                    or "?" in text
+                )
+                if is_inquiry and estate_rag.answer:
+                    safe_ans = html.escape(estate_rag.answer.strip())
+                    formatted_ans = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", safe_ans)
+                    formatted_ans = re.sub(r"### (.*?)\n", r"\n<b>\1</b>\n", formatted_ans)
+                    reply_body += f"\n📖 <b>Estate Policy Intelligence:</b>\n{formatted_ans}\n"
 
-            infras = [i for i in estate_rag.affected_infrastructure if "Unit #" not in i]
-            if infras:
-                safe_infras = html.escape(", ".join(infras[:3]))
-                reply_body += f"\n🔧 <b>Connected Infrastructure:</b> {safe_infras}\n"
-            if estate_rag.by_laws_cited:
-                safe_bylaws = html.escape(", ".join(estate_rag.by_laws_cited[:2]))
-                reply_body += f"⚖️ <b>Governing By-Law:</b> {safe_bylaws}\n"
+                if getattr(estate_rag, "source_sections", None):
+                    safe_sources = html.escape(", ".join(estate_rag.source_sections[:2]))
+                    reply_body += f"\n📑 <b>Source By-law:</b> {safe_sources}\n"
+                if estate_rag.by_laws_cited:
+                    safe_bylaws = html.escape(", ".join(estate_rag.by_laws_cited[:2]))
+                    reply_body += f"⚖️ <b>Governing By-Law:</b> {safe_bylaws}\n"
+        except Exception as rag_err:
+            logger.warning(f"Semantic RAG enrichment skipped: {rag_err}")
 
         if decision.is_emergency:
             reply_body += (
@@ -522,13 +537,17 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
         return
     await query.answer()
 
+    if not query.message:
+        return
+
     data = query.data or ""
     if data == "guide_water":
         sem_rag = get_semantic_rag()
         rag_res = sem_rag.query("emergency water isolation shutoff valve leak protocol")
         bylaw_mention = ""
         if rag_res.by_laws_cited:
-            bylaw_mention = f"• <b>Governing By-Law:</b> {', '.join(rag_res.by_laws_cited[:2])}\n"
+            safe_bylaws = html.escape(", ".join(rag_res.by_laws_cited[:2]))
+            bylaw_mention = f"• <b>Governing By-Law:</b> {safe_bylaws}\n"
 
         await query.message.reply_text(
             "🚰 <b>Estate Water Isolation & Emergency Guide</b>\n\n"
@@ -536,7 +555,6 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             "2. Turn the circular valve handle clockwise until tightly closed.\n"
             "3. Relieve residual water pressure by opening a cold water tap.\n"
             "4. Keep main door unlocked for dispatched emergency technicians.\n\n"
-            f"{infra_mention}"
             f"{bylaw_mention}"
             "📞 <b>Emergency Hotline:</b> <code>+65 6789-0123</code> (Apex 24/7 Rapid Plumbing)",
             parse_mode=ParseMode.HTML,
@@ -578,7 +596,7 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
         )
     elif data.startswith("rate_"):
         parts = data.split("_")
-        if len(parts) >= 3 and query.message:
+        if len(parts) >= 3:
             t_id = parts[1]
             try:
                 stars = int(parts[2])
@@ -617,6 +635,7 @@ def main() -> None:
 
     app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start_command))
+    app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("ask", ask_command))
     app.add_handler(CommandHandler("status", status_command))
     app.add_handler(CommandHandler("mytickets", mytickets_command))

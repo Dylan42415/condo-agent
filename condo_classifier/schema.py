@@ -30,8 +30,10 @@ class StrictModel(BaseModel):
 
 class ResidentRequest(StrictModel):
     text: str = Field(min_length=3, max_length=4000)
-    channel: Literal["Web", "WhatsApp", "Email", "Phone transcript"] = "Web"
+    channel: Literal["Web", "WhatsApp", "Telegram", "Email", "Phone transcript"] = "Web"
     location: str | None = Field(default=None, max_length=120)
+    # The resident's own words when `text` is an English translation of them.
+    original_text: str | None = Field(default=None, max_length=4000)
 
     @field_validator("text")
     @classmethod

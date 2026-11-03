@@ -45,3 +45,64 @@ def test_changing_engine_clears_result_from_previous_backend():
     ).run()
     assert not app.exception
     assert "single_result" not in app.session_state
+
+
+def test_streamlit_dispatch_management_tab():
+    app = AppTest.from_file(ROOT / "app.py", default_timeout=30).run()
+    assert not app.exception
+
+    # Filter priority selectbox
+    prio_sb = next(s for s in app.selectbox if s.label == "Filter Priority")
+    prio_sb.select("Emergency").run()
+    assert not app.exception
+
+    # Filter status selectbox
+    status_sb = next(s for s in app.selectbox if s.label == "Filter Status")
+    status_sb.select("ALL").run()
+    assert not app.exception
+
+    # Select ticket selectbox
+    ticket_sb = next(s for s in app.selectbox if s.label == "Select a Work Order to manage")
+    assert ticket_sb.value is not None
+
+    # Work Order actions
+    prog_btn = next((b for b in app.button if "Mark In Progress" in b.label), None)
+    res_btn = next((b for b in app.button if "Mark Resolved" in b.label), None)
+    assert prog_btn is not None or res_btn is not None
+
+
+def test_streamlit_estate_policy_rag_tab():
+    app = AppTest.from_file(ROOT / "app.py", default_timeout=30).run()
+    assert not app.exception
+
+    # Select a preset query
+    preset_sb = next(s for s in app.selectbox if s.label == "Quick Query Presets")
+    preset_sb.select(preset_sb.options[1]).run()
+    assert not app.exception
+
+    # Click Run Semantic RAG Query
+    rag_btn = next(b for b in app.button if "Semantic" in b.label)
+    rag_btn.click().run()
+    assert not app.exception
+    assert len(app.success) >= 1
+
+    # Browse chunk selector
+    browse_sb = next(s for s in app.selectbox if s.label == "Browse Indexed Chunk")
+    assert browse_sb is not None
+
+
+def test_streamlit_batch_processing_tab():
+    app = AppTest.from_file(ROOT / "app.py", default_timeout=30).run()
+    assert not app.exception
+
+    # Upload test CSV
+    csv_bytes = b"text\nWater pipe burst in kitchen #08-14\nLoud music next door\n"
+    app.file_uploader[0].upload("test_requests.csv", csv_bytes).run()
+    assert not app.exception
+
+    # Click Classify batch requests
+    batch_btn = next(b for b in app.button if "Classify" in b.label and "requests" in b.label)
+    batch_btn.click().run()
+    assert not app.exception
+    assert app.session_state.get("batch_result") is not None
+

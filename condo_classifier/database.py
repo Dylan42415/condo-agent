@@ -14,8 +14,8 @@ DEFAULT_DB_PATH = ROOT / "data" / "tickets.db"
 EVIDENCE_DIR = ROOT / "data" / "evidence"
 
 
-def get_connection(db_path: Path | str = DEFAULT_DB_PATH) -> sqlite3.Connection:
-    path = Path(db_path)
+def get_connection(db_path: Path | str | None = None) -> sqlite3.Connection:
+    path = Path(db_path) if db_path is not None else Path(DEFAULT_DB_PATH)
     path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(path), timeout=30.0)
     conn.row_factory = sqlite3.Row
@@ -24,8 +24,8 @@ def get_connection(db_path: Path | str = DEFAULT_DB_PATH) -> sqlite3.Connection:
     return conn
 
 
-def init_db(db_path: Path | str = DEFAULT_DB_PATH) -> Path:
-    path = Path(db_path)
+def init_db(db_path: Path | str | None = None) -> Path:
+    path = Path(db_path) if db_path is not None else Path(DEFAULT_DB_PATH)
     EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
     with get_connection(path) as conn:
         cursor = conn.cursor()
@@ -108,7 +108,7 @@ def create_ticket(
     safety_instruction: str | None = None,
     photo_path: str | None = None,
     status: str = "SUBMITTED",
-    db_path: Path | str = DEFAULT_DB_PATH,
+    db_path: Path | str | None = None,
 ) -> str:
     now_iso = datetime.now(UTC).isoformat()
     with get_connection(db_path) as conn:
@@ -172,7 +172,7 @@ def create_dispatch(
     message_text: str,
     contact_channel: str = "SMS",
     delivery_status: str = "SENT",
-    db_path: Path | str = DEFAULT_DB_PATH,
+    db_path: Path | str | None = None,
 ) -> str:
     now_iso = datetime.now(UTC).isoformat()
     with get_connection(db_path) as conn:
@@ -212,7 +212,7 @@ def create_dispatch(
     return dispatch_id
 
 
-def get_ticket(ticket_id: str, db_path: Path | str = DEFAULT_DB_PATH) -> dict[str, Any] | None:
+def get_ticket(ticket_id: str, db_path: Path | str | None = None) -> dict[str, Any] | None:
     with get_connection(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM tickets WHERE ticket_id = ?", (ticket_id,))
@@ -225,7 +225,7 @@ def list_tickets(
     priority: str | None = None,
     category: str | None = None,
     limit: int = 100,
-    db_path: Path | str = DEFAULT_DB_PATH,
+    db_path: Path | str | None = None,
 ) -> list[dict[str, Any]]:
     query = "SELECT * FROM tickets WHERE 1=1"
     params: list[Any] = []
@@ -254,7 +254,7 @@ def update_ticket_status(
     actor: str = "STAFF",
     notes: str = "",
     notify: bool = True,
-    db_path: Path | str = DEFAULT_DB_PATH,
+    db_path: Path | str | None = None,
 ) -> bool:
     now_iso = datetime.now(UTC).isoformat()
     with get_connection(db_path) as conn:
@@ -311,7 +311,7 @@ def update_ticket_status(
         return True
 
 
-def get_timeline(ticket_id: str, db_path: Path | str = DEFAULT_DB_PATH) -> list[dict[str, Any]]:
+def get_timeline(ticket_id: str, db_path: Path | str | None = None) -> list[dict[str, Any]]:
     with get_connection(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute(
@@ -325,7 +325,7 @@ def get_timeline(ticket_id: str, db_path: Path | str = DEFAULT_DB_PATH) -> list[
         return [dict(row) for row in cursor.fetchall()]
 
 
-def get_dispatches(ticket_id: str, db_path: Path | str = DEFAULT_DB_PATH) -> list[dict[str, Any]]:
+def get_dispatches(ticket_id: str, db_path: Path | str | None = None) -> list[dict[str, Any]]:
     with get_connection(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute(
@@ -339,7 +339,7 @@ def get_dispatches(ticket_id: str, db_path: Path | str = DEFAULT_DB_PATH) -> lis
         return [dict(row) for row in cursor.fetchall()]
 
 
-def get_stats(db_path: Path | str = DEFAULT_DB_PATH) -> dict[str, int]:
+def get_stats(db_path: Path | str | None = None) -> dict[str, int]:
     with get_connection(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM tickets")
@@ -366,7 +366,7 @@ def get_stats(db_path: Path | str = DEFAULT_DB_PATH) -> dict[str, int]:
         }
 
 
-def seed_demo_tickets(db_path: Path | str = DEFAULT_DB_PATH) -> None:
+def seed_demo_tickets(db_path: Path | str | None = None) -> None:
     """Pre-populates sample tickets if the database is currently empty."""
     stats = get_stats(db_path)
     if stats["total"] > 0:
@@ -442,7 +442,7 @@ def record_resident_feedback(
     ticket_id: str,
     rating: int,
     feedback: str = "",
-    db_path: Path | str = DEFAULT_DB_PATH,
+    db_path: Path | str | None = None,
 ) -> bool:
     """Stores resident 1-5 star rating and optional comments for a ticket."""
     now_iso = datetime.now(UTC).isoformat()
@@ -478,7 +478,7 @@ def record_resident_feedback(
         return True
 
 
-def generate_audit_report(ticket_id: str, db_path: Path | str = DEFAULT_DB_PATH) -> str:
+def generate_audit_report(ticket_id: str, db_path: Path | str | None = None) -> str:
     """Generates an official post-incident audit summary in Markdown format."""
     ticket = get_ticket(ticket_id, db_path=db_path)
     if not ticket:

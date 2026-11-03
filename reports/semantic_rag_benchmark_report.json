@@ -1,0 +1,1435 @@
+{
+  "timestamp": "2026-11-03 21:32:44",
+  "knowledge_base": "sample_condo_handbook.md",
+  "table_integrity": {
+    "total_source_tables": 7,
+    "intact_tables": 7,
+    "table_integrity_score": 100.0,
+    "table_details": [
+      {
+        "table_id": 1,
+        "header": "| Service / Department | Location / Contact | Operational Hours |",
+        "rows_count": 7,
+        "status": "INTACT",
+        "intact": true,
+        "chunk_id": "chunk_0003",
+        "section": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory",
+        "missing_rows": 0
+      },
+      {
+        "table_id": 2,
+        "header": "| Requirement | Specification / Policy |",
+        "rows_count": 8,
+        "status": "INTACT",
+        "intact": true,
+        "chunk_id": "chunk_0004",
+        "section": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 2. Moving In, Moving Out & Bulk Deliveries > 2.1 Moving Guidelines & Security Deposit",
+        "missing_rows": 0
+      },
+      {
+        "table_id": 3,
+        "header": "| Work Classification | Permitted Schedule | Strict Prohibitions ",
+        "rows_count": 6,
+        "status": "INTACT",
+        "intact": true,
+        "chunk_id": "chunk_0005",
+        "section": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+        "missing_rows": 0
+      },
+      {
+        "table_id": 4,
+        "header": "| Facility | Operating Hours | Booking Fee | Security Deposit | M",
+        "rows_count": 7,
+        "status": "INTACT",
+        "intact": true,
+        "chunk_id": "chunk_0007",
+        "section": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours",
+        "missing_rows": 0
+      },
+      {
+        "table_id": 5,
+        "header": "| Vehicle Category | Allocation & Charges | Requirements |",
+        "rows_count": 6,
+        "status": "INTACT",
+        "intact": true,
+        "chunk_id": "chunk_0009",
+        "section": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.1 Resident Vehicle Season Decals & Allocation",
+        "missing_rows": 0
+      },
+      {
+        "table_id": 6,
+        "header": "| Stage | Responsible Party | Timeframe / SLA | Action Required |",
+        "rows_count": 7,
+        "status": "INTACT",
+        "intact": true,
+        "chunk_id": "chunk_0012",
+        "section": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.2 Inspection SLA & Resolution Escalation",
+        "missing_rows": 0
+      },
+      {
+        "table_id": 7,
+        "header": "| Regulation Parameter | Permitted Policy | Prohibitions & Penalt",
+        "rows_count": 7,
+        "status": "INTACT",
+        "intact": true,
+        "chunk_id": "chunk_0013",
+        "section": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations",
+        "missing_rows": 0
+      }
+    ]
+  },
+  "breadcrumb_injection": {
+    "total_chunks": 15,
+    "chunks_with_headers": 14,
+    "correctly_injected": 14,
+    "breadcrumb_coverage_score": 100.0,
+    "chunk_details": [
+      {
+        "chunk_id": "chunk_0001",
+        "breadcrumb": "General",
+        "has_breadcrumb": false,
+        "prefix_injected": false,
+        "valid": true,
+        "prefix_preview": ""
+      },
+      {
+        "chunk_id": "chunk_0002",
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws",
+        "has_breadcrumb": true,
+        "prefix_injected": true,
+        "valid": true,
+        "prefix_preview": "[Document: Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws]"
+      },
+      {
+        "chunk_id": "chunk_0003",
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory",
+        "has_breadcrumb": true,
+        "prefix_injected": true,
+        "valid": true,
+        "prefix_preview": "[Document: Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws | Section: 1. Directory & Emergency Contacts | Subsection: 1.1 Management Office & Security Directory]"
+      },
+      {
+        "chunk_id": "chunk_0004",
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 2. Moving In, Moving Out & Bulk Deliveries > 2.1 Moving Guidelines & Security Deposit",
+        "has_breadcrumb": true,
+        "prefix_injected": true,
+        "valid": true,
+        "prefix_preview": "[Document: Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws | Section: 2. Moving In, Moving Out & Bulk Deliveries | Subsection: 2.1 Moving Guidelines & Security Deposit]"
+      },
+      {
+        "chunk_id": "chunk_0005",
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+        "has_breadcrumb": true,
+        "prefix_injected": true,
+        "valid": true,
+        "prefix_preview": "[Document: Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws | Section: 3. Renovation Works & Noise Control By-laws | Subsection: 3.1 Renovation Working Hours & Permissible Acoustic Thresholds]"
+      },
+      {
+        "chunk_id": "chunk_0006",
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+        "has_breadcrumb": true,
+        "prefix_injected": true,
+        "valid": true,
+        "prefix_preview": "[Document: Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws | Section: 3. Renovation Works & Noise Control By-laws | Subsection: 3.2 Noise Infractions & Financial Penalties]"
+      },
+      {
+        "chunk_id": "chunk_0007",
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours",
+        "has_breadcrumb": true,
+        "prefix_injected": true,
+        "valid": true,
+        "prefix_preview": "[Document: Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws | Section: 4. Recreational Facilities & Booking House Rules | Subsection: 4.1 Facilities Tariff & Operating Hours]"
+      },
+      {
+        "chunk_id": "chunk_0008",
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.2 BBQ Pit and Poolside Etiquette",
+        "has_breadcrumb": true,
+        "prefix_injected": true,
+        "valid": true,
+        "prefix_preview": "[Document: Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws | Section: 4. Recreational Facilities & Booking House Rules | Subsection: 4.2 BBQ Pit and Poolside Etiquette]"
+      },
+      {
+        "chunk_id": "chunk_0009",
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.1 Resident Vehicle Season Decals & Allocation",
+        "has_breadcrumb": true,
+        "prefix_injected": true,
+        "valid": true,
+        "prefix_preview": "[Document: Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws | Section: 5. Vehicle Parking & Traffic Management By-laws | Subsection: 5.1 Resident Vehicle Season Decals & Allocation]"
+      },
+      {
+        "chunk_id": "chunk_0010",
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.2 Visitor Parking & Wheel-Clamping Enforcement",
+        "has_breadcrumb": true,
+        "prefix_injected": true,
+        "valid": true,
+        "prefix_preview": "[Document: Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws | Section: 5. Vehicle Parking & Traffic Management By-laws | Subsection: 5.2 Visitor Parking & Wheel-Clamping Enforcement]"
+      },
+      {
+        "chunk_id": "chunk_0011",
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.1 BMSMA Statutory Presumption (Section 101)",
+        "has_breadcrumb": true,
+        "prefix_injected": true,
+        "valid": true,
+        "prefix_preview": "[Document: Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws | Section: 6. Inter-Floor Water Leaks & Sanitary By-laws | Subsection: 6.1 BMSMA Statutory Presumption (Section 101)]"
+      },
+      {
+        "chunk_id": "chunk_0012",
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.2 Inspection SLA & Resolution Escalation",
+        "has_breadcrumb": true,
+        "prefix_injected": true,
+        "valid": true,
+        "prefix_preview": "[Document: Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws | Section: 6. Inter-Floor Water Leaks & Sanitary By-laws | Subsection: 6.2 Inspection SLA & Resolution Escalation]"
+      },
+      {
+        "chunk_id": "chunk_0013",
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations",
+        "has_breadcrumb": true,
+        "prefix_injected": true,
+        "valid": true,
+        "prefix_preview": "[Document: Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws | Section: 7. Pet Ownership & Hygiene By-laws | Subsection: 7.1 Domestic Pet Limits & Regulations]"
+      },
+      {
+        "chunk_id": "chunk_0014",
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 8. Refuse Disposal, Common Corridor & Fire Safety By-laws > 8.1 Waste Disposal Procedures",
+        "has_breadcrumb": true,
+        "prefix_injected": true,
+        "valid": true,
+        "prefix_preview": "[Document: Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws | Section: 8. Refuse Disposal, Common Corridor & Fire Safety By-laws | Subsection: 8.1 Waste Disposal Procedures]"
+      },
+      {
+        "chunk_id": "chunk_0015",
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 8. Refuse Disposal, Common Corridor & Fire Safety By-laws > 8.2 Fire Escape Corridors (SCDF Compliance)",
+        "has_breadcrumb": true,
+        "prefix_injected": true,
+        "valid": true,
+        "prefix_preview": "[Document: Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws | Section: 8. Refuse Disposal, Common Corridor & Fire Safety By-laws | Subsection: 8.2 Fire Escape Corridors (SCDF Compliance)]"
+      }
+    ]
+  },
+  "breakpoint_thresholding": {
+    "sentences_count": 6,
+    "distances": [
+      0.3154,
+      0.3611,
+      0.3119,
+      0.4278,
+      0.2717
+    ],
+    "threshold_80th_percentile": 0.4278,
+    "chunks_produced": 2,
+    "split_preserved_coherence": true
+  },
+  "retrieval_benchmark": {
+    "total_queries": 18,
+    "hit_count_at_1": 17,
+    "hit_rate_at_1": 94.44,
+    "hit_count_at_3": 18,
+    "hit_rate_at_3": 100.0,
+    "mrr": 0.9722,
+    "query_results": [
+      {
+        "id": "Q01",
+        "category": "Renovation Noise",
+        "query": "Can my contractor do heavy drilling or hacking on Saturday morning?",
+        "target_chunk_id": "chunk_0005",
+        "target_section": "3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 460.11,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0005",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+            "similarity_score": 0.751,
+            "keyword_boost": 0.7273,
+            "final_score": 0.7439
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0006",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+            "similarity_score": 0.6664,
+            "keyword_boost": 0.4545,
+            "final_score": 0.6029
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0004",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 2. Moving In, Moving Out & Bulk Deliveries > 2.1 Moving Guidelines & Security Deposit",
+            "similarity_score": 0.5962,
+            "keyword_boost": 0.5455,
+            "final_score": 0.581
+          }
+        ]
+      },
+      {
+        "id": "Q02",
+        "category": "Renovation Hours",
+        "query": "What are the allowed hours for general renovation like painting and carpentry?",
+        "target_chunk_id": "chunk_0005",
+        "target_section": "3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 474.36,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0005",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+            "similarity_score": 0.7827,
+            "keyword_boost": 0.6667,
+            "final_score": 0.7479
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0006",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+            "similarity_score": 0.6419,
+            "keyword_boost": 0.4167,
+            "final_score": 0.5743
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0003",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory",
+            "similarity_score": 0.5681,
+            "keyword_boost": 0.5,
+            "final_score": 0.5477
+          }
+        ]
+      },
+      {
+        "id": "Q03",
+        "category": "Weekend Drilling Penalty",
+        "query": "What happens if a contractor does unapproved drilling on Sunday or a public holiday?",
+        "target_chunk_id": "chunk_0006",
+        "target_section": "3.2 Noise Infractions & Financial Penalties",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 478.16,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0006",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+            "similarity_score": 0.6731,
+            "keyword_boost": 0.6154,
+            "final_score": 0.6558
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0005",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+            "similarity_score": 0.658,
+            "keyword_boost": 0.6154,
+            "final_score": 0.6452
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0004",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 2. Moving In, Moving Out & Bulk Deliveries > 2.1 Moving Guidelines & Security Deposit",
+            "similarity_score": 0.5486,
+            "keyword_boost": 0.5385,
+            "final_score": 0.5456
+          }
+        ]
+      },
+      {
+        "id": "Q04",
+        "category": "Noise Infraction Fine",
+        "query": "What is the penalty fine for a second renovation noise complaint?",
+        "target_chunk_id": "chunk_0006",
+        "target_section": "3.2 Noise Infractions & Financial Penalties",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 465.73,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0006",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+            "similarity_score": 0.7679,
+            "keyword_boost": 1.0,
+            "final_score": 0.8375
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0013",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations",
+            "similarity_score": 0.6256,
+            "keyword_boost": 0.8864,
+            "final_score": 0.7038
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0005",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+            "similarity_score": 0.6754,
+            "keyword_boost": 0.4545,
+            "final_score": 0.6092
+          }
+        ]
+      },
+      {
+        "id": "Q05",
+        "category": "BBQ Booking Tariff",
+        "query": "How much does it cost to book the BBQ pit and is there a deposit?",
+        "target_chunk_id": "chunk_0007",
+        "target_section": "4.1 Facilities Tariff & Operating Hours",
+        "rank": 2,
+        "hit_at_1": false,
+        "hit_at_3": true,
+        "reciprocal_rank": 0.5,
+        "retrieval_latency_ms": 426.17,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0008",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.2 BBQ Pit and Poolside Etiquette",
+            "similarity_score": 0.6482,
+            "keyword_boost": 0.9167,
+            "final_score": 0.7287
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0007",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours",
+            "similarity_score": 0.6428,
+            "keyword_boost": 0.9167,
+            "final_score": 0.7249
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0004",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 2. Moving In, Moving Out & Bulk Deliveries > 2.1 Moving Guidelines & Security Deposit",
+            "similarity_score": 0.5497,
+            "keyword_boost": 0.7833,
+            "final_score": 0.6198
+          }
+        ]
+      },
+      {
+        "id": "Q06",
+        "category": "BBQ Operating Hours & Capacity",
+        "query": "What are the operational hours and capacity limit for booking the BBQ pavilion pit?",
+        "target_chunk_id": "chunk_0007",
+        "target_section": "4.1 Facilities Tariff & Operating Hours",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 462.08,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0007",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours",
+            "similarity_score": 0.7125,
+            "keyword_boost": 0.7692,
+            "final_score": 0.7296
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0008",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.2 BBQ Pit and Poolside Etiquette",
+            "similarity_score": 0.6667,
+            "keyword_boost": 0.5385,
+            "final_score": 0.6282
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0003",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory",
+            "similarity_score": 0.5726,
+            "keyword_boost": 0.5385,
+            "final_score": 0.5624
+          }
+        ]
+      },
+      {
+        "id": "Q07",
+        "category": "BBQ Cleaning Fee",
+        "query": "Is there a cleaning fee if the BBQ pit is left dirty with food and ash?",
+        "target_chunk_id": "chunk_0008",
+        "target_section": "4.2 BBQ Pit and Poolside Etiquette",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 453.96,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0008",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.2 BBQ Pit and Poolside Etiquette",
+            "similarity_score": 0.7169,
+            "keyword_boost": 0.8667,
+            "final_score": 0.7618
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0007",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours",
+            "similarity_score": 0.6137,
+            "keyword_boost": 0.6,
+            "final_score": 0.6096
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0013",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations",
+            "similarity_score": 0.551,
+            "keyword_boost": 0.7333,
+            "final_score": 0.6057
+          }
+        ]
+      },
+      {
+        "id": "Q08",
+        "category": "Pool Hours & Attire",
+        "query": "What are the opening hours and attire rules for the swimming pool?",
+        "target_chunk_id": "chunk_0007",
+        "target_section": "4.1 Facilities Tariff & Operating Hours",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 446.86,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0007",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours",
+            "similarity_score": 0.6609,
+            "keyword_boost": 0.7273,
+            "final_score": 0.6808
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0008",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.2 BBQ Pit and Poolside Etiquette",
+            "similarity_score": 0.6043,
+            "keyword_boost": 0.5455,
+            "final_score": 0.5867
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0013",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations",
+            "similarity_score": 0.5468,
+            "keyword_boost": 0.4545,
+            "final_score": 0.5191
+          }
+        ]
+      },
+      {
+        "id": "Q09",
+        "category": "Poolside Noise / Quiet Hours",
+        "query": "Can we play amplified music or host a karaoke session at the poolside BBQ after 10pm?",
+        "target_chunk_id": "chunk_0008",
+        "target_section": "4.2 BBQ Pit and Poolside Etiquette",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 502.81,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0008",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.2 BBQ Pit and Poolside Etiquette",
+            "similarity_score": 0.7395,
+            "keyword_boost": 0.625,
+            "final_score": 0.7052
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0007",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours",
+            "similarity_score": 0.6269,
+            "keyword_boost": 0.5,
+            "final_score": 0.5888
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0013",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations",
+            "similarity_score": 0.5981,
+            "keyword_boost": 0.375,
+            "final_score": 0.5312
+          }
+        ]
+      },
+      {
+        "id": "Q10",
+        "category": "Water Leak Statutory Presumption",
+        "query": "Water is leaking from my bathroom ceiling from the unit above. Who is legally responsible under BMSMA Section 101?",
+        "target_chunk_id": "chunk_0011",
+        "target_section": "6.1 BMSMA Statutory Presumption (Section 101)",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 453.82,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0011",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.1 BMSMA Statutory Presumption (Section 101)",
+            "similarity_score": 0.8212,
+            "keyword_boost": 1.0,
+            "final_score": 0.8748
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0012",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.2 Inspection SLA & Resolution Escalation",
+            "similarity_score": 0.6948,
+            "keyword_boost": 0.2941,
+            "final_score": 0.5746
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0002",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws",
+            "similarity_score": 0.6116,
+            "keyword_boost": 0.4853,
+            "final_score": 0.5737
+          }
+        ]
+      },
+      {
+        "id": "Q11",
+        "category": "Water Leak Inspection SLA",
+        "query": "What is the management response time and inspection timeline for inter-floor water leaks?",
+        "target_chunk_id": "chunk_0012",
+        "target_section": "6.2 Inspection SLA & Resolution Escalation",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 466.04,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0012",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.2 Inspection SLA & Resolution Escalation",
+            "similarity_score": 0.815,
+            "keyword_boost": 0.6429,
+            "final_score": 0.7633
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0011",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.1 BMSMA Statutory Presumption (Section 101)",
+            "similarity_score": 0.7088,
+            "keyword_boost": 0.6429,
+            "final_score": 0.689
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0003",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory",
+            "similarity_score": 0.634,
+            "keyword_boost": 0.3571,
+            "final_score": 0.5509
+          }
+        ]
+      },
+      {
+        "id": "Q12",
+        "category": "Parking Wheel Clamping",
+        "query": "My car was wheel-clamped in the visitor lot. What is the unclamping fee and where do I pay?",
+        "target_chunk_id": "chunk_0010",
+        "target_section": "5.2 Visitor Parking & Wheel-Clamping Enforcement",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 473.55,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0010",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.2 Visitor Parking & Wheel-Clamping Enforcement",
+            "similarity_score": 0.7333,
+            "keyword_boost": 0.7222,
+            "final_score": 0.73
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0009",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.1 Resident Vehicle Season Decals & Allocation",
+            "similarity_score": 0.5875,
+            "keyword_boost": 0.4444,
+            "final_score": 0.5446
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0003",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory",
+            "similarity_score": 0.5266,
+            "keyword_boost": 0.4444,
+            "final_score": 0.5019
+          }
+        ]
+      },
+      {
+        "id": "Q13",
+        "category": "Season Parking Allocation",
+        "query": "What is the monthly parking charge for a resident's second vehicle?",
+        "target_chunk_id": "chunk_0009",
+        "target_section": "5.1 Resident Vehicle Season Decals & Allocation",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 490.53,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0009",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.1 Resident Vehicle Season Decals & Allocation",
+            "similarity_score": 0.7361,
+            "keyword_boost": 0.5833,
+            "final_score": 0.6903
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0010",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.2 Visitor Parking & Wheel-Clamping Enforcement",
+            "similarity_score": 0.6298,
+            "keyword_boost": 0.6667,
+            "final_score": 0.6408
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0006",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+            "similarity_score": 0.5395,
+            "keyword_boost": 0.5833,
+            "final_score": 0.5527
+          }
+        ]
+      },
+      {
+        "id": "Q14",
+        "category": "Emergency Lift Hotline",
+        "query": "The elevator is broken down and someone is trapped inside. What is the 24/7 lift hotline?",
+        "target_chunk_id": "chunk_0003",
+        "target_section": "1.1 Management Office & Security Directory",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 467.42,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0003",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory",
+            "similarity_score": 0.6547,
+            "keyword_boost": 1.0,
+            "final_score": 0.7583
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0012",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.2 Inspection SLA & Resolution Escalation",
+            "similarity_score": 0.5851,
+            "keyword_boost": 0.7857,
+            "final_score": 0.6453
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0004",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 2. Moving In, Moving Out & Bulk Deliveries > 2.1 Moving Guidelines & Security Deposit",
+            "similarity_score": 0.5538,
+            "keyword_boost": 0.6071,
+            "final_score": 0.5698
+          }
+        ]
+      },
+      {
+        "id": "Q15",
+        "category": "Pet Swimming Pool Ban & Leash Fine",
+        "query": "Are pets allowed in the swimming pool area, and what is the fine for an unleashed dog?",
+        "target_chunk_id": "chunk_0013",
+        "target_section": "7.1 Domestic Pet Limits & Regulations",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 443.59,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0013",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations",
+            "similarity_score": 0.683,
+            "keyword_boost": 1.0,
+            "final_score": 0.7781
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0008",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.2 BBQ Pit and Poolside Etiquette",
+            "similarity_score": 0.6226,
+            "keyword_boost": 0.5625,
+            "final_score": 0.6046
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0006",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+            "similarity_score": 0.5629,
+            "keyword_boost": 0.6875,
+            "final_score": 0.6003
+          }
+        ]
+      },
+      {
+        "id": "Q16",
+        "category": "Pet Limit Per Unit",
+        "query": "What is the pet limit per unit? Can I keep two dogs in my condo?",
+        "target_chunk_id": "chunk_0013",
+        "target_section": "7.1 Domestic Pet Limits & Regulations",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 472.02,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0013",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations",
+            "similarity_score": 0.742,
+            "keyword_boost": 0.6667,
+            "final_score": 0.7194
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0009",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.1 Resident Vehicle Season Decals & Allocation",
+            "similarity_score": 0.5902,
+            "keyword_boost": 0.4,
+            "final_score": 0.5331
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0007",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours",
+            "similarity_score": 0.5575,
+            "keyword_boost": 0.4667,
+            "final_score": 0.5302
+          }
+        ]
+      },
+      {
+        "id": "Q17",
+        "category": "Moving Guidelines Deposit",
+        "query": "What is the security deposit and advance notice required for moving in or moving out?",
+        "target_chunk_id": "chunk_0004",
+        "target_section": "2.1 Moving Guidelines & Security Deposit",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 469.42,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0004",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 2. Moving In, Moving Out & Bulk Deliveries > 2.1 Moving Guidelines & Security Deposit",
+            "similarity_score": 0.7195,
+            "keyword_boost": 1.0,
+            "final_score": 0.8037
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0005",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+            "similarity_score": 0.5764,
+            "keyword_boost": 0.8214,
+            "final_score": 0.6499
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0006",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+            "similarity_score": 0.5695,
+            "keyword_boost": 0.8214,
+            "final_score": 0.6451
+          }
+        ]
+      },
+      {
+        "id": "Q18",
+        "category": "Corridor Clutter & Fire Escape",
+        "query": "Can residents place shoe racks or bicycles along the common corridor outside their unit under SCDF rules?",
+        "target_chunk_id": "chunk_0015",
+        "target_section": "8.2 Fire Escape Corridors (SCDF Compliance)",
+        "rank": 1,
+        "hit_at_1": true,
+        "hit_at_3": true,
+        "reciprocal_rank": 1.0,
+        "retrieval_latency_ms": 473.38,
+        "top_3_retrieved": [
+          {
+            "rank": 1,
+            "chunk_id": "chunk_0015",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 8. Refuse Disposal, Common Corridor & Fire Safety By-laws > 8.2 Fire Escape Corridors (SCDF Compliance)",
+            "similarity_score": 0.8257,
+            "keyword_boost": 0.4706,
+            "final_score": 0.7192
+          },
+          {
+            "rank": 2,
+            "chunk_id": "chunk_0014",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 8. Refuse Disposal, Common Corridor & Fire Safety By-laws > 8.1 Waste Disposal Procedures",
+            "similarity_score": 0.6858,
+            "keyword_boost": 0.2353,
+            "final_score": 0.5507
+          },
+          {
+            "rank": 3,
+            "chunk_id": "chunk_0007",
+            "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours",
+            "similarity_score": 0.5983,
+            "keyword_boost": 0.4118,
+            "final_score": 0.5423
+          }
+        ]
+      }
+    ]
+  },
+  "faithfulness_evaluation": {
+    "queries_tested": 14,
+    "faithfulness_rate": 42.86,
+    "avg_fact_recall_percent": 82.79,
+    "hallucination_count": 8,
+    "hallucination_flags": [
+      {
+        "id": "Q03",
+        "query": "What happens if a contractor does unapproved drilling on Sunday or a public holiday?",
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6222-0000"
+        ],
+        "unverified_bylaws": [
+          "By-law §3"
+        ]
+      },
+      {
+        "id": "Q04",
+        "query": "What is the penalty fine for a second renovation noise complaint?",
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6111-5555"
+        ],
+        "unverified_bylaws": []
+      },
+      {
+        "id": "Q05",
+        "query": "How much does it cost to book the BBQ pit and is there a deposit?",
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6222-0000",
+          "+65 6111-5555"
+        ],
+        "unverified_bylaws": []
+      },
+      {
+        "id": "Q08",
+        "query": "What are the opening hours and attire rules for the swimming pool?",
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6222-0000"
+        ],
+        "unverified_bylaws": []
+      },
+      {
+        "id": "Q10",
+        "query": "Water is leaking from my bathroom ceiling from the unit above. Who is legally responsible under BMSMA Section 101?",
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6222-1111"
+        ],
+        "unverified_bylaws": [
+          "By-law §6"
+        ]
+      },
+      {
+        "id": "Q11",
+        "query": "What is the management response time and inspection timeline for inter-floor water leaks?",
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6789-0123",
+          "+65 6111-5555"
+        ],
+        "unverified_bylaws": [
+          "By-law §6"
+        ]
+      },
+      {
+        "id": "Q13",
+        "query": "What is the monthly parking charge for a resident's second vehicle?",
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6111-5555"
+        ],
+        "unverified_bylaws": []
+      },
+      {
+        "id": "Q17",
+        "query": "What is the security deposit and advance notice required for moving in or moving out?",
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6222-0000"
+        ],
+        "unverified_bylaws": []
+      }
+    ],
+    "synthesis_details": [
+      {
+        "id": "Q01",
+        "category": "Renovation Noise",
+        "query": "Can my contractor do heavy drilling or hacking on Saturday morning?",
+        "model_used": "gemini:gemini-3.1-flash-lite",
+        "latency_seconds": 6.78,
+        "grounded": true,
+        "by_laws_cited": [
+          "By-law §4 (Renovation Works & Noise Control By-laws)",
+          "By-law §4",
+          "By-law §4 strictly governs unit renovations to balance home improvement rights against residents' peaceful living rights"
+        ],
+        "source_sections": [
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.1 BMSMA Statutory Presumption (Section 101)"
+        ],
+        "dollars_cited": [
+          "$1000.00"
+        ],
+        "phones_cited": [
+          "+65 6444-2222"
+        ],
+        "unverified_dollars": [],
+        "unverified_phones": [],
+        "unverified_bylaws": [],
+        "fact_recall_score": 1.0,
+        "faithful": true,
+        "answer_preview": "1. **RULING**: **PROHIBITED**.  2. **BY-LAW & STATUTORY AUTHORITY**: By-law §4 (Renovation Works & Noise Control By-laws).  3. **EXACT CONSTRAINTS & TARIFFS**: *   **Permissible Schedule**: Heavy mechanical drilling and hacking are strictly prohibited on Saturdays, Sundays, and Public Holidays. *   "
+      },
+      {
+        "id": "Q02",
+        "category": "Renovation Hours",
+        "query": "What are the allowed hours for general renovation like painting and carpentry?",
+        "model_used": "gemini:gemini-3.1-flash-lite",
+        "latency_seconds": 3.44,
+        "grounded": true,
+        "by_laws_cited": [
+          "By-law §4 (Renovation Working Hours & Permissible Acoustic Thresholds)",
+          "By-law §4 strictly governs unit renovations to balance home improvement rights against residents' peaceful living rights"
+        ],
+        "source_sections": [
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory"
+        ],
+        "dollars_cited": [
+          "$2000.00",
+          "$500.00"
+        ],
+        "phones_cited": [
+          "+65 6789 0200",
+          "+65 6789 0100"
+        ],
+        "unverified_dollars": [],
+        "unverified_phones": [],
+        "unverified_bylaws": [],
+        "fact_recall_score": 1.0,
+        "faithful": true,
+        "answer_preview": "OFFICIAL MANAGEMENT RESPONSE:  1. **RULING**: **PERMITTED** (within strictly defined schedules).  2. **BY-LAW & STATUTORY AUTHORITY**:     - By-law §4 (Renovation Working Hours & Permissible Acoustic Thresholds).  3. **EXACT CONSTRAINTS & TARIFFS**:    - **Permitted Schedule**:       - Monday to Fri"
+      },
+      {
+        "id": "Q03",
+        "category": "Weekend Drilling Penalty",
+        "query": "What happens if a contractor does unapproved drilling on Sunday or a public holiday?",
+        "model_used": "gemini:gemini-3.1-flash-lite",
+        "latency_seconds": 3.22,
+        "grounded": true,
+        "by_laws_cited": [
+          "By-law §4**: Governs Renovation Working Hours and prohibits heavy mechanical drilling and hacking on Saturdays",
+          "By-law §3",
+          "By-law §4 strictly governs unit renovations to balance home improvement rights against residents' peaceful living rights",
+          "By-law §10 balances the privilege of pet ownership with hygiene"
+        ],
+        "source_sections": [
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations"
+        ],
+        "dollars_cited": [
+          "$1000.00",
+          "$2000.00",
+          "$5000.00"
+        ],
+        "phones_cited": [
+          "+65 6444-2222",
+          "+65 6222-0000"
+        ],
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6222-0000"
+        ],
+        "unverified_bylaws": [
+          "By-law §3"
+        ],
+        "fact_recall_score": 1.0,
+        "faithful": false,
+        "answer_preview": "1. **RULING**: **PROHIBITED**. Performing heavy mechanical drilling or hacking on Sundays or Public Holidays is strictly forbidden under Marina Heights Condominium By-laws.  2. **BY-LAW & STATUTORY AUTHORITY**:  - **By-law §4**: Governs Renovation Working Hours and prohibits heavy mechanical drillin"
+      },
+      {
+        "id": "Q04",
+        "category": "Noise Infraction Fine",
+        "query": "What is the penalty fine for a second renovation noise complaint?",
+        "model_used": "gemini:gemini-3.1-flash-lite",
+        "latency_seconds": 3.47,
+        "grounded": true,
+        "by_laws_cited": [
+          "By-law §10 balances the privilege of pet ownership with hygiene"
+        ],
+        "source_sections": [
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.1 BMSMA Statutory Presumption (Section 101)",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations"
+        ],
+        "dollars_cited": [
+          "$500.00"
+        ],
+        "phones_cited": [
+          "+65 6444-2222",
+          "+65 6111-5555"
+        ],
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6111-5555"
+        ],
+        "unverified_bylaws": [],
+        "fact_recall_score": 0.67,
+        "faithful": false,
+        "answer_preview": "**OFFICIAL MANAGEMENT RESPONSE:**  1. **RULING**: **ACTION REQUIRED** (Second Infraction).  2. **BY-LAW & STATUTORY AUTHORITY**: Marina Heights Condominium (MCST 4291) Resident Handbook & By-laws, Section 3.2 (Noise Infractions & Financial Penalties).  3. **EXACT CONSTRAINTS & TARIFFS**:     - **Pen"
+      },
+      {
+        "id": "Q05",
+        "category": "BBQ Booking Tariff",
+        "query": "How much does it cost to book the BBQ pit and is there a deposit?",
+        "model_used": "gemini:gemini-3.1-flash-lite",
+        "latency_seconds": 2.84,
+        "grounded": true,
+        "by_laws_cited": [],
+        "source_sections": [
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.2 BBQ Pit and Poolside Etiquette",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 2. Moving In, Moving Out & Bulk Deliveries > 2.1 Moving Guidelines & Security Deposit"
+        ],
+        "dollars_cited": [
+          "$20.00",
+          "$50.00",
+          "$50.00"
+        ],
+        "phones_cited": [
+          "+65 6222-0000",
+          "+65 6111-5555"
+        ],
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6222-0000",
+          "+65 6111-5555"
+        ],
+        "unverified_bylaws": [],
+        "fact_recall_score": 1.0,
+        "faithful": false,
+        "answer_preview": "OFFICIAL MANAGEMENT RESPONSE:  1. **RULING**: **ACTION REQUIRED**. You must book the BBQ pit via the Resident App or at the Management Office to secure your session.  2. **BY-LAW & STATUTORY AUTHORITY**: Marina Heights Condominium (MCST 4291) Resident Handbook & By-laws, Section 4.1 (Facilities Tari"
+      },
+      {
+        "id": "Q06",
+        "category": "BBQ Operating Hours & Capacity",
+        "query": "What are the operational hours and capacity limit for booking the BBQ pavilion pit?",
+        "model_used": "gemini:gemini-3.1-flash-lite",
+        "latency_seconds": 3.83,
+        "grounded": true,
+        "by_laws_cited": [],
+        "source_sections": [
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.2 BBQ Pit and Poolside Etiquette",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory"
+        ],
+        "dollars_cited": [
+          "$20.00",
+          "$50.00",
+          "$50.00"
+        ],
+        "phones_cited": [
+          "+65 6789 0200",
+          "+65 6789 0100"
+        ],
+        "unverified_dollars": [],
+        "unverified_phones": [],
+        "unverified_bylaws": [],
+        "fact_recall_score": 0.33,
+        "faithful": true,
+        "answer_preview": "OFFICIAL MANAGEMENT RESPONSE:  1. **RULING**: **PERMITTED** (Subject to booking and adherence to house rules).  2. **BY-LAW & STATUTORY AUTHORITY**: Marina Heights Condominium (MCST 4291) Resident Handbook & By-laws, Section 4.1 (Facilities Tariff & Operating Hours).  3. **EXACT CONSTRAINTS & TARIFF"
+      },
+      {
+        "id": "Q08",
+        "category": "Pool Hours & Attire",
+        "query": "What are the opening hours and attire rules for the swimming pool?",
+        "model_used": "gemini:gemini-3.1-flash-lite",
+        "latency_seconds": 3.1,
+        "grounded": true,
+        "by_laws_cited": [],
+        "source_sections": [
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.2 BBQ Pit and Poolside Etiquette",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory"
+        ],
+        "dollars_cited": [],
+        "phones_cited": [
+          "+65 6444-2222",
+          "+65 6222-0000"
+        ],
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6222-0000"
+        ],
+        "unverified_bylaws": [],
+        "fact_recall_score": 1.0,
+        "faithful": false,
+        "answer_preview": "1. **RULING**: **PERMITTED** (Subject to compliance with operating hours and attire regulations).  2. **BY-LAW & STATUTORY AUTHORITY**: Marina Heights Condominium (MCST 4291) Resident Handbook & By-laws, Section 4.1 (Facilities Tariff & Operating Hours) and Section 4.2 (BBQ Pit and Poolside Etiquett"
+      },
+      {
+        "id": "Q10",
+        "category": "Water Leak Statutory Presumption",
+        "query": "Water is leaking from my bathroom ceiling from the unit above. Who is legally responsible under BMSMA Section 101?",
+        "model_used": "gemini:gemini-3.1-flash-lite",
+        "latency_seconds": 3.42,
+        "grounded": true,
+        "by_laws_cited": [
+          "By-law §6",
+          "BMSMA Section 101"
+        ],
+        "source_sections": [
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.1 BMSMA Statutory Presumption (Section 101)",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.2 Inspection SLA & Resolution Escalation",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws"
+        ],
+        "dollars_cited": [],
+        "phones_cited": [
+          "+65 6222-1111",
+          "+65 6444-2222",
+          "+65 6444-2222"
+        ],
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6222-1111"
+        ],
+        "unverified_bylaws": [
+          "By-law §6"
+        ],
+        "fact_recall_score": 0.67,
+        "faithful": false,
+        "answer_preview": "1. **RULING**: **ACTION REQUIRED**. Under the BMSMA Statutory Presumption, the defect is legally presumed to originate from the unit above yours. The owner of the upper unit is legally responsible for the repairs.  2. **BY-LAW & STATUTORY AUTHORITY**:  *   **BMSMA Section 101**: Establishes the lega"
+      },
+      {
+        "id": "Q11",
+        "category": "Water Leak Inspection SLA",
+        "query": "What is the management response time and inspection timeline for inter-floor water leaks?",
+        "model_used": "gemini:gemini-3.1-flash-lite",
+        "latency_seconds": 3.45,
+        "grounded": true,
+        "by_laws_cited": [
+          "By-law §6",
+          "BMSMA Section 101"
+        ],
+        "source_sections": [
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.1 BMSMA Statutory Presumption (Section 101)",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.2 Inspection SLA & Resolution Escalation",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws"
+        ],
+        "dollars_cited": [],
+        "phones_cited": [
+          "+65 6444-2222",
+          "+65 6789-0123",
+          "+65 6111-5555"
+        ],
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6789-0123",
+          "+65 6111-5555"
+        ],
+        "unverified_bylaws": [
+          "By-law §6"
+        ],
+        "fact_recall_score": 0.5,
+        "faithful": false,
+        "answer_preview": "1. **RULING**: **ACTION REQUIRED**. Upon reporting an inter-floor water leak, the management follows a strict Service Level Agreement (SLA) to ensure timely inspection and resolution.  2. **BY-LAW & STATUTORY AUTHORITY**:  *   **BMSMA Section 101**: Establishes the statutory presumption that the def"
+      },
+      {
+        "id": "Q12",
+        "category": "Parking Wheel Clamping",
+        "query": "My car was wheel-clamped in the visitor lot. What is the unclamping fee and where do I pay?",
+        "model_used": "gemini:gemini-3.1-flash-lite",
+        "latency_seconds": 3.25,
+        "grounded": true,
+        "by_laws_cited": [],
+        "source_sections": [
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.2 Visitor Parking & Wheel-Clamping Enforcement",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory"
+        ],
+        "dollars_cited": [
+          "$107.00"
+        ],
+        "phones_cited": [
+          "+65 6444-2222"
+        ],
+        "unverified_dollars": [],
+        "unverified_phones": [],
+        "unverified_bylaws": [],
+        "fact_recall_score": 1.0,
+        "faithful": true,
+        "answer_preview": "**OFFICIAL MANAGEMENT RESPONSE:**  1. **RULING**: **ACTION REQUIRED**. Your vehicle has been immobilized due to a violation of the visitor parking policy. You must settle the administrative fee to initiate the unclamping process.  2. **BY-LAW & STATUTORY AUTHORITY**: Marina Heights Condominium (MCST"
+      },
+      {
+        "id": "Q13",
+        "category": "Season Parking Allocation",
+        "query": "What is the monthly parking charge for a resident's second vehicle?",
+        "model_used": "gemini:gemini-3.1-flash-lite",
+        "latency_seconds": 2.93,
+        "grounded": true,
+        "by_laws_cited": [],
+        "source_sections": [
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.1 Resident Vehicle Season Decals & Allocation",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.2 Visitor Parking & Wheel-Clamping Enforcement",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours"
+        ],
+        "dollars_cited": [
+          "$120.00"
+        ],
+        "phones_cited": [
+          "+65 6111-5555"
+        ],
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6111-5555"
+        ],
+        "unverified_bylaws": [],
+        "fact_recall_score": 0.67,
+        "faithful": false,
+        "answer_preview": "1. **RULING**: **PERMITTED** (Subject to availability and balloting).  2. **BY-LAW & STATUTORY AUTHORITY**: Marina Heights Condominium (MCST 4291) Resident Handbook & By-laws, Section 5.1 (Resident Vehicle Season Decals & Allocation).  3. **EXACT CONSTRAINTS & TARIFFS**: *   **Monthly Charge**: S$12"
+      },
+      {
+        "id": "Q14",
+        "category": "Emergency Lift Hotline",
+        "query": "The elevator is broken down and someone is trapped inside. What is the 24/7 lift hotline?",
+        "model_used": "gemini:gemini-3.1-flash-lite",
+        "latency_seconds": 2.95,
+        "grounded": true,
+        "by_laws_cited": [],
+        "source_sections": [
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 6. Inter-Floor Water Leaks & Sanitary By-laws > 6.2 Inspection SLA & Resolution Escalation",
+          "General"
+        ],
+        "dollars_cited": [],
+        "phones_cited": [
+          "1800-543-8888",
+          "1800-543-8888",
+          "+65 6789 0100",
+          "995",
+          "999"
+        ],
+        "unverified_dollars": [],
+        "unverified_phones": [],
+        "unverified_bylaws": [],
+        "fact_recall_score": 1.0,
+        "faithful": true,
+        "answer_preview": "1. **RULING**: **ACTION REQUIRED**. Please contact the emergency lift maintenance provider immediately to report the entrapment.  2. **BY-LAW & STATUTORY AUTHORITY**: Marina Heights Condominium (MCST 4291) Resident Handbook & By-laws, Section 1.1 (Management Office & Security Directory).  3. **EXACT"
+      },
+      {
+        "id": "Q15",
+        "category": "Pet Swimming Pool Ban & Leash Fine",
+        "query": "Are pets allowed in the swimming pool area, and what is the fine for an unleashed dog?",
+        "model_used": "gemini:gemini-3.1-flash-lite",
+        "latency_seconds": 3.29,
+        "grounded": true,
+        "by_laws_cited": [
+          "By-law §10** (7",
+          "By-law §10 balances the privilege of pet ownership with hygiene"
+        ],
+        "source_sections": [
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.2 BBQ Pit and Poolside Etiquette"
+        ],
+        "dollars_cited": [
+          "$200.00",
+          "$100.00",
+          "$100.00"
+        ],
+        "phones_cited": [
+          "+65 6444-2222"
+        ],
+        "unverified_dollars": [],
+        "unverified_phones": [],
+        "unverified_bylaws": [],
+        "fact_recall_score": 0.75,
+        "faithful": true,
+        "answer_preview": "1. **RULING**: **PROHIBITED** (Pets in swimming pool area) and **ACTION REQUIRED** (Leash rule compliance).  2. **BY-LAW & STATUTORY AUTHORITY**:  - Pet access to amenities is governed by **By-law §10** (7.1 Domestic Pet Limits & Regulations). - Leash requirements are governed by **By-law §10** (7.1"
+      },
+      {
+        "id": "Q17",
+        "category": "Moving Guidelines Deposit",
+        "query": "What is the security deposit and advance notice required for moving in or moving out?",
+        "model_used": "gemini:gemini-3.1-flash-lite",
+        "latency_seconds": 3.36,
+        "grounded": true,
+        "by_laws_cited": [
+          "By-law §4 strictly governs unit renovations to balance home improvement rights against residents' peaceful living rights"
+        ],
+        "source_sections": [
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 2. Moving In, Moving Out & Bulk Deliveries > 2.1 Moving Guidelines & Security Deposit",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+          "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties"
+        ],
+        "dollars_cited": [
+          "$1000.00"
+        ],
+        "phones_cited": [
+          "+65 6222-0000",
+          "+65 6444-2222"
+        ],
+        "unverified_dollars": [],
+        "unverified_phones": [
+          "+65 6222-0000"
+        ],
+        "unverified_bylaws": [],
+        "fact_recall_score": 1.0,
+        "faithful": false,
+        "answer_preview": "OFFICIAL MANAGEMENT RESPONSE:  1. **RULING**: **ACTION REQUIRED**. You must schedule your move in advance with the Management Office and provide the required security deposit to ensure compliance with estate moving guidelines.  2. **BY-LAW & STATUTORY AUTHORITY**: Marina Heights Condominium (MCST 42"
+      }
+    ]
+  }
+}
