@@ -500,13 +500,21 @@ class EstateVaultGraph:
                 f"Retrieved Estate Knowledge:\n{context}\n\n"
                 f"Resident Question: {query}\n\nAnswer:"
             )
-            for m in ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"]:
-                try:
-                    res = client.models.generate_content(model=m, contents=prompt)
-                    if res.text and len(res.text.strip()) > 30:
-                        return res.text.strip()
-                except Exception:
-                    continue
+            def _call_gemini():
+                for m in ["gemini-3.1-flash-lite", "gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-flash-latest"]:
+                    try:
+                        res = client.models.generate_content(model=m, contents=prompt)
+                        if res.text and len(res.text.strip()) > 30:
+                            return res.text.strip()
+                    except Exception:
+                        continue
+                return None
+
+            import concurrent.futures
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(_call_gemini)
+                return future.result(timeout=3.0)
         except Exception:
             pass
         return None

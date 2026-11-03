@@ -63,11 +63,12 @@ logger = logging.getLogger(__name__)
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-# Preferred models in order of stability and throughput
+# Verified available models from Google AI Studio console
 GEMINI_MODELS = [
-    os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),
-    "gemini-2.0-flash",
-    "gemini-1.5-flash",
+    os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite"),
+    "gemini-3.1-flash-lite",
+    "gemini-3.5-flash-lite",
+    "gemini-3.6-flash",
     "gemini-flash-latest",
 ]
 GEMINI_MODEL = GEMINI_MODELS[0]
@@ -303,20 +304,23 @@ async def process_triage(text: str, photo_bytes: bytes | None = None) -> TriageD
     for model_name in dict.fromkeys(GEMINI_MODELS):
         tried_models.append(model_name)
         try:
-            response = await asyncio.to_thread(
-                genai_client.models.generate_content,
-                model=model_name,
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    system_instruction=build_triage_system_prompt(),
-                    response_mime_type="application/json",
-                    response_schema=TriageDecision,
-                    temperature=0.1,
+            response = await asyncio.wait_for(
+                asyncio.to_thread(
+                    genai_client.models.generate_content,
+                    model=model_name,
+                    contents=contents,
+                    config=types.GenerateContentConfig(
+                        system_instruction=build_triage_system_prompt(),
+                        response_mime_type="application/json",
+                        response_schema=TriageDecision,
+                        temperature=0.1,
+                    ),
                 ),
+                timeout=3.5,
             )
             return TriageDecision.model_validate_json(response.text)
         except Exception as exc:
-            logger.warning(f"Model {model_name} failed ({exc}). Trying next candidate...")
+            logger.warning(f"Model {model_name} failed or timed out ({exc}). Trying next candidate...")
 
     logger.warning(f"All Gemini models {tried_models} unavailable. Falling back to local triage.")
     return fallback_triage()
@@ -442,7 +446,9 @@ async def handle_resident_message(update: Update, context: ContextTypes.DEFAULT_
             reply_body += f"\n💡 <b>Immediate Resident Guidance:</b>\n<i>{safe_instruction}</i>\n"
 
         # Enrich with Estate Knowledge Graph RAG (Valves, Risers, By-Laws & Policy Answers)
-        estate_rag = get_estate_vault().query(text, unit_hint=decision.unit_number, hops=2)
+        estate_rag = await asyncio.to_thread(
+            get_estate_vault().query, text, unit_hint=decision.unit_number, hops=2
+        )
         if estate_rag.grounded:
             # If the user asked a question or it is an inquiry, include the direct policy answer
             is_inquiry = (
