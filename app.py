@@ -694,12 +694,14 @@ with rag_tab:
     st.markdown("### 🔍 Test Semantic Chunking RAG")
     preset_scenarios = [
         "Select a test query...",
-        "🚫 Can my contractor do drilling works on Saturday afternoon?",
-        "💰 How much is the fine for noisy renovation without approval?",
-        "🍖 What are the operating hours and deposit for booking BBQ Pit 1?",
-        "🚗 My visitor parked overnight in a resident lot, is there a wheel clamp fee?",
-        "💧 There is water dripping from my ceiling from unit #09-04 above. Who is responsible?",
-        "🐕 What are the rules on keeping pets and dogs in common areas?",
+        "🎾 What are the tennis court operating hours, session limits, and booking quotas per week?",
+        "🔑 How many access cards is a 3-bedroom apartment entitled to, and what is the replacement fee?",
+        "🔨 What are the permissible hours for contractor renovation works, and how much is the security deposit?",
+        "🚗 What is the maximum vehicle height limit for Basement 1 and Basement 2 carparks?",
+        "🚿 Can I wash my car in my regular parking lot, or are there designated wash bays?",
+        "🐕 What are the rules on keeping dogs, and are pets allowed in the clubhouse or swimming pool?",
+        "📞 Who should I contact for a lift breakdown, plumbing emergency, or the security guardhouse?",
+        "🍖 How much does it cost to book a BBQ pit, and what is the gas cylinder fee and deposit?",
     ]
     selected_preset = st.selectbox("Quick Query Presets", preset_scenarios, index=0)
 

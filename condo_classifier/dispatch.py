@@ -81,7 +81,7 @@ def build_dispatch_sms(
     priority: str,
     sla_minutes: int,
     passcode: str,
-    condo_name: str = "Oceanfront Residences",
+    condo_name: str = "Tribeca Condominium",
 ) -> str:
     """Constructs the standard contractor dispatch SMS payload."""
     unit_str = unit_number or "Common Area"
@@ -103,7 +103,7 @@ def trigger_auto_dispatch(
     raw_message: str = "",
     unit_number: str | None = None,
     channel: str = "SMS",
-    condo_name: str = "Oceanfront Residences",
+    condo_name: str = "Tribeca Condominium",
     db_path: Path | str | None = None,
     assigned_vendor: dict[str, Any] | None = None,
 ) -> dict[str, Any]:

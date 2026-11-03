@@ -33,7 +33,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_KB_PATH = ROOT / "Knowledge Base" / "sample_condo_handbook.md"
+DEFAULT_KB_PATH = ROOT / "Knowledge Base" / "converted_tribeca_handbook.md"
 BACKUPS_DIR = ROOT / "Knowledge Base" / "backups"
 AUDIT_LOG_FILE = BACKUPS_DIR / "amendment_audit_log.json"
 

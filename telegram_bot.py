@@ -53,7 +53,11 @@ from condo_classifier.signals import safety_signal
 
 local_classifier = Classifier(BaselineBackend())
 
+from pathlib import Path
+
 # Load environment variables
+ROOT = Path(__file__).resolve().parent
+load_dotenv(ROOT / ".env")
 load_dotenv()
 
 logging.basicConfig(
@@ -116,10 +120,10 @@ def build_triage_system_prompt() -> str:
                         f"- {cat.title()} ({sub}): '{v['vendor_name']}' "
                         f"(Phone: {phone}, SLA: ~{sla} mins)"
                     )
-    v_text = "\n".join(vendor_lines) if vendor_lines else "- Default Contractor (+65 6000-0000)"
+    v_text = "\n".join(vendor_lines) if vendor_lines else "- Tribeca Management Office (6509 4278 / 6509 9748)"
 
     return (
-        "You are the AI Emergency Coordinator and Triage Agent for Oceanfront Luxury Condominium.\n"
+        "You are the AI Emergency Coordinator and Triage Agent for Tribeca Condominium.\n"
         "Assess resident requests (text/photos), classify incidents, and assign vendors.\n\n"
         f"VENDOR DIRECTORY (Loaded dynamically from vendors.json):\n{v_text}\n\n"
         "RULES:\n"
@@ -135,7 +139,7 @@ def generate_work_order_id() -> str:
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     welcome_text = (
-        "🏢 <b>Welcome to Oceanfront Residences Help Desk</b>\n\n"
+        "🏢 <b>Welcome to Tribeca Condominium Help Desk</b>\n\n"
         "I am your 24/7 AI Property Coordinator. I help you report issues, request services, "
         "and automatically dispatch on-call contractors for emergencies.\n\n"
         "💡 <b>Commands & Usage:</b>\n"
@@ -219,7 +223,7 @@ async def ask_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     except Exception as exc:
         logger.error(f"Error querying Semantic RAG in ask_command: {exc}")
         await message.reply_text(
-            "⚠️ Unable to query estate by-laws at the moment. Please contact the Management Office at +65 6789 0200.",
+            "⚠️ Unable to query estate by-laws at the moment. Please contact the Tribeca Management Office at 6509 4278 / 6509 9748 or Guardhouse at 6509 6946.",
             parse_mode=ParseMode.HTML,
         )
 
@@ -315,8 +319,8 @@ async def process_triage(text: str, photo_bytes: bytes | None = None) -> TriageD
             priority_str = "emergency" if is_emergency else "normal"
 
         vendor = resolve_vendor_assignment(category_str, text)
-        vendor_name = vendor.get("vendor_name", "Condo Concierge")
-        contact = vendor.get("emergency_phone" if is_emergency else "phone", "+65 6111-5555")
+        vendor_name = vendor.get("vendor_name", "Tribeca Management Office")
+        contact = vendor.get("emergency_phone" if is_emergency else "phone", "6509 4278")
         sla = vendor.get("emergency_sla_minutes" if is_emergency else "routine_sla_minutes", 120)
 
         unit_match = re.search(r"#\d{1,2}-\d{1,4}", text)

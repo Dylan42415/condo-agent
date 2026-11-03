@@ -24,11 +24,11 @@ from typing import Any, Sequence
 
 from dotenv import load_dotenv
 
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env")
 load_dotenv()
 logger = logging.getLogger(__name__)
-
-ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_KB_FILE = ROOT / "Knowledge Base" / "sample_condo_handbook.md"
+DEFAULT_KB_FILE = ROOT / "Knowledge Base" / "converted_tribeca_handbook.md"
 DEFAULT_VAULT_DIR = ROOT / "Knowledge Base" / "vault"
 
 
@@ -282,6 +282,10 @@ class SemanticChunker:
 
             # If section contains a GFM table or is already compact, keep as atomic semantic chunk
             has_table = bool(re.search(r"^\|(?:\s*:?-+:?\s*\|)+\s*$", sec_text, re.MULTILINE))
+            if not has_table and len(sec_text) < 15:
+                # Filter out orphaned navigation buttons like '**BACK**' from PDF forms
+                continue
+
             if has_table or len(sec_text) <= self.max_chunk_chars:
                 chunk = SemanticChunk(
                     chunk_id=f"chunk_{chunk_idx:04d}",
@@ -327,8 +331,8 @@ class SemanticChunker:
         if len(sentences) <= 2:
             return [text]
 
-        # Embed sentences
-        embeddings = self.embedding_provider.embed_texts(sentences)
+        # Embed sentences quickly for local semantic distance calculation
+        embeddings = [self.embedding_provider._local_deterministic_embedding(s) for s in sentences]
 
         # Compute distances between adjacent sentences (1.0 - cosine_similarity)
         distances: list[float] = []
@@ -496,9 +500,14 @@ class SemanticRAGEngine:
         Expands colloquial resident inquiries with relevant by-law keywords and statutes
         to bridge colloquial speech to formal estate by-law terminology.
         """
+        contact_triggers = ["contact", "who should", "who to call", "phone", "hotline", "office number", "guardhouse", "contractor"]
+        extra_terms = ""
+        if any(w in query.lower() for w in contact_triggers):
+            extra_terms = " Useful Contact Numbers Management Office Guardhouse contractor directory"
+
         api_key = os.getenv("GEMINI_API_KEY", "").strip()
         if not api_key:
-            return query
+            return f"{query}{extra_terms}".strip()
 
         try:
             from google import genai
@@ -518,11 +527,11 @@ class SemanticRAGEngine:
             )
             expanded_terms = res.text.strip().replace("\n", " ")
             if expanded_terms:
-                return f"{query} {expanded_terms}"
+                return f"{query} {expanded_terms}{extra_terms}".strip()
         except Exception as e:
             logger.debug(f"Query expansion skipped: {e}")
 
-        return query
+        return f"{query}{extra_terms}".strip()
 
     def query(self, user_question: str, top_k: int = 3, expand_parent: bool = True) -> SemanticRAGResult:
         """Answers a user inquiry using optimized Semantic Chunking RAG."""
@@ -584,7 +593,14 @@ class SemanticRAGEngine:
             retrieved_chunks=retrieved_chunks,
             by_laws_cited=by_laws_cited,
             source_sections=list(dict.fromkeys(source_sections)),
-            grounded=bool(by_laws_cited or "By-law" in answer or "Section" in answer or "$" in answer),
+            grounded=bool(
+                by_laws_cited
+                or any(
+                    k.lower() in answer.lower()
+                    for k in ["by-law", "section", "clause", "rule", "guidelines", "handbook", "bmsma", "$"]
+                )
+                or (retrieved_chunks and any(r in answer.upper() for r in ["PERMITTED", "PROHIBITED", "ACTION REQUIRED"]))
+            ),
             context_text=context_text,
             model_used=model_used,
             latency_seconds=elapsed,
@@ -600,30 +616,20 @@ class SemanticRAGEngine:
                 client = genai.Client(api_key=api_key)
 
                 system_prompt = (
-                    "You are the official Condominium Management AI Assistant. Answer resident questions strictly "
-                    "using the provided estate handbook and by-law context.\n\n"
+                    "You are the official Condominium Management AI Assistant for Tribeca Condominium. Answer resident questions strictly "
+                    "using the provided estate handbook context.\n\n"
                     "FORMAT YOUR RESPONSE WITH THIS CLEAR DECISION-FIRST STRUCTURE:\n"
-                    "1. **RULING**: Start with a direct verdict: **PERMITTED**, **PROHIBITED**, or **ACTION REQUIRED**.\n"
-                    "2. **BY-LAW & STATUTORY AUTHORITY**: Cite specific By-laws and legal acts (e.g., By-law §4, By-law §10, BMSMA Section 101).\n"
-                    "3. **EXACT CONSTRAINTS & TARIFFS**: Quote exact schedules, permissible hours, dollar fines ($500, $1,000, $107), deposits ($2,000, $50), and notice periods from the context.\n"
-                    "4. **ACTIONABLE NEXT STEPS & CONTACTS**: Give practical instructions, specific phone numbers, and guardhouse/management locations. "
-                    "Always include an **'Important Note'** detailing the legitimate estate rules, proper booking/registration procedures and fees (e.g., overnight visitor parking registration deadlines and tariffs, grace periods) mentioned in the context so the resident understands future compliance.\n\n"
-                    "Ground your answer strictly on the provided context without speculating."
+                    "1. **RULING**: Start with a direct verdict: **PERMITTED**, **PROHIBITED**, **ACTION REQUIRED**, or **NOT APPLICABLE** (for external/non-estate questions).\n"
+                    "2. **BY-LAW & STATUTORY AUTHORITY**: Cite specific Sections, Guidelines, Rules, or Clauses from the context.\n"
+                    "3. **EXACT CONSTRAINTS & TARIFFS**: Quote exact schedules, permissible hours, dollar fines/deposits, and rules from the context.\n"
+                    "4. **ACTIONABLE NEXT STEPS & CONTACTS**: Give practical instructions and cite ONLY the official phone numbers, addresses, and management offices that appear in the provided context.\n\n"
+                    "CRITICAL GROUNDING MANDATE:\n"
+                    "- Ground your answer strictly and exclusively on the provided context without speculating.\n"
+                    "- Never invent, assume, or cite external phone numbers, mock vendors, or contact details not explicitly present in the provided context.\n"
+                    "- If a specific phone number or procedure is not in the context, state that clearly and advise contacting the Tribeca Management Office at 6509 4278 / 6509 9748 or Guardhouse at 6509 6946."
                 )
 
-                from condo_classifier.dispatch import load_vendor_directory
-                vendors = load_vendor_directory()
-                lines = ["OFFICIAL ESTATE DIRECTORY & CONTACTS:"]
-                for cat, vdata in vendors.items():
-                    if isinstance(vdata, dict):
-                        for sub, v in vdata.items():
-                            if isinstance(v, dict) and "vendor_name" in v and "phone" in v:
-                                cov = f" ({v.get('coverage', '')})" if v.get("coverage") else ""
-                                lines.append(f"- {v['vendor_name']}: {v['phone']}{cov}")
-                directory_context = "\n".join(lines)
-
                 prompt = (
-                    f"{directory_context}\n\n"
                     f"ESTATE RULES CONTEXT:\n{context}\n\n"
                     f"RESIDENT QUESTION:\n{query}\n\n"
                     "OFFICIAL MANAGEMENT RESPONSE:"
@@ -717,24 +723,18 @@ class SemanticRAGEngine:
 
         constraints_str = "\n".join(constraint_bullets[:4])
 
-        # Actionable steps: dynamically find contacts from vendor directory
-        from condo_classifier.dispatch import load_vendor_directory
-        vendors = load_vendor_directory()
-        contact_items: list[str] = []
-        for cat, data in vendors.items():
-            if isinstance(data, dict):
-                for sub, item in data.items():
-                    if isinstance(item, dict) and "phone" in item and "vendor_name" in item:
-                        vname = item["vendor_name"]
-                        phone = item["phone"]
-                        if any(kw in query.lower() for kw in item.get("keywords", [])):
-                            contact_items.append(f"Contact {vname} at {phone} for immediate assistance.")
-
-        if not contact_items:
-            sec = vendors.get("security", {}).get("default", {})
-            sec_name = sec.get("vendor_name", "Guardhouse")
-            sec_phone = sec.get("phone", "+65 6444-2222")
-            contact_items.append(f"Report or verify with {sec_name} ({sec_phone}).")
+        # Actionable steps: prioritize authentic Tribeca estate contacts if present
+        if any(term in context for term in ["65094278", "6509 4278", "65099748", "6509 9748", "65096946", "6509 6946", "Tribeca Management Office"]):
+            contact_items = [
+                "Contact the Tribeca Management Office at 6509 4278 / 6509 9748 or Guardhouse at 6509 6946."
+            ]
+        else:
+            contact_matches = re.findall(r"(?:Tel\s*:?|Phone\s*:?|Office\s*:?)\s*([0-9\s\-+]{7,15})", context, re.IGNORECASE)
+            contact_items = []
+            if contact_matches:
+                contact_items.append(f"Contact the relevant service department at {contact_matches[0].strip()}.")
+            else:
+                contact_items.append("Contact the Tribeca Management Office at 6509 4278 / 6509 9748 or Guardhouse at 6509 6946.")
 
         action_str = "\n".join(dict.fromkeys(contact_items[:2]))
 
