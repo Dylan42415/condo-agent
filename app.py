@@ -489,6 +489,37 @@ with rag_tab:
     g_m3.metric("Atomic GFM Tables", table_count)
     g_m4.metric("Chunking Method", "LangChain + Semantic")
 
+    with st.expander("📤 Ingest New Estate Handbook / By-Law (PDF)", expanded=False):
+        st.markdown("**Upload a new Condominium By-Law, AGM Circular, or Resident Handbook PDF:**")
+        st.caption(
+            "Uses PyMuPDF4LLM & Gemini Vision OCR to convert PDFs into clean GitHub-Flavored Markdown, "
+            "preserving tables, schedules, and headings, then automatically indexes it into vector memory."
+        )
+        uploaded_pdf = st.file_uploader("Choose a PDF file", type=["pdf"], key="rag_pdf_uploader")
+        if uploaded_pdf:
+            st.caption(f"Selected: `{uploaded_pdf.name}` ({len(uploaded_pdf.getvalue()) / 1024:.1f} KB)")
+            if st.button(f"⚡ Convert & Index '{uploaded_pdf.name}' into RAG", type="primary"):
+                with st.spinner("Converting PDF to lossless markdown and indexing semantic chunks..."):
+                    from condo_classifier.pdf_converter import convert_pdf_to_markdown
+                    upload_dir = ROOT / "Knowledge Base" / "uploads"
+                    upload_dir.mkdir(parents=True, exist_ok=True)
+                    temp_pdf = upload_dir / uploaded_pdf.name
+                    temp_pdf.write_bytes(uploaded_pdf.getvalue())
+
+                    target_md = ROOT / "Knowledge Base" / f"converted_{Path(uploaded_pdf.name).stem}.md"
+                    conv_res = convert_pdf_to_markdown(temp_pdf, output_path=target_md, engine="auto")
+
+                    sem_engine = get_semantic_rag(kb_path=target_md)
+                    sem_engine.initialize()
+
+                st.success(f"Successfully converted & indexed **{uploaded_pdf.name}**!")
+                c_c1, c_c2, c_c3, c_c4 = st.columns(4)
+                c_c1.metric("Pages Processed", conv_res.page_count)
+                c_c2.metric("Sections Indexed", len(conv_res.headings))
+                c_c3.metric("Tables Extracted", conv_res.table_count)
+                c_c4.metric("Engine Used", conv_res.engine_used)
+                st.rerun()
+
     st.divider()
 
     st.markdown("### 🔍 Test Semantic Chunking RAG")

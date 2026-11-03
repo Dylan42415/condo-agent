@@ -97,7 +97,8 @@ def test_streamlit_batch_processing_tab():
 
     # Upload test CSV
     csv_bytes = b"text\nWater pipe burst in kitchen #08-14\nLoud music next door\n"
-    app.file_uploader[0].upload("test_requests.csv", csv_bytes).run()
+    csv_uploader = next(u for u in app.file_uploader if "Request CSV" in u.label)
+    csv_uploader.upload("test_requests.csv", csv_bytes).run()
     assert not app.exception
 
     # Click Classify batch requests
