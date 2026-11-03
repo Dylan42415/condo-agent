@@ -1,0 +1,119 @@
+[
+  {
+    "id": 1,
+    "query": "my upstairs neighbor keeps making loud banging and drilling sounds at 10pm on a sunday what can i do and what fine will they get?",
+    "answer": "OFFICIAL MANAGEMENT RESPONSE:\n\nThe renovation activity you described is **PROHIBITED**.\n\nAccording to **By-law §4** (Renovation Works & Noise Control By-laws), heavy mechanical drilling and hacking are strictly prohibited on Sundays. Furthermore, general renovation works are prohibited all day on Sundays.\n\nRegarding the financial penalties for such infractions, **By-law §3.2** states that \"Unapproved Sunday/Holiday Drilling\" results in the following:\n*   An immediate **S$1,000 deduction** from the renovation deposit.\n*   Immediate site closure.\n*   Blacklisting of the contractor firm.\n\nIf you are experiencing noise disturbances, please note that security officers are dispatched to investigate upon resident complaints. You may contact the Management Office to report this violation for immediate action.",
+    "latency_seconds": 1.697,
+    "by_laws_cited": [
+      "By-law §4** (Renovation Works & Noise Control By-laws)",
+      "By-law §3",
+      "By-law §10 balances the privilege of pet ownership with hygiene",
+      "By-law §4 strictly governs unit renovations to balance home improvement rights against residents' peaceful living rights"
+    ],
+    "source_sections": [
+      "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+      "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations",
+      "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds"
+    ],
+    "retrieved_chunks": [
+      {
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.2 Noise Infractions & Financial Penalties",
+        "content_snippet": "### 3.2 Noise Infractions & Financial Penalties  \nAcoustic sensors in common corridors and resident complaints trigger immediate security dispatched patrols.  \n- **First Infraction (Verbal Warning):**"
+      },
+      {
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations",
+        "content_snippet": "## 7. Pet Ownership & Hygiene By-laws  \n### 7.1 Domestic Pet Limits & Regulations  \nBy-law §10 balances the privilege of pet ownership with hygiene, public health, and neighborhood peace.  \n| Regulati"
+      },
+      {
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+        "content_snippet": "## 3. Renovation Works & Noise Control By-laws  \n### 3.1 Renovation Working Hours & Permissible Acoustic Thresholds  \nBy-law §4 strictly governs unit renovations to balance home improvement rights aga"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "query": "Can I bring my dog to the swimming pool area or BBQ pit if it is on a leash?",
+    "answer": "OFFICIAL MANAGEMENT RESPONSE:\n\nBringing your dog to the swimming pool area or BBQ pit is **PROHIBITED**.\n\nAccording to **By-law §10 (Restricted Amenities)**, all pets (with the exception of service dogs) are strictly barred from the Swimming Pool, Gym, Sauna, and BBQ Pits, regardless of whether they are on a leash. \n\nPlease be advised of the following penalties:\n*   If a pet is found in the pool water, it will result in **immediate expulsion** and a **S$200 cleaning tariff**.",
+    "latency_seconds": 1.534,
+    "by_laws_cited": [
+      "By-law §10 (Restricted Amenities)**",
+      "By-law §10 balances the privilege of pet ownership with hygiene"
+    ],
+    "source_sections": [
+      "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations",
+      "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.2 BBQ Pit and Poolside Etiquette",
+      "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours"
+    ],
+    "retrieved_chunks": [
+      {
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 7. Pet Ownership & Hygiene By-laws > 7.1 Domestic Pet Limits & Regulations",
+        "content_snippet": "## 7. Pet Ownership & Hygiene By-laws  \n### 7.1 Domestic Pet Limits & Regulations  \nBy-law §10 balances the privilege of pet ownership with hygiene, public health, and neighborhood peace.  \n| Regulati"
+      },
+      {
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.2 BBQ Pit and Poolside Etiquette",
+        "content_snippet": "### 4.2 BBQ Pit and Poolside Etiquette  \n- **Music & Sound Equipment:** Amplified music, karaoke speakers, and instruments must cease promptly at 22:00.\n- **Glassware Ban:** No glassware, bottles, cer"
+      },
+      {
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 4. Recreational Facilities & Booking House Rules > 4.1 Facilities Tariff & Operating Hours",
+        "content_snippet": "## 4. Recreational Facilities & Booking House Rules  \n### 4.1 Facilities Tariff & Operating Hours  \nAll recreational facilities are reserved exclusively for residents and their bona fide invited guest"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "query": "My friend parked in visitor parking overnight without registering, and got clamped this morning. What is the fee to remove the clamp and how long does it take?",
+    "answer": "OFFICIAL MANAGEMENT RESPONSE:\n\nYour friend's action of parking overnight without prior registration is **PROHIBITED** under **By-law §5.2 Visitor Parking & Wheel-Clamping Enforcement**, which states that overnight visitor parking is prohibited between 00:00 and 06:00 unless registered at the Guardhouse by 22:00.\n\nRegarding the removal of the wheel clamp:\n*   **Unclamping Administrative Fee:** S$107.00 (inclusive of GST).\n*   **Processing Time:** Unclamping is executed within 30 minutes of payment at the Guardhouse.\n\nPayment must be made at the Guardhouse. You may contact the 24/7 Security Guardhouse at +65 6789 0100 for further assistance.",
+    "latency_seconds": 1.515,
+    "by_laws_cited": [
+      "By-law §5"
+    ],
+    "source_sections": [
+      "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.2 Visitor Parking & Wheel-Clamping Enforcement",
+      "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory",
+      "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.1 Resident Vehicle Season Decals & Allocation"
+    ],
+    "retrieved_chunks": [
+      {
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.2 Visitor Parking & Wheel-Clamping Enforcement",
+        "content_snippet": "### 5.2 Visitor Parking & Wheel-Clamping Enforcement  \nVisitor lots are strictly for temporary guest parking and may not be used by residents to evade season parking fees.  \n- **Grace Period:** 15 min"
+      },
+      {
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory",
+        "content_snippet": "## 1. Directory & Emergency Contacts  \n### 1.1 Management Office & Security Directory  \nThe management office handles administrative requests, facility bookings, renovation approvals, and billing enqu"
+      },
+      {
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 5. Vehicle Parking & Traffic Management By-laws > 5.1 Resident Vehicle Season Decals & Allocation",
+        "content_snippet": "## 5. Vehicle Parking & Traffic Management By-laws  \n### 5.1 Resident Vehicle Season Decals & Allocation  \nEstate parking spaces are designated under Strata title common property and monitored by auto"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "query": "We are moving in our furniture this Sunday morning. Can the movers use Service Lift #3?",
+    "answer": "OFFICIAL MANAGEMENT RESPONSE:\n\nYour requested action is **PROHIBITED**.\n\nAccording to **By-law §2.1 (Moving Guidelines & Security Deposit)**, all moving-in activities and heavy furniture deliveries are strictly prohibited on Sundays and Public Holidays. \n\nFurthermore, the permitted moving hours are strictly limited to:\n*   **Monday to Friday:** 09:00 – 17:00\n*   **Saturday:** 09:00 – 13:00\n\nPlease note that all moving activities must be scheduled with the Management Office at least **3 working days** in advance, and a refundable security deposit of **S$1,000** is required. Additionally, management-issued canvas padding must be installed in Service Lift #3 prior to any loading. \n\nFor further assistance, you may contact the Management Office at **+65 6789 0200** during their operational hours (Monday–Friday: 09:00–17:00, Saturday: 09:00–13:00).",
+    "latency_seconds": 1.714,
+    "by_laws_cited": [
+      "By-law §2",
+      "By-law §4 strictly governs unit renovations to balance home improvement rights against residents' peaceful living rights"
+    ],
+    "source_sections": [
+      "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 2. Moving In, Moving Out & Bulk Deliveries > 2.1 Moving Guidelines & Security Deposit",
+      "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory",
+      "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds"
+    ],
+    "retrieved_chunks": [
+      {
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 2. Moving In, Moving Out & Bulk Deliveries > 2.1 Moving Guidelines & Security Deposit",
+        "content_snippet": "## 2. Moving In, Moving Out & Bulk Deliveries  \n### 2.1 Moving Guidelines & Security Deposit  \nTo prevent damage to common property lifts, walls, and flooring, all moving in/out activities and heavy f"
+      },
+      {
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 1. Directory & Emergency Contacts > 1.1 Management Office & Security Directory",
+        "content_snippet": "## 1. Directory & Emergency Contacts  \n### 1.1 Management Office & Security Directory  \nThe management office handles administrative requests, facility bookings, renovation approvals, and billing enqu"
+      },
+      {
+        "breadcrumb": "Marina Heights Condominium (MCST 4291) - Resident Handbook & By-laws > 3. Renovation Works & Noise Control By-laws > 3.1 Renovation Working Hours & Permissible Acoustic Thresholds",
+        "content_snippet": "## 3. Renovation Works & Noise Control By-laws  \n### 3.1 Renovation Working Hours & Permissible Acoustic Thresholds  \nBy-law §4 strictly governs unit renovations to balance home improvement rights aga"
+      }
+    ]
+  }
+]

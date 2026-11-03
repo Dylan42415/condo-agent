@@ -1,12 +1,14 @@
 """
 Semantic Chunking RAG Engine for Condominium Estate Management.
 
-This module provides a production-grade Semantic Chunking RAG pipeline that:
+Optimized Two-Stage Semantic Chunking Pipeline:
 1. Ingests high-fidelity Markdown files (converted from PDFs or estate vaults).
 2. Performs structure-aware splitting via LangChain MarkdownHeaderTextSplitter.
-3. Applies semantic breakpoint chunking (cosine distance thresholding on sentence embeddings).
-4. Indexes chunks into an in-memory hybrid vector store (Vector Similarity + BM25/Exact Token Boosting).
-5. Grounded synthesis using Gemini (gemini-3.1-flash-lite) with deterministic offline fallback.
+3. Injects hierarchical breadcrumbs into embeddable text (Anthropic-style Contextual Retrieval).
+4. Maintains parent document section references for Small-to-Big context expansion.
+5. Performs query normalization/expansion to bridge colloquial speech to legal by-law terminology.
+6. Indexes chunks into an in-memory hybrid vector store (Vector Similarity + Priority Token Boosting).
+7. Decision-first grounded synthesis using Gemini (gemini-3.1-flash-lite) with deterministic fallback.
 """
 
 from __future__ import annotations
@@ -46,11 +48,28 @@ class SemanticChunk:
     token_count: int = 0
     embedding: list[float] | None = None
     has_table: bool = False
+    parent_section_id: str = ""
+    parent_content: str = ""
 
     @property
     def header_breadcrumb(self) -> str:
         parts = [p for p in [self.document_title, self.section, self.subsection] if p]
         return " > ".join(parts) if parts else "General"
+
+    @property
+    def embeddable_text(self) -> str:
+        """Context-injected text for dense embedding and sparse matching."""
+        parts = []
+        if self.document_title:
+            parts.append(f"Document: {self.document_title}")
+        if self.section:
+            parts.append(f"Section: {self.section}")
+        if self.subsection:
+            parts.append(f"Subsection: {self.subsection}")
+        header_prefix = " | ".join(parts)
+        if header_prefix:
+            return f"[{header_prefix}]\n{self.content}"
+        return self.content
 
 
 @dataclass
@@ -72,6 +91,7 @@ class SemanticRAGResult:
     context_text: str = ""
     model_used: str = "deterministic"
     latency_seconds: float = 0.0
+    expanded_query: str = ""
 
 
 # ============================================================================
@@ -199,7 +219,8 @@ class SemanticChunker:
     """
     Two-Stage Semantic Chunker:
     1. Structure-Aware Markdown Header Splitting (#, ##, ###).
-    2. Semantic Breakpoint Detection (sentence-level cosine distance thresholding).
+    2. Small-to-Big Parent Context Association.
+    3. Semantic Breakpoint Detection (sentence-level cosine distance thresholding).
     """
 
     def __init__(
@@ -226,6 +247,7 @@ class SemanticChunker:
     def chunk_markdown_text(self, markdown_text: str, source_file: str = "document.md") -> list[SemanticChunk]:
         """
         Executes two-stage semantic chunking on markdown content.
+        Preserves parent section relationships for Small-to-Big retrieval.
         """
         # Stage 1: Structural Markdown Header Splitting
         from langchain_text_splitters import MarkdownHeaderTextSplitter
@@ -253,6 +275,7 @@ class SemanticChunker:
             doc_title = meta.get("Document", "")
             section = meta.get("Section", "")
             subsection = meta.get("Subsection", "")
+            parent_id = f"{source_file}:{doc_title}:{section}:{subsection}"
 
             # If section contains a GFM table or is already compact, keep as atomic semantic chunk
             has_table = bool(re.search(r"^\|(?:\s*:?-+:?\s*\|)+\s*$", sec_text, re.MULTILINE))
@@ -267,6 +290,8 @@ class SemanticChunker:
                     headings_path=[p for p in [doc_title, section, subsection] if p],
                     token_count=len(sec_text.split()),
                     has_table=has_table,
+                    parent_section_id=parent_id,
+                    parent_content=sec_text,
                 )
                 all_chunks.append(chunk)
                 chunk_idx += 1
@@ -285,6 +310,8 @@ class SemanticChunker:
                     headings_path=[p for p in [doc_title, section, subsection] if p],
                     token_count=len(sub_text.split()),
                     has_table="|" in sub_text,
+                    parent_section_id=parent_id,
+                    parent_content=sec_text,
                 )
                 all_chunks.append(chunk)
                 chunk_idx += 1
@@ -341,16 +368,16 @@ class SemanticChunker:
 # ============================================================================
 
 class HybridSemanticIndex:
-    """In-memory vector and keyword index for semantic chunks."""
+    """In-memory vector and keyword index with Contextual Breadcrumb embeddings."""
 
     def __init__(self, embedding_provider: EmbeddingProvider | None = None) -> None:
         self.embedding_provider = embedding_provider or EmbeddingProvider()
         self.chunks: list[SemanticChunk] = []
 
     def index_chunks(self, chunks: list[SemanticChunk]) -> None:
-        """Indexes chunks, generating embeddings in batch."""
+        """Indexes chunks, generating contextual breadcrumb embeddings in batch."""
         self.chunks = chunks
-        texts_to_embed = [c.content for c in self.chunks]
+        texts_to_embed = [c.embeddable_text for c in self.chunks]
         embeddings = self.embedding_provider.embed_texts(texts_to_embed)
         for chunk, emb in zip(self.chunks, embeddings):
             chunk.embedding = emb
@@ -362,7 +389,7 @@ class HybridSemanticIndex:
         vector_weight: float = 0.70,
         keyword_weight: float = 0.30,
     ) -> list[RetrievedChunkMatch]:
-        """Hybrid retrieval combining dense vector similarity with sparse exact token reinforcement."""
+        """Hybrid retrieval combining dense contextual vector similarity with sparse exact token reinforcement."""
         if not self.chunks:
             return []
 
@@ -370,26 +397,24 @@ class HybridSemanticIndex:
         query_tokens = set(re.findall(r"\b\w+\b", query.lower()))
 
         # Specific high-value token patterns: numbers, fines, times, by-laws
-        priority_tokens = set(re.findall(r"\b(?:\$\d+|\d+:\d+|\d+|by-law|bmsma|deposit|fine|clamp|penalty)\b", query.lower()))
+        priority_tokens = set(re.findall(r"\b(?:\$\d+|\d+:\d+|\d+|by-law|bmsma|deposit|fine|clamp|penalty|unclamp)\b", query.lower()))
 
         matches: list[RetrievedChunkMatch] = []
 
         for chunk in self.chunks:
-            # 1. Dense Cosine Similarity
+            # 1. Dense Cosine Similarity (over contextual embeddable text)
             sim = 0.0
             if chunk.embedding:
                 sim = cosine_similarity(query_vec, chunk.embedding)
 
-            # 2. Sparse / Keyword Boost
-            content_lower = chunk.content.lower()
-            breadcrumb_lower = chunk.header_breadcrumb.lower()
-            combined_lower = f"{breadcrumb_lower} {content_lower}"
+            # 2. Sparse / Keyword Boost (matched against embeddable text)
+            contextual_lower = chunk.embeddable_text.lower()
 
-            token_matches = sum(1 for t in query_tokens if t in combined_lower)
+            token_matches = sum(1 for t in query_tokens if t in contextual_lower)
             base_kw_score = (token_matches / max(1, len(query_tokens)))
 
             # Priority exact token matching (e.g. "$500", "10:00", "Saturday", "BMSMA")
-            priority_matches = sum(1 for pt in priority_tokens if pt in combined_lower)
+            priority_matches = sum(1 for pt in priority_tokens if pt in contextual_lower)
             priority_bonus = 0.25 * priority_matches
 
             kw_score = min(1.0, base_kw_score + priority_bonus)
@@ -416,6 +441,11 @@ class HybridSemanticIndex:
 class SemanticRAGEngine:
     """
     Main Semantic Chunking RAG Interface for Condo Inquiries.
+    Features:
+    - Query Normalization & Colloquial Expansion
+    - Small-to-Big Parent Section Context Expansion
+    - Contextual Breadcrumb Injection
+    - Decision-First Structured Synthesis
     """
 
     def __init__(
@@ -452,13 +482,49 @@ class SemanticRAGEngine:
         self._initialized = True
         logger.info(f"Initialized Semantic RAG with {len(chunks)} chunks from {self.kb_path.name}")
 
-    def query(self, user_question: str, top_k: int = 3) -> SemanticRAGResult:
-        """Answers a user inquiry using Semantic Chunking RAG."""
+    def expand_query(self, query: str) -> str:
+        """
+        Expands colloquial resident inquiries with relevant by-law keywords and statutes
+        to bridge colloquial speech to formal estate by-law terminology.
+        """
+        api_key = os.getenv("GEMINI_API_KEY", "").strip()
+        if not api_key:
+            return query
+
+        try:
+            from google import genai
+            client = genai.Client(api_key=api_key)
+            prompt = (
+                "You are an expert Condominium Legal Assistant. Given a resident inquiry, output 3 to 6 "
+                "formal estate terminology search keywords (e.g. By-law §, BMSMA Section, permissible hours, "
+                "quiet hours, deposit, penalty fine, wheel clamp, pet restriction). "
+                "Output ONLY the keywords on a single line separated by spaces.\n\n"
+                f"Resident Inquiry: {query}\n"
+                "Keywords:"
+            )
+            res = client.models.generate_content(
+                model=self.model_name,
+                contents=prompt,
+                config={"temperature": 0.0}
+            )
+            expanded_terms = res.text.strip().replace("\n", " ")
+            if expanded_terms:
+                return f"{query} {expanded_terms}"
+        except Exception as e:
+            logger.debug(f"Query expansion skipped: {e}")
+
+        return query
+
+    def query(self, user_question: str, top_k: int = 3, expand_parent: bool = True) -> SemanticRAGResult:
+        """Answers a user inquiry using optimized Semantic Chunking RAG."""
         start_time = time.perf_counter()
         self.initialize()
 
-        # Step 1: Retrieve top chunks
-        matches = self.index.retrieve(user_question, top_k=top_k)
+        # Step 1: Query Normalization / Expansion
+        search_query = self.expand_query(user_question)
+
+        # Step 2: Retrieve top chunks using enriched search query
+        matches = self.index.retrieve(search_query, top_k=top_k)
         retrieved_chunks = [m.chunk for m in matches]
 
         if not retrieved_chunks:
@@ -470,21 +536,36 @@ class SemanticRAGEngine:
                 source_sections=[],
                 grounded=False,
                 latency_seconds=time.perf_counter() - start_time,
+                expanded_query=search_query,
             )
 
-        # Step 2: Build Grounded Context
+        # Step 3: Small-to-Big Parent Context Assembly (deduplicating parent sections)
+        seen_parents = set()
         context_parts = []
         source_sections = []
+
         for i, m in enumerate(matches, 1):
             c = m.chunk
             header = c.header_breadcrumb
             source_sections.append(header)
+
+            pid = c.parent_section_id
+            if expand_parent and pid:
+                if pid in seen_parents:
+                    continue
+                seen_parents.add(pid)
+                # Deliver full parent section context to the LLM to preserve complete tables and rules
+                text_to_include = c.parent_content or c.content
+            else:
+                text_to_include = c.content
+
             context_parts.append(
-                f"[Source {i}: {header}]\n{c.content}"
+                f"[Source {i}: {header}]\n{text_to_include}"
             )
+
         context_text = "\n\n---\n\n".join(context_parts)
 
-        # Step 3: Synthesize Answer via Gemini (or deterministic fallback)
+        # Step 4: Decision-First Grounded Answer Synthesis
         answer, model_used, by_laws_cited = self._synthesize(user_question, context_text)
 
         elapsed = time.perf_counter() - start_time
@@ -498,10 +579,11 @@ class SemanticRAGEngine:
             context_text=context_text,
             model_used=model_used,
             latency_seconds=elapsed,
+            expanded_query=search_query,
         )
 
     def _synthesize(self, query: str, context: str) -> tuple[str, str, list[str]]:
-        """Synthesizes grounded answer using Gemini or deterministic rules."""
+        """Synthesizes structured, decision-first grounded answer using Gemini or deterministic rules."""
         api_key = os.getenv("GEMINI_API_KEY", "").strip()
         if api_key:
             try:
@@ -509,16 +591,27 @@ class SemanticRAGEngine:
                 client = genai.Client(api_key=api_key)
 
                 system_prompt = (
-                    "You are the official Condo Management AI Assistant. Answer resident questions strictly "
-                    "using the provided estate handbook and by-law context.\n"
-                    "Requirements:\n"
-                    "1. Clearly state whether the requested action is PERMITTED or PROHIBITED.\n"
-                    "2. Explicitly cite specific by-laws (e.g. By-law §4, By-law §10, BMSMA Section 101).\n"
-                    "3. Quote exact hours, financial penalties (e.g. $500 fine, $107 unclamping fee), deposits, and phone numbers.\n"
-                    "4. If the context does not contain the answer, state that the estate rules do not specify it."
+                    "You are the official Condominium Management AI Assistant. Answer resident questions strictly "
+                    "using the provided estate handbook and by-law context.\n\n"
+                    "FORMAT YOUR RESPONSE WITH THIS CLEAR DECISION-FIRST STRUCTURE:\n"
+                    "1. **RULING**: Start with a direct verdict: **PERMITTED**, **PROHIBITED**, or **ACTION REQUIRED**.\n"
+                    "2. **BY-LAW & STATUTORY AUTHORITY**: Cite specific By-laws and legal acts (e.g., By-law §4, By-law §10, BMSMA Section 101).\n"
+                    "3. **EXACT CONSTRAINTS & TARIFFS**: Quote exact schedules, permissible hours, dollar fines ($500, $1,000, $107), deposits ($2,000, $50), and notice periods from the context.\n"
+                    "4. **ACTIONABLE NEXT STEPS & CONTACTS**: Give practical instructions, specific phone numbers, and guardhouse/management locations.\n\n"
+                    "Ground your answer strictly on the provided context without speculating."
+                )
+
+                directory_context = (
+                    "OFFICIAL ESTATE DIRECTORY & CONTACTS:\n"
+                    "- 24/7 Security Guardhouse: Main Entrance Gate | Tel: +65 6789 0100\n"
+                    "- Management Office: Clubhouse Level 1, #01-01 | Tel: +65 6789 0200 (Mon–Fri 09:00–17:00, Sat 09:00–13:00)\n"
+                    "- 24/7 Lift Maintenance (Schindler Express Hotline): 1800-543-8888\n"
+                    "- 24/7 Emergency Plumber (Apex Rapid Plumbing): +65 6333 4455\n"
+                    "- Emergency Electrical (VoltCare Hotline): +65 6444 8899\n"
                 )
 
                 prompt = (
+                    f"{directory_context}\n\n"
                     f"ESTATE RULES CONTEXT:\n{context}\n\n"
                     f"RESIDENT QUESTION:\n{query}\n\n"
                     "OFFICIAL MANAGEMENT RESPONSE:"
@@ -557,38 +650,55 @@ class SemanticRAGEngine:
         # Drilling / Renovation noise query
         if "drill" in q_lower or "renovat" in q_lower or "hack" in q_lower:
             return (
-                "Heavy mechanical drilling and hacking are strictly restricted to Monday to Friday, "
-                "10:00 to 16:00 (capped at 4 hours daily). Drilling is strictly PROHIBITED on Saturdays, "
-                "Sundays, and Public Holidays. Violations incur a S$500 penalty deducted from the renovation "
-                "deposit under By-law §4 (Renovation Works & Noise Control).",
+                "**RULING**: **PROHIBITED**\n\n"
+                "**BY-LAW AUTHORITY**: By-law §4 (Renovation Works & Noise Control)\n\n"
+                "**EXACT CONSTRAINTS & TARIFFS**:\n"
+                "- Heavy mechanical drilling and hacking are strictly restricted to Monday to Friday, 10:00 to 16:00 (capped at 4 hours daily).\n"
+                "- Drilling is strictly PROHIBITED on Saturdays, Sundays, and Public Holidays.\n"
+                "- Violations incur a S$500 penalty deducted from the renovation deposit; unapproved Sunday drilling incurs an immediate S$1,000 fine.\n\n"
+                "**ACTIONABLE NEXT STEPS**:\n"
+                "Contact the 24/7 Security Guardhouse at +65 6789 0100 to report unauthorized weekend drilling.",
                 ["By-law §4 - Renovation Works & Noise Control"]
             )
 
         # BBQ pit booking query
         if "bbq" in q_lower or "barbecue" in q_lower:
             return (
-                "BBQ pavilions operate in two sessions: Lunch (10:00–14:00) and Dinner (17:00–22:00). "
-                "The booking fee is S$20.00 per session with a refundable security deposit of S$50.00. "
-                "Music must stop promptly at 22:00.",
+                "**RULING**: **PERMITTED** (with advance booking)\n\n"
+                "**BY-LAW AUTHORITY**: By-law §4.1 / By-law §8 (Facility Booking and Amenities)\n\n"
+                "**EXACT CONSTRAINTS & TARIFFS**:\n"
+                "- Operating hours: Lunch (10:00–14:00) and Dinner (17:00–22:00).\n"
+                "- Booking fee: S$20.00 per session with a refundable security deposit of S$50.00.\n"
+                "- Music must stop promptly at 22:00. Uncleaned grills incur a S$50 cleaning fee.\n\n"
+                "**ACTIONABLE NEXT STEPS**:\n"
+                "Book via the Resident App or at the Clubhouse Management Office (Level 1, #01-01).",
                 ["By-law §8 - Facility Booking and Amenities"]
             )
 
         # Water leak query
         if "leak" in q_lower or "water" in q_lower or "ceiling" in q_lower:
             return (
-                "Under Section 101 of the Building Maintenance and Strata Management Act (BMSMA), "
-                "inter-floor water leakage is legally presumed to originate from the upper unit, and "
-                "the upper unit owner is responsible for waterproofing repairs. The Management Office "
-                "conducts a joint inspection within 24 hours of reporting.",
+                "**RULING**: **ACTION REQUIRED**\n\n"
+                "**STATUTORY AUTHORITY**: Section 101 of the Building Maintenance and Strata Management Act (BMSMA)\n\n"
+                "**EXACT CONSTRAINTS & LIABILITY**:\n"
+                "- Water seepage is legally presumed to originate from the upper unit, and the upper owner is responsible for waterproofing repairs.\n"
+                "- Management Office conducts a joint site inspection within 24 hours of reporting.\n\n"
+                "**ACTIONABLE NEXT STEPS**:\n"
+                "Report immediately to the Management Office (+65 6789 0200) or emergency plumbing hotline (+65 6333 4455).",
                 ["BMSMA Section 101", "By-law §6 - Inter-Floor Water Leaks"]
             )
 
         # Parking / Wheel clamp query
         if "park" in q_lower or "clamp" in q_lower or "car" in q_lower:
             return (
-                "Visitor parking provides a 15-minute grace period and up to 4 hours with a guardhouse pass. "
-                "Unauthorized parking or overstaying will result in vehicle wheel-clamping. The unclamping fee "
-                "is S$107.00 (inclusive of GST), payable at the guardhouse.",
+                "**RULING**: **ACTION REQUIRED**\n\n"
+                "**BY-LAW AUTHORITY**: By-law §5.2 / By-law §12 (Security and Access Control)\n\n"
+                "**EXACT CONSTRAINTS & TARIFFS**:\n"
+                "- Unauthorized parking or overstaying will result in vehicle wheel-clamping.\n"
+                "- Unclamping fee: S$107.00 (inclusive of GST).\n"
+                "- SLA: Unclamping is executed within 30 minutes of payment.\n\n"
+                "**ACTIONABLE NEXT STEPS**:\n"
+                "Proceed to the 24/7 Security Guardhouse at the main gate (+65 6789 0100) to pay the unclamping fee.",
                 ["By-law §12 - Security and Access Control"]
             )
 
@@ -607,4 +717,3 @@ def get_semantic_rag(kb_path: Path | str | None = None) -> SemanticRAGEngine:
         _DEFAULT_SEMANTIC_ENGINE = SemanticRAGEngine(kb_path=kb_path)
         _DEFAULT_SEMANTIC_ENGINE.initialize()
     return _DEFAULT_SEMANTIC_ENGINE
-
