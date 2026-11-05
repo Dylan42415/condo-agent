@@ -303,14 +303,25 @@ def locate_target_section(
         is_form_section = "application form" in s.breadcrumb.lower() or "form " in s.title.lower()
         mentions_form = "form" in intent_clean or "application" in intent_clean
         if not mentions_form and is_form_section:
-            score -= 3.0
+            score -= 10.0
         elif not is_form_section and not mentions_form and score > 0:
-            score += 1.0
+            score += 2.0
 
         scored.append((score, s, list(set(matches))))
 
     scored.sort(key=lambda x: x[0], reverse=True)
     best_score, best_sec, matched_words = scored[0]
+
+    # If user did not mention "form" or "application", strictly restrict candidate pool to operative rule sections
+    mentions_form = "form" in intent_clean or "application" in intent_clean
+    if not mentions_form:
+        rule_scored = [
+            c for c in scored
+            if "application form" not in c[1].breadcrumb.lower() and "form " not in c[1].title.lower()
+        ]
+        if rule_scored and rule_scored[0][0] > 0:
+            scored = rule_scored
+            best_score, best_sec, matched_words = scored[0]
 
     # If Gemini is available, verify or enhance the rationale
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
@@ -330,6 +341,7 @@ def locate_target_section(
                 f"EMPLOYEE INTENT: \"{user_intent}\"\n\n"
                 f"CANDIDATE SECTIONS:\n{candidates_text}\n\n"
                 f"Select the single best candidate index (1, 2, or 3) and provide a 1-sentence rationale.\n"
+                f"CRITICAL MANDATE: Prioritize primary OPERATIVE BY-LAWS / HOUSE RULES (e.g. Recreational Facilities > Barbecue Area) that govern resident obligations and tariffs. NEVER select static application forms unless the employee specifically asks to amend an application form.\n"
                 f"Return JSON:\n{{\"selected_choice\": 1, \"rationale\": \"...\"}}"
             )
 
@@ -360,7 +372,7 @@ def locate_target_section(
 # Amendment Proposal Generator (Human-in-the-Loop)
 # ============================================================================
 
-def reconcile_surgical_amendment(orig_block: str, prop_block: str) -> str:
+def reconcile_surgical_amendment(orig_block: str, prop_block: str, user_intent: str = "") -> str:
     """
     Surgically reconciles the proposed text against the original section block.
 
@@ -371,6 +383,11 @@ def reconcile_surgical_amendment(orig_block: str, prop_block: str) -> str:
     orig_trailing_ws = orig_block[len(orig_block.rstrip("\r\n")):]
     orig_lines = [l.rstrip("\r\n") for l in orig_block.splitlines()]
     prop_lines = [l.rstrip("\r\n") for l in prop_block.splitlines()]
+
+    is_deletion_intent = any(
+        w in user_intent.lower()
+        for w in ["delete", "remove", "omit", "drop", "strike", "cancel", "rescind", "scrap", "eliminate"]
+    )
 
     def is_semantically_identical(orig_l: str, prop_l: str) -> bool:
         o_clean = re.sub(r"[^a-zA-Z0-9]+", "", orig_l).lower()
@@ -401,8 +418,8 @@ def reconcile_surgical_amendment(orig_block: str, prop_block: str) -> str:
                 else:
                     reconciled.extend(prop_sub)
         elif tag == "delete":
-            # If the deleted lines are merely blank lines or whitespace, keep from orig
-            if all(not l.strip() for l in orig_lines[i1:i2]):
+            # If the user did not ask to delete content, or if deleted lines are blank/footer lines, keep from orig!
+            if not is_deletion_intent or all(not l.strip() for l in orig_lines[i1:i2]):
                 reconciled.extend(orig_lines[i1:i2])
             else:
                 pass  # Real deletion
@@ -510,7 +527,9 @@ def generate_policy_amendment(
         )
 
     # Surgically reconcile proposed block against original to eliminate accidental micro-diffs on untouched lines
-    proposed_raw_block = reconcile_surgical_amendment(section.raw_block, proposed_raw_block)
+    proposed_raw_block = reconcile_surgical_amendment(
+        section.raw_block, proposed_raw_block, user_intent=user_intent
+    )
 
     # Ensure trailing horizontal rule (---) is preserved if original had it
     had_hr = bool(re.search(r"\n---\s*$", section.raw_block.rstrip()))

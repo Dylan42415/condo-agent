@@ -588,6 +588,11 @@ with rag_tab:
 
         if draft_clicked and user_intent_input.strip():
             with st.spinner("Agent analyzing handbook, locating target section, and drafting proposal..."):
+                import importlib
+                import condo_classifier.policy_editor as pe_mod
+                importlib.reload(pe_mod)
+                from condo_classifier.policy_editor import parse_handbook_sections, locate_target_section, generate_policy_amendment
+
                 hb_text = active_kb_path.read_text(encoding="utf-8")
                 sections = parse_handbook_sections(hb_text)
                 target_sec, match_score, rationale = locate_target_section(sections, user_intent_input.strip())
