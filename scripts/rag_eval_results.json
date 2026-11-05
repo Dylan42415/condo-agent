@@ -3,176 +3,177 @@
     "query": "Can visitors park overnight?",
     "grounded": true,
     "model_used": "gemini:gemini-3.1-flash-lite",
-    "latency_seconds": 24.226961800006393,
+    "latency_seconds": 9.124966300001688,
     "by_laws_cited": [],
     "source_sections": [
       "GENERAL > Condominium Living Guidelines > **Car Parking**"
     ],
     "retrieved_chunks": [
       {
+        "chunk_id": "chunk_0015",
+        "breadcrumb": "GENERAL > Condominium Living Guidelines > **Car Parking**",
+        "has_table": false,
+        "chars": 223,
+        "snippet": "11.\n\nHeavy vehicles are not allowed in the car park.\n\n12.\n\nRepair or servicing of cars, recreation, storage or repair works by the Residents or their visitors is not permitted in the car park or anywhere in the common area."
+      },
+      {
         "chunk_id": "chunk_0009",
         "breadcrumb": "GENERAL > Condominium Living Guidelines > **Car Parking**",
         "has_table": false,
-        "chars": 752,
-        "snippet": "Where the apartment is sold, it is the responsibility of the Owner of the apartment to notify the Management to have the car deregistered.\n\n9.\n\nResidents who have changed their cars should submit details of new vehicle to the Management for registration.\n\n10.\n\nThe car park has a height limit of 2.4 metres for Basement 1 and 2.2 metres for Basement 2.\n\n11.\n\nHeavy vehicles are not allowed in the car"
+        "chars": 216,
+        "snippet": "### **Car Parking**\n\n1.\n\nResidents need to register their vehicle 10-digit IU together with a photocopy of the vehicle registration card at the Management Office before their vehicle is allowed to drive into Tribeca."
       },
       {
-        "chunk_id": "chunk_0007",
+        "chunk_id": "chunk_0016",
         "breadcrumb": "GENERAL > Condominium Living Guidelines > **Car Parking**",
         "has_table": false,
-        "chars": 538,
-        "snippet": "### **Car Parking**\n\n1.\n\nResidents need to register their vehicle 10-digit IU together with a photocopy of the vehicle registration card at the Management Office before their vehicle is allowed to drive into Tribeca.\n\n2.\n\nEach unit is entitled to submit only one (1) vehicle IU per unit to the Management to program into the system only.\n\n3.\n\nResidents may register their vehicle IU by using **Form A"
-      },
-      {
-        "chunk_id": "chunk_0008",
-        "breadcrumb": "GENERAL > Condominium Living Guidelines > **Car Parking**",
-        "has_table": false,
-        "chars": 1120,
-        "snippet": "Resident\u2019s vehicle IU will be deactivated by the Management Office upon vacating the estate.\n\n5.\n\nDesignated washing area(s) have been provided for the convenience of Residents.\n\nAs such, any car washing must be done strictly at the designated areas only.\n\nAny cleaning of cars beyond these designated areas are limited to only wiping as excessive splashing of water will soil the area and cause stag"
+        "chars": 173,
+        "snippet": "13.\n\nNo vehicles should be parked indiscriminately along the driveways or at any non-designated areas (e.g. in front of switch room and lift lobby, etc.) or across two lots."
       }
     ],
-    "answer": "1. **RULING**: **PROHIBITED** (based on the absence of visitor parking provisions).\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \nPer the \"Car Parking\" section of the Condominium Living Guidelines, the estate rules strictly govern the registration of resident vehicles. The guidelines state: \"Each unit is entitled to submit only one (1) vehicle IU per unit to the Management to program into the system only.\" There is no provision within the provided context for visitor parking, overnight or otherwise.\n\n3. **EXACT CONSTRAINTS & TARIFFS**: \n- **Registration**: Only one (1) vehicle IU per unit is permitted to be programmed into the system.\n- **Prohibited Actions**: \"No vehicles should be parked indiscriminately along the driveways or at any non-designated areas (e.g. in front of switch room and lift lobby, etc.) or across two lots.\"\n- **Liability**: \"All vehicles parked in the condominium will be at the Owners\u2019 risk.\"\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**: \nAs the provided handbook does not contain specific policies regarding visitor parking, you are advised to contact the Tribeca Management Office for clarification on current visitor access policies.\n\n- **Tribeca Management Office**: 6509 4278 / 6509 9748\n- **Guardhouse**: 6509 6946"
+    "answer": "1. **RULING**: **NOT APPLICABLE**\n\n2. **BY-LAW & STATUTORY AUTHORITY**: Section: **Car Parking**, Clauses 1\u201313.\n\n3. **EXACT CONSTRAINTS & TARIFFS**: The provided Estate Rules context does not contain information regarding visitor parking policies or overnight parking permissions. The current guidelines strictly govern the registration of resident vehicles (limited to one per unit), height restrictions (2.4m for Basement 1; 2.2m for Basement 2), and prohibitions against vehicle repairs, heavy vehicles, and indiscriminate parking.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**: As the provided handbook does not specify rules for visitor parking, please contact the Tribeca Management Office directly for clarification on current visitor policies.\n*   **Tribeca Management Office**: 6509 4278 / 6509 9748\n*   **Guardhouse**: 6509 6946"
   },
   {
     "query": "What happens if someone parks in a reserved lot?",
     "grounded": true,
     "model_used": "gemini:gemini-3.1-flash-lite",
-    "latency_seconds": 2.7475018999975873,
+    "latency_seconds": 3.1283934000002773,
     "by_laws_cited": [],
     "source_sections": [
+      "GENERAL > Condominium Living Guidelines > **Car Parking**",
       "GENERAL > GENERAL > **Brief on Tribeca**",
-      "GENERAL > Condominium Living Guidelines > **Car Parking**"
+      "GENERAL > Condominium Living Guidelines > **Renovation Works**"
     ],
     "retrieved_chunks": [
       {
-        "chunk_id": "chunk_0005",
+        "chunk_id": "chunk_0016",
+        "breadcrumb": "GENERAL > Condominium Living Guidelines > **Car Parking**",
+        "has_table": false,
+        "chars": 173,
+        "snippet": "13.\n\nNo vehicles should be parked indiscriminately along the driveways or at any non-designated areas (e.g. in front of switch room and lift lobby, etc.) or across two lots."
+      },
+      {
+        "chunk_id": "chunk_0007",
         "breadcrumb": "GENERAL > GENERAL > **Brief on Tribeca**",
         "has_table": true,
         "chars": 2395,
         "snippet": "# GENERAL  \n## GENERAL  \n### **Brief on Tribeca**  \nTribeca is a freehold 30-storey residential condominium development with a total of 175 units of one-bedroom studios to four-bedroom apartments and penthouses.  \nSituated near Singapore\u2019s Central Business District, the Integrated Resort and Orchard Road, Tribeca will be a gateway to endless possibilities for your lifestyle. Indulge in the allurin"
       },
       {
-        "chunk_id": "chunk_0008",
-        "breadcrumb": "GENERAL > Condominium Living Guidelines > **Car Parking**",
-        "has_table": false,
-        "chars": 1120,
-        "snippet": "Resident\u2019s vehicle IU will be deactivated by the Management Office upon vacating the estate.\n\n5.\n\nDesignated washing area(s) have been provided for the convenience of Residents.\n\nAs such, any car washing must be done strictly at the designated areas only.\n\nAny cleaning of cars beyond these designated areas are limited to only wiping as excessive splashing of water will soil the area and cause stag"
-      },
-      {
-        "chunk_id": "chunk_0009",
-        "breadcrumb": "GENERAL > Condominium Living Guidelines > **Car Parking**",
-        "has_table": false,
-        "chars": 752,
-        "snippet": "Where the apartment is sold, it is the responsibility of the Owner of the apartment to notify the Management to have the car deregistered.\n\n9.\n\nResidents who have changed their cars should submit details of new vehicle to the Management for registration.\n\n10.\n\nThe car park has a height limit of 2.4 metres for Basement 1 and 2.2 metres for Basement 2.\n\n11.\n\nHeavy vehicles are not allowed in the car"
+        "chunk_id": "chunk_0030",
+        "breadcrumb": "GENERAL > Condominium Living Guidelines > **Renovation Works**",
+        "has_table": true,
+        "chars": 6001,
+        "snippet": "### **Renovation Works**  \n1. To carry out any renovation works, all Owners are required to engage their own qualified person for advice on the requirement for submission of plans to the relevant authorities (if applicable), and to obtain the necessary approval for the proposed works. A set of the proposed renovation plans is to be submitted to the Developer or Management for advice and comments b"
       }
     ],
-    "answer": "OFFICIAL MANAGEMENT RESPONSE:\n\n1. **RULING**: **PROHIBITED**. Parking in non-designated areas or indiscriminately is strictly forbidden.\n\n2. **BY-LAW & STATUTORY AUTHORITY**: According to the **Condominium Living Guidelines > Car Parking**, Section 13, \"No vehicles should be parked indiscriminately along the driveways or at any non-designated areas (e.g. in front of switch room and lift lobby, etc.) or across two lots.\" Additionally, Section 5 states that the Management reserves the right to bar any motorists from entering the car park for misuse of designated lots without assigning any reasons.\n\n3. **EXACT CONSTRAINTS & TARIFFS**: \n   - All vehicles parked in the condominium are at the Owners\u2019 risk.\n   - The Management disclaims all liabilities for theft, vandalism, misdemeanor, or damage caused to vehicles and/or their contents.\n   - Repair or servicing of cars is not permitted in the car park or anywhere in the common area.\n   - Heavy vehicles are not allowed in the car park.\n   - Height limits are 2.4 metres for Basement 1 and 2.2 metres for Basement 2.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**: \n   - Ensure all vehicles are parked only in designated lots. \n   - If you encounter an issue regarding parking or require further clarification on enforcement, please contact the Tribeca Management Office at **6509 4278 / 6509 9748** or the Guardhouse at **6509 6946**."
+    "answer": "1. **RULING**: **PROHIBITED**\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \nPer the **Condominium Living Guidelines > Car Parking** (Section 13), \"No vehicles should be parked indiscriminately along the driveways or at any non-designated areas (e.g. in front of switch room and lift lobby, etc.) or across two lots.\" Additionally, Section 5 states that designated washing areas are not to be used for parking, and the Management reserves the right to bar any motorists from entering the car park for misuse of designated lots without assigning any reasons.\n\n3. **EXACT CONSTRAINTS & TARIFFS**: \n- **Parking Restrictions**: Vehicles must not be parked in non-designated areas or across two lots.\n- **Enforcement**: The Management reserves the right to bar motorists from entering the car park for misuse of designated lots.\n- **Liability**: All vehicles parked in the condominium are at the Owners\u2019 risk. The Management disclaims all liabilities for theft, vandalism, misdemeanor, or any damage caused to the vehicles and/or their contents.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**: \nIf you encounter an unauthorized vehicle parked in a reserved or non-designated area, please report the matter to the Tribeca Guardhouse or Management Office for assistance.\n\n- **Tribeca Management Office**: 6509 4278 / 6509 9748\n- **Guardhouse**: 6509 6946"
   },
   {
     "query": "How much does management charge for a particular violation?",
     "grounded": true,
     "model_used": "gemini:gemini-3.1-flash-lite",
-    "latency_seconds": 3.663501900002302,
+    "latency_seconds": 3.998973300000216,
     "by_laws_cited": [],
     "source_sections": [
       "GENERAL > Condominium Living Guidelines > **Renovation Works**",
       "GENERAL > GENERAL > **Brief on Tribeca**",
-      "GENERAL > Condominium Living Guidelines > **Pneumatic Waste Collection System / Disposal of Refuse**"
+      "GENERAL > Recreational Facilities > **Barbecue Area**"
     ],
     "retrieved_chunks": [
       {
-        "chunk_id": "chunk_0020",
+        "chunk_id": "chunk_0030",
         "breadcrumb": "GENERAL > Condominium Living Guidelines > **Renovation Works**",
         "has_table": true,
         "chars": 6001,
         "snippet": "### **Renovation Works**  \n1. To carry out any renovation works, all Owners are required to engage their own qualified person for advice on the requirement for submission of plans to the relevant authorities (if applicable), and to obtain the necessary approval for the proposed works. A set of the proposed renovation plans is to be submitted to the Developer or Management for advice and comments b"
       },
       {
-        "chunk_id": "chunk_0005",
+        "chunk_id": "chunk_0007",
         "breadcrumb": "GENERAL > GENERAL > **Brief on Tribeca**",
         "has_table": true,
         "chars": 2395,
         "snippet": "# GENERAL  \n## GENERAL  \n### **Brief on Tribeca**  \nTribeca is a freehold 30-storey residential condominium development with a total of 175 units of one-bedroom studios to four-bedroom apartments and penthouses.  \nSituated near Singapore\u2019s Central Business District, the Integrated Resort and Orchard Road, Tribeca will be a gateway to endless possibilities for your lifestyle. Indulge in the allurin"
       },
       {
-        "chunk_id": "chunk_0029",
-        "breadcrumb": "GENERAL > Condominium Living Guidelines > **Pneumatic Waste Collection System / Disposal of Refuse**",
+        "chunk_id": "chunk_0118",
+        "breadcrumb": "GENERAL > Recreational Facilities > **Barbecue Area**",
         "has_table": false,
-        "chars": 259,
-        "snippet": "- i.\n\nBulky items should be disposed by separate arrangement.\n\nIf in doubt, please contact the Management Office.\n\n5.\n\nUpon failure to comply, the Developer or Management reserves the right to remove it and charge the disposal cost to the Residents concerned."
+        "chars": 960,
+        "snippet": "4.\n\nSubject to Residents\u2019 demand, the Management reserves the right to allow only one booking per apartment unit within every two weeks.\n\n5.\n\nWhen booking a barbecue pit, Resident shall deposit a sum of **$150.00 per pit** with the Management.\n\nThe deposit shall be refunded, free of interest, after the event if the barbeque pit (including the gas cylinder) and its surrounding area used are handed "
       }
     ],
-    "answer": "1. **RULING**: **ACTION REQUIRED**. The Management does not have a single, fixed fine for all violations. Instead, the estate handbook specifies a **minimum renovation deposit of $1,000.00** for renovation works, which may be used to cover rectification costs for damages or unauthorized debris disposal. For other specific violations (such as refuse chute damage or common area obstruction), the Management reserves the right to charge the actual costs incurred for repairs, cleaning, or disposal to the responsible party.\n\n2. **BY-LAW & STATUTORY AUTHORITY**:\n*   **Renovation Deposits & Damages**: Section 5 and 6 of \"Renovation Works\".\n*   **Debris Removal**: Section 15 and 16 of \"Renovation Works\".\n*   **Common Area Obstruction**: Section 19 of \"Renovation Works\".\n*   **Refuse Chute Damage/Misuse**: Section 5 and 7 of \"Pneumatic Waste Collection System / Disposal of Refuse\".\n\n3. **EXACT CONSTRAINTS & TARIFFS**:\n*   **Renovation Deposit**: A minimum of **$1,000.00** must be placed with the Management (payable to \u201cGuan Realty (Private) Limited \u2013 Tribeca MF\u201d).\n*   **Rectification/Disposal Costs**: If an Owner or resident fails to comply with rules regarding debris removal, common area obstruction, or damage to common property/refuse chutes, the Management reserves the right to perform the necessary work and charge the full cost of rectification, cleaning, or disposal to the Owner/Resident.\n*   **Refuse Chute Liability**: Offenders are liable for the full cost of replacement or repair to damages caused to the refuse chute (e.g., due to improper disposal of renovation debris or flammable/adhesive materials).\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**:\n*   If you have questions regarding a specific violation or the associated costs, please contact the **Tribeca Management Office** directly for clarification.\n*   **Management Office**: 6509 4278 / 6509 9748\n*   **Guardhouse**: 6509 6946"
+    "answer": "1. **RULING**: **ACTION REQUIRED**. The Management does not have a single flat fee for all violations. Charges are determined based on the specific nature of the breach, such as renovation deposits, cleaning costs, or rectification of damages.\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \n*   **Renovation Works**: Sections 5, 6, 11, 15, 16, and 19 of the \"Renovation Works\" guidelines.\n*   **Barbecue Area**: Sections 5, 6, and 8 of the \"Barbecue Area\" guidelines.\n\n3. **EXACT CONSTRAINTS & TARIFFS**:\n*   **Renovation Deposit**: A minimum of **$1,000.00** is required for renovation applications.\n*   **Rectification/Cleaning Costs**: If an Owner fails to rectify damages or clear debris/obstructions, the Management reserves the right to perform the work and deduct the full cost from the deposit. If costs exceed the deposit, the Owner is liable for the balance.\n*   **Barbecue Deposit**: **$150.00 per pit**. If cleaning or repair costs are incurred, they are deducted from this deposit. If costs exceed the deposit, the Resident must pay the difference.\n*   **Barbecue Gas Charge**: A non-refundable fee of **$15.00 per pit** is charged for the use of cylinder gas.\n*   **Forfeiture**: Failure to cancel a barbecue booking at least seven (7) days in advance results in the forfeiture of the $150.00 deposit.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**:\n*   For specific inquiries regarding outstanding charges or to report a violation, please contact the **Tribeca Management Office** at **6509 4278 / 6509 9748**.\n*   For urgent matters or to report ongoing unauthorized works, you may contact the **Guardhouse** at **6509 6946**.\n*   Ensure all renovation applications are submitted using the official **Forms B1 and B2**, and barbecue bookings are made using **Form E**."
   },
   {
     "query": "Who should residents contact regarding maintenance?",
-    "grounded": false,
+    "grounded": true,
     "model_used": "gemini:gemini-3.1-flash-lite",
-    "latency_seconds": 2.814791000004334,
+    "latency_seconds": 4.095566300000428,
     "by_laws_cited": [],
     "source_sections": [
       "GENERAL > Useful Contact Numbers",
-      "GENERAL > Recreational Facilities > **Children\u2019s Playground**",
-      "Welcome Message"
+      "Welcome Message",
+      "GENERAL > Recreational Facilities > **Children\u2019s Playground**"
     ],
     "retrieved_chunks": [
       {
-        "chunk_id": "chunk_0083",
+        "chunk_id": "chunk_0134",
         "breadcrumb": "GENERAL > Useful Contact Numbers",
         "has_table": true,
         "chars": 2923,
         "snippet": "## Useful Contact Numbers  \n|**Contact List**|**Name & Address**||**Contact Nos.**|\n|---|---|---|---|\n|i|**The Management Office**|||\n|Management Office|60 Kim Seng Road<br>#01-01 Tribeca<br>Management Office<br>Singapore 239497|Tel:<br>Tel:<br>Fax:|65094278<br>65099748<br>65096324|\n|Security Guardhouse||Tel:|65096946|\n|<br>|**Developer**<br>|||\n|Developer|Guan Realty (Private) Limited<br>c/o 36 R"
       },
       {
-        "chunk_id": "chunk_0082",
+        "chunk_id": "chunk_0003",
+        "breadcrumb": "Welcome Message",
+        "has_table": false,
+        "chars": 369,
+        "snippet": "To assist you as you settle into your new home, we have appointed a professional Managing Agent to provide on site estate Management services.\n\nIf you have further questions other than those covered in this handbook, please contact the Tribeca Management Office at 65094278 or 65099748, or fax 65096324.\n\nAlternatively, you may contact us at 6877 8228 or fax 6226 3010."
+      },
+      {
+        "chunk_id": "chunk_0133",
         "breadcrumb": "GENERAL > Recreational Facilities > **Children\u2019s Playground**",
         "has_table": false,
         "chars": 913,
         "snippet": "### **Children\u2019s Playground**  \n1. Children under 12 years of age must be supervised by the parent / guardian who shall be responsible for their safety.  \n2.  \n- No eating, drinking and pets are allowed in the playground.  \n3. Cycling, roller skating and skate boarding are strictly prohibited at the playground area.  \n4.  \n- Persons unfit/unwell or with infectious/communicable disease shall not us"
-      },
-      {
-        "chunk_id": "chunk_0002",
-        "breadcrumb": "Welcome Message",
-        "has_table": false,
-        "chars": 1022,
-        "snippet": "## Welcome Message\n\n#### Dear Residents,\n\nWe would like to extend our warmest welcome to you.\n\nIn line with our green initiatives and Tribeca\u2019s environmentally friendly features, we are pleased to present you with a CD of the Resident\u2019s Handbook instead of a hardcopy.\n\nWe have prepared this handbook to serve as a general guide for Residents of Tribeca.\n\nFor your convenience, we have provided guide"
       }
     ],
-    "answer": "1. **RULING**: **ACTION REQUIRED**. Residents should contact the Tribeca Management Office for assistance with estate maintenance and management services.\n\n2. **BY-LAW & STATUTORY AUTHORITY**: As stated in the **Welcome Message**, the developer has appointed a professional Managing Agent to provide on-site estate management services, including the care and maintenance of fixtures and finishes.\n\n3. **EXACT CONSTRAINTS & TARIFFS**: There are no specific tariffs listed for general maintenance inquiries. Residents are advised to direct their queries to the Management Office during operational hours.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**:\nFor all maintenance-related inquiries, please contact the Tribeca Management Office:\n*   **Phone**: 6509 4278 or 6509 9748\n*   **Fax**: 6509 6324\n*   **Address**: 60 Kim Seng Road, #01-01 Tribeca, Singapore 239497\n\nIf you require urgent assistance regarding security matters, you may contact the **Security Guardhouse** at **6509 6946**."
+    "answer": "1. **RULING**: **ACTION REQUIRED**\n\n2. **BY-LAW & STATUTORY AUTHORITY**: As per the \"Welcome Message\" in the Resident\u2019s Handbook, the Management Office is responsible for providing on-site estate management services. Specific maintenance concerns regarding building systems (such as lifts, plumbing, or electrical services) are supported by the appointed contractors listed in the \"Useful Contact Numbers\" section.\n\n3. **EXACT CONSTRAINTS & TARIFFS**: \n- For general management and maintenance inquiries, contact the **Tribeca Management Office** at **6509 4278** or **6509 9748**.\n- You may also reach the Management Office via fax at **6509 6324**.\n- For urgent security or facility-related matters, you may contact the **Security Guardhouse** at **6509 6946**.\n- Specific maintenance contractors are listed for technical issues, including:\n    - **Lift**: KONE Pte Ltd (6424 6246)\n    - **ACMV & Electrical Services**: King Wan Construction Pte Ltd (6368 4300)\n    - **Plumbing & Sanitary, Fire Protection and Gas**: Hai Yong Engineering Pte Ltd (6553 0503)\n    - **Fire Alarm System**: Maxx Engineering Pte Ltd (6487 5044)\n    - **Swimming Pool**: Hydrotechs M&E Service Pte Ltd (6748 4779)\n    - **Pneumatic Waste Collection System**: Envac Singapore Pte. Ltd. (6292 5123)\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**: \n- If you have questions regarding maintenance that are not covered in the handbook, please contact the **Tribeca Management Office** at **6509 4278** or **6509 9748**.\n- The Management Office is located at: 60 Kim Seng Road, #01-01 Tribeca, Singapore 239497."
   },
   {
     "query": "What are the restrictions on using common facilities?",
     "grounded": true,
     "model_used": "gemini:gemini-3.1-flash-lite",
-    "latency_seconds": 3.168778499995824,
+    "latency_seconds": 4.10730440000043,
     "by_laws_cited": [],
     "source_sections": [
-      "GENERAL > Recreational Facilities > **General Rules & Regulations on the Use of Facilities**",
-      "GENERAL > Condominium Living Guidelines > **Renovation Works**"
+      "GENERAL > Condominium Living Guidelines > **Renovation Works**",
+      "GENERAL > Recreational Facilities > **General Rules & Regulations on the Use of Facilities**"
     ],
     "retrieved_chunks": [
       {
-        "chunk_id": "chunk_0053",
-        "breadcrumb": "GENERAL > Recreational Facilities > **General Rules & Regulations on the Use of Facilities**",
-        "has_table": false,
-        "chars": 530,
-        "snippet": "3.\n\nResidents must produce valid access cards to use the facilities or to make bookings.\n\n4.\n\n- Prior bookings by Residents are necessary to use certain facilities.\n\n5.\n\nBookings are non-transferable and can only be made by a Resident for a particular unit.\n\nResidents are not permitted to place bookings on behalf of other Residents from other units.\n\n6.\n\nEach apartment unit is entitled to the book"
-      },
-      {
-        "chunk_id": "chunk_0055",
-        "breadcrumb": "GENERAL > Recreational Facilities > **General Rules & Regulations on the Use of Facilities**",
-        "has_table": false,
-        "chars": 1102,
-        "snippet": "8.\n\nNo food or beverages is allowed in the recreational area other than the barbecue area/Function Room.\n\n9.\n\nAny Resident and/or his guests who breaches any of the rules herein, or endangers themselves or others, shall be required to leave the area.\n\n- Residents and guests must be appropriately attired when using the facilities.\n\n10.\n\n11.\n\nChildren under the age of twelve (12) years must be accom"
-      },
-      {
-        "chunk_id": "chunk_0020",
+        "chunk_id": "chunk_0030",
         "breadcrumb": "GENERAL > Condominium Living Guidelines > **Renovation Works**",
         "has_table": true,
         "chars": 6001,
         "snippet": "### **Renovation Works**  \n1. To carry out any renovation works, all Owners are required to engage their own qualified person for advice on the requirement for submission of plans to the relevant authorities (if applicable), and to obtain the necessary approval for the proposed works. A set of the proposed renovation plans is to be submitted to the Developer or Management for advice and comments b"
+      },
+      {
+        "chunk_id": "chunk_0071",
+        "breadcrumb": "GENERAL > Recreational Facilities > **General Rules & Regulations on the Use of Facilities**",
+        "has_table": false,
+        "chars": 164,
+        "snippet": "3.\n\nResidents must produce valid access cards to use the facilities or to make bookings.\n\n4.\n\n- Prior bookings by Residents are necessary to use certain facilities."
+      },
+      {
+        "chunk_id": "chunk_0073",
+        "breadcrumb": "GENERAL > Recreational Facilities > **General Rules & Regulations on the Use of Facilities**",
+        "has_table": false,
+        "chars": 173,
+        "snippet": "6.\n\nEach apartment unit is entitled to the booking of only one (1) facility at any one time.\n\nBookings of different facilities for the same time slot shall not be permitted."
       }
     ],
-    "answer": "**RULING**: **PERMITTED** (subject to strict compliance with the General Rules & Regulations).\n\n**BY-LAW & STATUTORY AUTHORITY**: \n*   **Source 1: General Rules & Regulations on the Use of Facilities**, Sections 1 through 19.\n\n**EXACT CONSTRAINTS & TARIFFS**:\n*   **Eligibility**: Facilities are for the exclusive use of Residents and their guests. Non-Resident Owners who have tenanted out their units assign their rights to their tenants.\n*   **Access**: Residents must produce a valid access card. Guests must be accompanied by their host at all times.\n*   **Booking Rules**: \n    *   Prior booking is required for certain facilities.\n    *   Bookings are non-transferable and limited to one facility per unit at any one time.\n    *   Residents cannot book on behalf of other units.\n*   **Conduct & Safety**:\n    *   Children under 12 must be accompanied by an adult.\n    *   Noise levels must be kept to a minimum.\n    *   Appropriate attire is required.\n    *   Pets are strictly prohibited in recreational facilities.\n    *   No food or beverages are allowed except in the barbecue area/Function Room.\n    *   Football, roller-skating, roller-blading, and skateboarding are prohibited on the landscaped deck and common corridors.\n*   **Liability**: Residents must report existing damages before use; failure to do so may result in the Resident being held liable for repair/replacement costs. The Management is not responsible for any loss, damage, injury, or death arising from facility use.\n*   **Maintenance**: Facilities must be kept clean and tidy. The Management reserves the right to close facilities for maintenance or other necessary reasons.\n\n**ACTIONABLE NEXT STEPS & CONTACTS**:\n*   If you encounter any issues or require further clarification regarding facility bookings, please contact the **Tribeca Management Office** at **6509 4278 / 6509 9748** or the **Guardhouse** at **6509 6946**."
+    "answer": "**OFFICIAL MANAGEMENT RESPONSE:**\n\n1. **RULING**: **ACTION REQUIRED**. Residents must adhere to specific booking, conduct, and usage protocols to utilize the recreational facilities at Tribeca Condominium.\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \n   - **Source 2: General Rules & Regulations on the Use of Facilities**, Clauses 1\u201319.\n\n3. **EXACT CONSTRAINTS & TARIFFS**:\n   - **Eligibility**: Facilities are for the exclusive use of Residents and their guests. Non-Resident Owners who have tenanted out their units assign their rights to their tenants.\n   - **Access & Booking**: Residents must produce valid access cards. Prior bookings are required for certain facilities. Bookings are non-transferable and limited to one facility per unit at any one time.\n   - **Guest Policy**: Guests must be accompanied by their host, who is responsible for the guest's compliance with all rules.\n   - **Conduct & Safety**: \n     - Children under 12 must be accompanied by an adult.\n     - Noise levels must be kept to a minimum.\n     - Appropriate attire is required.\n     - Pets are strictly prohibited in recreational facilities.\n     - Football, roller-skating, roller-blading, and skateboarding are prohibited on the landscaped deck and common corridors.\n   - **Food & Beverage**: No food or beverages are allowed in recreational areas, except for the barbecue area and Function Room.\n   - **Damages**: Residents must report existing damages before use; failure to do so may result in the Resident being held liable for repair or replacement costs.\n   - **Maintenance**: The Management reserves the right to close facilities for maintenance or other necessary reasons.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**:\n   - Ensure you have your valid access card for facility usage and bookings.\n   - Report any pre-existing damage to the Management before using a facility.\n   - For further inquiries or to report issues, please contact the **Tribeca Management Office at 6509 4278 / 6509 9748** or the **Guardhouse at 6509 6946**."
   }
 ]

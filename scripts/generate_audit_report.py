@@ -4,6 +4,7 @@ Converts reports/adversarial_ux_audit_results.json into a formatted Markdown rep
 """
 
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,13 +42,17 @@ for r in results:
         verdict_str = f"**{data['priority'].upper()}** (ETA: {data['eta_minutes']}m)"
         cit_str = f"{data['assigned_entity']} (`{data['entity_contact']}`)"
     else:
-        # Extract ruling
+        # Extract ruling from RULING header
         out = r["raw_output"]
         ruling = "PROCESSED"
-        for candidate in ["PERMITTED (WITH CONDITIONS)", "PERMITTED (WITH SPECIFIC CONSTRAINTS)", "PERMITTED", "PROHIBITED", "ACTION REQUIRED", "NOT APPLICABLE"]:
-            if candidate in out.upper():
-                ruling = candidate
-                break
+        r_match = re.search(r"\*\*RULING\*\*:\s*(\*\*[^*]+\*\*|[A-Z\s\(\),/-]+)", out, re.I)
+        if r_match:
+            ruling = r_match.group(1).replace("*", "").strip().strip(".").split("\n")[0].strip()
+        else:
+            for candidate in ["PROHIBITED", "PERMITTED", "ACTION REQUIRED", "NOT APPLICABLE"]:
+                if candidate in out.upper():
+                    ruling = candidate
+                    break
         verdict_str = f"**{ruling}**"
         sections = r.get("sections", [])
         cit_str = sections[0].split(">")[-1].strip() if sections else "Estate By-laws"

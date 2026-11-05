@@ -592,7 +592,7 @@ def apply_amendment_to_handbook(
     short_id = uuid.uuid4().hex[:8]
     backup_filename = f"{handbook_path.stem}_{timestamp_str}_{short_id}.md"
     backup_file_path = BACKUPS_DIR / backup_filename
-    backup_file_path.write_text(original_text, encoding="utf-8", newline="\n")
+    backup_file_path.write_bytes(handbook_path.read_bytes())
 
     # 2. In-Place Surgical Replacement
     # Ensure trailing newline is preserved
@@ -691,10 +691,10 @@ def rollback_amendment(
     now = datetime.now(timezone.utc)
     ts = now.strftime("%Y%m%d_%H%M%S")
     safety_backup = BACKUPS_DIR / f"{handbook_path.stem}_prerollback_{ts}.md"
-    safety_backup.write_text(handbook_path.read_text(encoding="utf-8"), encoding="utf-8", newline="\n")
+    safety_backup.write_bytes(handbook_path.read_bytes())
 
     # Overwrite handbook
-    handbook_path.write_text(backup_content, encoding="utf-8", newline="\n")
+    handbook_path.write_bytes(target_backup.read_bytes())
 
     # Record rollback in audit log
     record = AmendmentAuditRecord(

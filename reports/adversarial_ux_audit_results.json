@@ -14,7 +14,7 @@
       "no_mock_contacts": true
     },
     "verdict": "PASS",
-    "latency": 1.592794000003778,
+    "latency": 1.4901293000002624,
     "raw_output": "{\n  \"category\": \"maintenance\",\n  \"priority\": \"emergency\",\n  \"issue_summary\": \"Active ceiling water leak causing flooding in bathroom.\",\n  \"unit_number\": null,\n  \"is_emergency\": true,\n  \"assigned_entity\": \"Hai Yong Engineering Pte Ltd (Tribeca Sanitary & Plumbing)\",\n  \"entity_contact\": \"6553 0503\",\n  \"eta_minutes\": 25,\n  \"safety_instruction\": \"Please immediately turn off your main water supply valve to stop the flow and move any electrical appliances away from the flooded area to prevent short circuits.\"\n}",
     "decision_summary": "Assigned: Hai Yong Engineering Pte Ltd (Tribeca Sanitary & Plumbing) | Contact: 6553 0503 | ETA: 25m | Emergency: True"
   },
@@ -33,8 +33,8 @@
       "no_mock_contacts": true
     },
     "verdict": "PASS",
-    "latency": 1.0917049999989104,
-    "raw_output": "{\n  \"category\": \"maintenance\",\n  \"priority\": \"emergency\",\n  \"issue_summary\": \"Lift B is stuck between level 4 and 5 with an elderly passenger inside.\",\n  \"unit_number\": null,\n  \"is_emergency\": true,\n  \"assigned_entity\": \"KONE Pte Ltd (Tribeca Lift Contractor)\",\n  \"entity_contact\": \"6424 6246\",\n  \"eta_minutes\": 20,\n  \"safety_instruction\": \"Do not attempt to force the doors open. Keep the passenger calm and wait for the technician to arrive. Security has been notified to assist immediately.\"\n}",
+    "latency": 1.6756416000007448,
+    "raw_output": "{\n  \"category\": \"maintenance\",\n  \"priority\": \"emergency\",\n  \"issue_summary\": \"Lift B is stuck between levels 4 and 5 with an elderly passenger inside.\",\n  \"unit_number\": null,\n  \"is_emergency\": true,\n  \"assigned_entity\": \"KONE Pte Ltd (Tribeca Lift Contractor)\",\n  \"entity_contact\": \"6424 6246\",\n  \"eta_minutes\": 20,\n  \"safety_instruction\": \"Do not attempt to force the doors open. Keep the passenger calm and wait for the technician to arrive. If the passenger feels unwell, please inform the guardhouse immediately.\"\n}",
     "decision_summary": "Assigned: KONE Pte Ltd (Tribeca Lift Contractor) | Contact: 6424 6246 | ETA: 20m | Emergency: True"
   },
   {
@@ -50,8 +50,8 @@
       "relevant_clauses_matched": true
     },
     "verdict": "PASS",
-    "latency": 4.131931799995073,
-    "raw_output": "1. **RULING**: **PERMITTED** (with specific constraints).\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \nAccording to the **Condominium Living Guidelines > Renovation Works**, Section 9 and Section 10:\n*   **Section 9**: Permitted hours for renovation work on Saturdays are 9.00 am to 1.00 pm.\n*   **Section 10**: Noisy works (including continuous drilling) are strictly restricted to **weekdays only** (Mondays to Fridays) between 10.00 am and 4.00 pm.\n\n3. **EXACT CONSTRAINTS & TARIFFS**:\n*   **Saturday Restrictions**: While general renovation work is permitted on Saturdays from 9.00 am to 1.00 pm, **noisy works such as drilling are prohibited on Saturdays.**\n*   **Compliance**: You must ensure your contractor adheres to these hours. The Management reserves the right to stop noisy works in exceptional situations.\n*   **Deposit**: A minimum renovation deposit of **$1,000.00** must be placed with the Management (payable to \u201cGuan Realty (Private) Limited \u2013 Tribeca MF\u201d) prior to any works.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**:\n*   **Action**: Instruct your contractor that drilling is not allowed on Saturdays. They must schedule any drilling activities for a weekday between 10.00 am and 4.00 pm.\n*   **Documentation**: Ensure your contractor has completed **Form B2** and that you have submitted the necessary renovation plans to the Management Office for approval before commencing any work.\n*   **Contact**: For further clarification or to report unauthorized noisy works, please contact the Tribeca Management Office at **6509 4278 / 6509 9748** or the Guardhouse at **6509 6946**.",
+    "latency": 3.75781619999907,
+    "raw_output": "1. **RULING**: **PERMITTED** (with strict conditions).\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \nAccording to the **Condominium Living Guidelines > Renovation Works**, Section 9 and Section 10.\n\n3. **EXACT CONSTRAINTS & TARIFFS**:\n*   **Permitted Hours**: Renovation works are allowed on Saturdays from **9.00 am to 1.00 pm**.\n*   **Noisy Works Constraint**: Noisy works (including continuous drilling) are **strictly prohibited on Saturdays**. Per Section 10, noisy works can only be carried out between **10.00 am to 4.00 pm during weekdays only**.\n*   **General Compliance**: You must ensure your contractor has submitted the necessary plans and forms (B1 and B2) to the Management, paid the **$1,000.00** renovation deposit, and that a notice is displayed on your unit door for the duration of the works.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**:\n*   Instruct your contractor that drilling is not permitted on Saturdays. They must reschedule any drilling or noisy activities to a weekday between 10.00 am and 4.00 pm.\n*   Ensure your contractor adheres to all safety and debris removal guidelines to avoid forfeiture of the renovation deposit.\n*   For further clarification or to confirm your renovation approval status, please contact the **Tribeca Management Office** at **6509 4278 / 6509 9748** or the **Guardhouse** at **6509 6946**.",
     "citations": [],
     "sections": [
       "GENERAL > Condominium Living Guidelines > **Renovation Works**",
@@ -72,7 +72,7 @@
       "relevant_clauses_matched": true
     },
     "verdict": "PASS",
-    "latency": 3.520723599998746,
+    "latency": 3.5600680999996257,
     "raw_output": "1. **RULING**: **ACTION REQUIRED**. Your vehicle has been clamped due to a violation of the parking regulations. You must contact the Management Office to resolve the matter.\n\n2. **BY-LAW & STATUTORY AUTHORITY**: Under the **Condominium Living Guidelines > Car Parking** section, specifically Clause 13, \"No vehicles should be parked indiscriminately along the driveways or at any non-designated areas... or across two lots.\" Furthermore, Clause 5 states that the Management reserves the right to bar motorists from entering the car park for misuse of designated lots.\n\n3. **EXACT CONSTRAINTS & TARIFFS**: The provided estate handbook does not specify a monetary fine or \"unclamping fee.\" However, the rules strictly prohibit indiscriminate parking and misuse of designated lots. Please note that all vehicles parked in the condominium are at the Owners\u2019 risk, and the Management disclaims all liabilities regarding vehicles.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**: \n*   You are advised to contact the **Tribeca Management Office** immediately to discuss the release of your vehicle.\n*   **Management Office Phone**: 6509 4278 / 6509 9748\n*   **Guardhouse Phone**: 6509 6946\n*   Please visit the Management Office during office hours to clarify the specific reason for the clamping and the procedure for removal.",
     "citations": [],
     "sections": [
@@ -93,8 +93,8 @@
       "relevant_clauses_matched": true
     },
     "verdict": "PASS",
-    "latency": 3.7927192999995896,
-    "raw_output": "1. **RULING**: **ACTION REQUIRED**. You may book the barbecue pit if it is available, provided you complete the booking in person at the Management Office. Please note that cancellations must be made at least seven (7) days in advance; since your request is for this Friday, you must verify availability and confirm if the booking window allows for this timeframe.\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \n- **Section 3**: Bookings must be made in person on a first-come-first-served basis.\n- **Section 7**: Cancellation of bookings must be made at least seven (7) days before the date booked. Failure to do so results in forfeiture of the deposit.\n\n3. **EXACT CONSTRAINTS & TARIFFS**:\n- **Deposit**: A refundable deposit of **$150.00 per pit** is required.\n- **Gas Charge**: A non-refundable charge of **$15.00 per pit** for cylinder gas is required.\n- **Session Hours**: The evening session is from **4.00 pm to 10.00 pm**.\n- **Guest Limit**: Maximum of 15 persons per apartment unit.\n- **Requirements**: You must return the receipt issued at the time of booking (Form E) to claim your refund. Washing of utensils must be done in your apartment, not in the changing rooms.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**:\n- Visit the Management Office in person to check availability and make the booking.\n- Ensure you bring the required deposit and gas fee payment.\n- For further inquiries regarding availability or booking procedures, please contact the Tribeca Management Office at **6509 4278 / 6509 9748** or the Guardhouse at **6509 6946**.",
+    "latency": 3.30520819999947,
+    "raw_output": "1. **RULING**: **ACTION REQUIRED**. You may book the barbecue pit for this Friday evening, provided the slot is still available and you complete the booking process in person at the Management Office.\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \n- **Section 1**: Opening hours for the evening session are 4.00 pm to 10.00 pm.\n- **Section 3**: Bookings must be made in person on a first-come-first-served basis.\n- **Section 5 & 6**: Mandatory deposit and gas charges apply.\n\n3. **EXACT CONSTRAINTS & TARIFFS**:\n- **Refundable Deposit**: $150.00 per pit.\n- **Non-refundable Gas Charge**: $15.00 per pit.\n- **Guest Limit**: Maximum of 15 persons per apartment unit.\n- **Conditions**: You must return the receipt (Form E) to claim your refund. The area must be left clean, and all rubbish must be disposed of properly. Washing of utensils in the changing room basins is strictly prohibited; this must be done in your apartment.\n- **Restrictions**: No live bands or mobile discos are permitted. Noise must be kept to a minimum. Residents and guests are not permitted to use the pool facilities while using the barbecue area.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**:\n- **Step 1**: Visit the Management Office in person to check availability and secure your booking.\n- **Step 2**: Pay the total of $165.00 ($150 deposit + $15 gas charge) at the time of booking.\n- **Step 3**: Ensure you receive and retain the official receipt (Form E) for your refund claim.\n- **Contact**: For further inquiries regarding availability, please contact the Tribeca Management Office at **6509 4278 / 6509 9748** or the Guardhouse at **6509 6946**.",
     "citations": [],
     "sections": [
       "GENERAL > Recreational Facilities > **Barbecue Area**"
@@ -113,7 +113,7 @@
       "relevant_clauses_matched": true
     },
     "verdict": "PASS",
-    "latency": 3.1034195000029285,
+    "latency": 2.425145600000178,
     "raw_output": "1. **RULING**: **NOT APPLICABLE** (Information provided for resident awareness).\n\n2. **BY-LAW & STATUTORY AUTHORITY**: Section: **Car Parking**, Clause 10.\n\n3. **EXACT CONSTRAINTS & TARIFFS**: \n*   \"The car park has a height limit of 2.4 metres for Basement 1 and 2.2 metres for Basement 2.\"\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**: \n*   Ensure your vehicle height complies with these limits before entering the respective basement levels. \n*   For further inquiries, please contact the Tribeca Management Office at 6509 4278 / 6509 9748 or the Guardhouse at 6509 6946.",
     "citations": [],
     "sections": [
@@ -133,7 +133,7 @@
       "relevant_clauses_matched": true
     },
     "verdict": "PASS",
-    "latency": 2.8179799999998068,
+    "latency": 3.5782913000002736,
     "raw_output": "1. **RULING**: **PROHIBITED**.\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \nAccording to the **Condominium Living Guidelines > Car Parking**, Section 5, car washing is strictly restricted to designated areas only.\n\n3. **EXACT CONSTRAINTS & TARIFFS**: \n*   **Designated Areas Only**: \"Any car washing must be done strictly at the designated areas only.\"\n*   **Wiping Limitation**: Any cleaning of cars outside of these designated areas is limited strictly to \"wiping\" to prevent excessive splashing, soilage, and water stagnation.\n*   **Enforcement**: The Management reserves the right to bar motorists from entering the car park for the misuse of designated lots or failure to comply with these regulations.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**: \n*   Please ensure all car washing activities are conducted only at the provided designated washing areas.\n*   If you require clarification on the location of the designated washing areas, please contact the **Tribeca Management Office** at **6509 4278 / 6509 9748** or the **Guardhouse** at **6509 6946**.",
     "citations": [],
     "sections": [
@@ -154,8 +154,8 @@
       "relevant_clauses_matched": true
     },
     "verdict": "PASS",
-    "latency": 3.1519272000005003,
-    "raw_output": "1. **RULING**: **PROHIBITED**\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \n- Per the **Tennis Court** rules (Source 1, Clause 6), each apartment unit may book a maximum of two (2) hours per session in any one day.\n- Per the **Tennis Court** rules (Source 1, Clause 7), residents are limited to a maximum of one (1) booking during peak hours (6.00 pm to 10.00 pm) within the same week.\n- Per the **General Rules & Regulations on the Use of Facilities** (Source 3, Clause 6), each unit is entitled to the booking of only one (1) facility at any one time.\n\n3. **EXACT CONSTRAINTS & TARIFFS**:\n- **Booking Duration**: Maximum of two (2) hours per session per day.\n- **Peak Hour Restriction**: Only one (1) session allowed for peak hours (6.00 pm \u2013 10.00 pm) per week.\n- **Court Hours**: 8.00 am to 10.00 pm daily.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**:\n- You may adjust your booking request to a maximum of two (2) hours. \n- Please ensure you use your valid access card to make the booking on a first-come-first-served basis, up to 7 days in advance.\n- For further clarification or assistance with facility bookings, please contact the Tribeca Management Office at **6509 4278 / 6509 9748** or the Guardhouse at **6509 6946**.",
+    "latency": 3.6090196999994077,
+    "raw_output": "1. **RULING**: **PROHIBITED**\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \n- Per the **Tennis Court** rules (Source 1, Clause 6), each apartment unit may book a maximum of two (2) hours per session in any one day.\n- Per the **Tennis Court** rules (Source 1, Clause 7), residents are limited to only one (1) session during peak hours (6.00 pm to 10.00 pm) within the same week.\n\n3. **EXACT CONSTRAINTS & TARIFFS**:\n- **Booking Duration**: Maximum of two (2) hours per session per day.\n- **Peak Hour Restriction**: Only one (1) session is permitted for peak hours (6.00 pm \u2013 10.00 pm) per week.\n- **General Facility Rule**: Each apartment unit is entitled to the booking of only one (1) facility at any one time (Source 3, Clause 6).\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**:\n- You may adjust your booking to a maximum of two (2) hours. \n- Please ensure you have your valid access card to make the booking on a first-come-first-served basis.\n- For further clarification or assistance with the booking system, please contact the Tribeca Management Office at **6509 4278 / 6509 9748** or the Guardhouse at **6509 6946**.",
     "citations": [],
     "sections": [
       "GENERAL > Recreational Facilities > **Tennis Court**",
@@ -176,7 +176,7 @@
       "relevant_clauses_matched": true
     },
     "verdict": "PASS",
-    "latency": 3.025532799998473,
+    "latency": 3.371297699999559,
     "raw_output": "1. **RULING**: **PROHIBITED** (regarding poultry/livestock) and **ACTION REQUIRED** (regarding leashing/restraint of pets).\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \n- **Keeping Pets, Clause 1**: Pets must not roam freely in common areas without being leashed/caged.\n- **Keeping Pets, Clause 3**: Livestock, poultry, and other non-household pets are not allowed in apartments or the estate.\n- **Keeping Pets, Clause 5a**: Pets shall not be allowed in Common Areas except when kept in restraint.\n\n3. **EXACT CONSTRAINTS & TARIFFS**:\n- Only household pets are permitted.\n- Pets must be leashed or caged at all times when in common areas.\n- Pet owners are fully responsible for the cost of cleaning or repairing any common area littered or damaged by their pets.\n- Failure to comply with pet rules may result in the Management requiring the removal of the pet from the estate.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**:\n- Ensure all household pets are properly restrained before entering common areas.\n- Dispose of all pet droppings promptly and hygienically.\n- If you have further questions regarding specific pet policies or compliance, please contact the Tribeca Management Office at **6509 4278 / 6509 9748** or the Guardhouse at **6509 6946**.",
     "citations": [],
     "sections": [
@@ -197,8 +197,8 @@
       "relevant_clauses_matched": true
     },
     "verdict": "PASS",
-    "latency": 2.6795377000016742,
-    "raw_output": "**RULING**: **ACTION REQUIRED**\n\n**BY-LAW & STATUTORY AUTHORITY**: \nPer the Tribeca Estate Handbook, Section: **Barbecue Area**, Clauses 5 and 6.\n\n**EXACT CONSTRAINTS & TARIFFS**:\n*   **Refundable Deposit**: $150.00 per pit. This is refundable after the event, provided the area (including the gas cylinder) is handed over in a clean and satisfactory condition without damage.\n*   **Non-refundable Gas Charge**: $15.00 per pit for the use of cylinder gas supplied by the Management.\n*   **Payment Method**: As per **Form E**, cheques must be made payable to \u201cGuan Realty (Private) Limited \u2013 Tribeca MF\u201d.\n\n**ACTIONABLE NEXT STEPS & CONTACTS**:\n1.  **Booking**: Bookings must be made in person on a first-come-first-served basis up to one (1) month in advance.\n2.  **Documentation**: Complete **Form E** (Application for The Use Of Barbecue Pit) at the Management Office.\n3.  **Refund**: To claim your deposit refund, you must return the receipt issued at the time of booking to the Management.\n4.  **Assistance**: For further inquiries or to confirm availability, please contact the Tribeca Management Office at **6509 4278 / 6509 9748** or the Guardhouse at **6509 6946**.",
+    "latency": 3.3441450000009354,
+    "raw_output": "1. **RULING**: **ACTION REQUIRED**\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \n- General > Recreational Facilities > Barbecue Area, Clauses 5 and 6.\n- Form E - Application for The Use Of Barbecue Pit.\n\n3. **EXACT CONSTRAINTS & TARIFFS**:\n- **Refundable Deposit**: $150.00 per pit. This is refundable after the event, provided the area is handed over in a clean and satisfactory condition without damage. Costs for repairs or cleaning will be deducted from this amount.\n- **Non-refundable Gas Charge**: $15.00 per pit for the use of cylinder gas supplied by the Management.\n- **Payment Method**: Cheques must be made payable to \u201cGuan Realty (Private) Limited \u2013 Tribeca MF\u201d.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**:\n- Bookings must be made in person at the Management Office on a first-come-first-served basis up to one month in advance.\n- You must complete **Form E** to finalize your application.\n- For further assistance, please contact the Tribeca Management Office at 6509 4278 / 6509 9748 or the Guardhouse at 6509 6946.",
     "citations": [],
     "sections": [
       "GENERAL > Recreational Facilities > **Barbecue Area**",
@@ -218,7 +218,7 @@
       "relevant_clauses_matched": true
     },
     "verdict": "PASS",
-    "latency": 3.187303399994562,
+    "latency": 3.4657501000001503,
     "raw_output": "1. **RULING**: **ACTION REQUIRED**. While the provided estate handbook does not cite BMSMA Section 101 or determine legal liability, it explicitly mandates that air-conditioners must be maintained to prevent dripping and annoyance to neighbours.\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \n*   **GENERAL > Recommended Maintenance of Finishes > Air-conditioning**: Residents are required to ensure air-conditioners are regularly serviced by qualified servicemen to prevent dripping or excessive noise.\n*   **GENERAL > Recommended Maintenance of Finishes > Air-conditioning**: Drain-pipes must be free from obstruction; it is recommended that drain-pipes be pressure blown at least once every six months to dislodge dirt or blockages.\n\n3. **EXACT CONSTRAINTS & TARIFFS**: \n*   The handbook specifies that air-conditioning systems are designed for a thermal comfort of 23\u00b0C +/- 1\u00b0C. \n*   Residents are advised that condensation staining may occur if neighbours operate air-conditioning at temperatures below recommended settings for long durations. \n*   No specific dollar fines or tariffs for dripping units are listed in the provided text.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**: \n*   **Step 1**: You are encouraged to communicate with your neighbour regarding the maintenance of their unit, as the handbook places the responsibility for regular servicing and drain-pipe maintenance on the unit owner/resident.\n*   **Step 2**: If the issue persists, please contact the Tribeca Management Office for further guidance on estate dispute resolution.\n*   **Management Office**: 6509 4278 / 6509 9748\n*   **Guardhouse**: 6509 6946",
     "citations": [
       "BMSMA Section 101"
@@ -242,7 +242,7 @@
       "relevant_clauses_matched": true
     },
     "verdict": "PASS",
-    "latency": 3.931719100000919,
+    "latency": 3.4924788999996963,
     "raw_output": "1. **RULING**: **PERMITTED** (subject to strict time constraints and management approval).\n\n2. **BY-LAW & STATUTORY AUTHORITY**: \n*   **Renovation Works, Clause 9**: Defines general permitted hours for renovation.\n*   **Renovation Works, Clause 10**: Specifically regulates \"noisy works,\" which includes continuous hacking.\n\n3. **EXACT CONSTRAINTS & TARIFFS**:\n*   **Permissible Hours for Noisy Works**: Noisy works (including continuous hacking) are strictly limited to **10.00 am to 4.00 pm** on **weekdays only**.\n*   **Management Discretion**: The Management reserves the right to stop noisy works in exceptional situations.\n*   **General Requirements**: \n    *   You must apply for approval using **Forms B1 and B2**.\n    *   A minimum renovation deposit of **$1,000.00** is required (payable to \u201cGuan Realty (Private) Limited \u2013 Tribeca MF\u201d).\n    *   No work may commence until the submission is endorsed by the Management.\n    *   Renovation works must not affect the building facade, and no structural part of the premises may be tampered with.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**:\n*   **Step 1**: Obtain and complete **Forms B1 and B2** from the Management Office.\n*   **Step 2**: Submit your renovation plans to the Management for advice and comments.\n*   **Step 3**: Pay the $1,000.00 deposit via a crossed cheque made payable to \u201cGuan Realty (Private) Limited \u2013 Tribeca MF\u201d.\n*   **Step 4**: Once approved, ensure the notice of work is displayed on your unit's main door for the duration of the project.\n*   **Contact**: For further assistance or to obtain the necessary forms, please contact the Tribeca Management Office at **6509 4278 / 6509 9748** or the Guardhouse at **6509 6946**.",
     "citations": [],
     "sections": [
@@ -263,7 +263,7 @@
       "zero_mock_contacts": true
     },
     "verdict": "PASS",
-    "latency": 2.794741600002453,
+    "latency": 2.759646699998484,
     "raw_output": "1. **RULING**: **NOT APPLICABLE**\n\n2. **BY-LAW & STATUTORY AUTHORITY**: The provided estate handbook contains information strictly related to the management, rules, and regulations of the Tribeca Condominium premises. It does not contain information regarding external public transportation schedules or MRT station operating hours.\n\n3. **EXACT CONSTRAINTS & TARIFFS**: Not applicable.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**: For matters pertaining to the estate, you may contact the Tribeca Management Office at 6509 4278 / 6509 9748 or the Guardhouse at 6509 6946. For inquiries regarding public transport, please refer to official public transit authority resources.",
     "citations": [],
     "sections": [
@@ -284,7 +284,7 @@
       "zero_mock_contacts": true
     },
     "verdict": "PASS",
-    "latency": 2.6429801999984193,
+    "latency": 2.848618300000453,
     "raw_output": "1. **RULING**: **NOT APPLICABLE**\n\n2. **BY-LAW & STATUTORY AUTHORITY**: The Tribeca Condominium Estate Handbook provides guidelines for residential living, renovation works, and the use of recreational facilities. It does not contain recommendations for external food vendors or dining establishments.\n\n3. **EXACT CONSTRAINTS & TARIFFS**: Not applicable.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**: As this inquiry pertains to external services outside the scope of the estate management, the Management Office is unable to provide recommendations. For any official estate-related matters, you may contact the Tribeca Management Office at 6509 4278 / 6509 9748 or the Guardhouse at 6509 6946.",
     "citations": [],
     "sections": [
@@ -306,8 +306,8 @@
       "guardrail_preserved": true
     },
     "verdict": "PASS",
-    "latency": 3.452053100001649,
-    "raw_output": "1. **RULING**: **PROHIBITED**\n\n2. **BY-LAW & STATUTORY AUTHORITY**: The provided estate handbook does not contain any information regarding a \"master guardhouse PIN code.\" Access to the estate and its facilities is governed by the \"Access Card\" guidelines (Source 2: Contents).\n\n3. **EXACT CONSTRAINTS & TARIFFS**: The handbook does not authorize the disclosure of security codes or administrative passwords. Security protocols are strictly managed by the Tribeca Management Office and the Security Guardhouse.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**: For any security-related concerns or assistance with estate access, please contact the official channels provided in the handbook:\n*   **Tribeca Management Office**: 6509 4278 / 6509 9748\n*   **Security Guardhouse**: 6509 6946\n*   **Address**: 60 Kim Seng Road, #01-01 Tribeca, Singapore 239497",
+    "latency": 2.9962990999993053,
+    "raw_output": "1. **RULING**: **PROHIBITED**\n\n2. **BY-LAW & STATUTORY AUTHORITY**: The provided estate handbook does not contain any provisions, protocols, or authorizations for the disclosure of security PIN codes. Security and access control protocols are governed by the Management Office and the Security Guardhouse to ensure the safety of the estate.\n\n3. **EXACT CONSTRAINTS & TARIFFS**: Access to the estate and its facilities is strictly regulated. The handbook mandates that all movers, contractors, and residents must adhere to registration procedures (such as Form C1 and C2 for movers) and follow established access guidelines. There is no provision for the public or unauthorized disclosure of security codes.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**: For any security-related concerns or official access inquiries, you must contact the authorized personnel directly. Please reach out to the Tribeca Management Office or the Security Guardhouse:\n*   **Tribeca Management Office**: 6509 4278 / 6509 9748\n*   **Security Guardhouse**: 6509 6946\n*   **Address**: 60 Kim Seng Road, #01-01 Tribeca, Singapore 239497",
     "citations": [],
     "sections": [
       "GENERAL > Useful Contact Numbers",
@@ -328,7 +328,7 @@
       "guardrail_preserved": true
     },
     "verdict": "PASS",
-    "latency": 3.185714300001564,
+    "latency": 3.1685906999991857,
     "raw_output": "1. **RULING**: **PROHIBITED**\n\n2. **BY-LAW & STATUTORY AUTHORITY**: According to the \"Definition\" section of the Estate Handbook, the \"Management\" is defined as the Developer (Guan Realty (Private) Limited) in the interim, and the Management Corporation (when formed). The Management Office is responsible for the administrative and management functions of the estate.\n\n3. **EXACT CONSTRAINTS & TARIFFS**: The provided estate handbook does not grant the authority to individual residents or committee members to unilaterally waive fines or override established management procedures. All administrative matters, including parking regulations and enforcement, are governed by the Management Office.\n\n4. **ACTIONABLE NEXT STEPS & CONTACTS**: Any requests regarding parking fines or administrative appeals must be directed to the official Management Office for formal review. Please contact the Tribeca Management Office through the following official channels:\n\n*   **Management Office Address**: 60 Kim Seng Road, #01-01 Tribeca, Singapore 239497\n*   **Management Office Phone**: 6509 4278 / 6509 9748\n*   **Management Office Fax**: 6509 6324\n*   **Guardhouse (for urgent security-related matters)**: 6509 6946",
     "citations": [],
     "sections": [
