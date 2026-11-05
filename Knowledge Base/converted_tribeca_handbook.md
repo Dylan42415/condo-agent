@@ -726,9 +726,7 @@ Recreational Facilities
 
 8. All bookings are not transferable. 
 
-9. Residents must be punctual for any game. Bookings shall be treated as cancelled if not claimed
-
-within ten minutes of the time booked and thereafter the court will be allocated to another Resident on a first-come-first-served basis. 
+9. Residents must be punctual for any game. Bookings shall be treated as cancelled if not claimed within ten minutes of the time booked and thereafter the court will be allocated to another Resident on a first-come-first-served basis. 
 
 10. The court shall be used solely for its respective purpose. No bicycle, roller-blade and the like shall be permitted in the court. 
 
@@ -840,9 +838,7 @@ within ten minutes of the time booked and thereafter the court will be allocated
 
 4. Subject to Residents’ demand, the Management reserves the right to allow only one booking per apartment unit within every two weeks. 
 
-5. When booking a barbecue pit, Resident shall deposit a sum of **$150.00 per pit** with the Management. The deposit shall be refunded, free of interest, after the event if the barbeque pit (including the gas cylinder) and its surrounding area used are handed over in a clean and
-
-satisfactory condition as determined by the Management and without damage to any part of it including proper disposal of all rubbish. Should the Management incur any costs for repair or additional charges, such costs will be deducted from the deposit and the balance refunded free of interest. However, if such costs and additional charges exceed the amount deposited, the Resident will have to pay the difference. When claiming the refund, the receipt issued at the time of booking must be returned to the Management ( **see Form E** ). 
+5. When booking a barbecue pit, Resident shall deposit a sum of **$150.00 per pit** with the Management. The deposit shall be refunded, free of interest, after the event if the barbeque pit (including the gas cylinder) and its surrounding area used are handed over in a clean and satisfactory condition as determined by the Management and without damage to any part of it including proper disposal of all rubbish. Should the Management incur any costs for repair or additional charges, such costs will be deducted from the deposit and the balance refunded free of interest. However, if such costs and additional charges exceed the amount deposited, the Resident will have to pay the difference. When claiming the refund, the receipt issued at the time of booking must be returned to the Management ( **see Form E** ). 
 
 6. In addition to the refundable deposit stated above, Residents shall also pay a non-refundable charge of $15.00 per pit for the use of cylinder gas supplied by the Management when booking a barbeque pit. The charge for use of cylinder gas is subject to revision without prior notification to Residents. 
 
@@ -980,9 +976,7 @@ Dear Sirs,
 
 We hereby authorise our Contractor, ____________________________________________ 
 
-(Name of Contractor) 
-
-of ______________________________________________________ to undertake the renovation (Address and Telephone Number) 
+(Name of Contractor) of ______________________________________________________ to undertake the renovation (Address and Telephone Number) 
 
 works at our above premises commencing from _______________ to ________________. 
 
@@ -1034,9 +1028,7 @@ Only designated lift, staircases and areas are allowed for the transportation of
 
 We further undertake not to store any materials/debris on any common areas but within the Owner’s premises. I/We agree that the Developer/Management shall be under no liability in respect of any losses or damages caused to the premises for the whole duration of the renovation works.
 
-##### **7) I/We hereby furnish the Developer/Management a list of my/our workers and their particulars:** 
-
-a) Names of Persons-in-charge  NRIC/Passport No.<br>1) ________________________________________  ___________________________<br>2) ________________________________________  ___________________________<br>3) ________________________________________  ___________________________<br>4) ________________________________________  ___________________________<br>5) ________________________________________  ___________________________<br>b) Names of Workmen/Sub-Contractors  NRIC/Passport No.<br>1) ________________________________________  ___________________________<br>2) ________________________________________  ___________________________<br>3) ________________________________________  ___________________________<br>4) ________________________________________  ___________________________<br>5) ________________________________________  ___________________________<br>c) Description of Works<br>____________________________________________________________________________<br>____________________________________________________________________________<br>____________________________________________________________________________<br>____________________________________________________________________________<br>Commencement Date:________________ Expected Completion Date: __________________<br>
+##### **7) I/We hereby furnish the Developer/Management a list of my/our workers and their particulars:** a) Names of Persons-in-charge  NRIC/Passport No.<br>1) ________________________________________  ___________________________<br>2) ________________________________________  ___________________________<br>3) ________________________________________  ___________________________<br>4) ________________________________________  ___________________________<br>5) ________________________________________  ___________________________<br>b) Names of Workmen/Sub-Contractors  NRIC/Passport No.<br>1) ________________________________________  ___________________________<br>2) ________________________________________  ___________________________<br>3) ________________________________________  ___________________________<br>4) ________________________________________  ___________________________<br>5) ________________________________________  ___________________________<br>c) Description of Works<br>____________________________________________________________________________<br>____________________________________________________________________________<br>____________________________________________________________________________<br>____________________________________________________________________________<br>Commencement Date:________________ Expected Completion Date: __________________<br>
 
 I/We also undertake that we shall not at any time during the performance of any part of the renovation works for the above premises employ or permit or cause the employment, whether by ourselves or any of our sub-contractors, of any illegal foreign workers at the above premises. 
 
@@ -1062,9 +1054,7 @@ Dear Sirs,
 
 We hereby authorise our Mover,__________________________________________ 
 
-(Name of Mover) 
-
-of ______________________________________________________  to undertake the mover (Address and Telephone Number) 
+(Name of Mover) of ______________________________________________________  to undertake the mover (Address and Telephone Number) 
 
 services at our above premises commencing from _______________ to ________________. 
 
@@ -1118,9 +1108,7 @@ We further undertake not to store any furniture, etc on any common areas but wit
 
 **BACK**
 
-##### **7) I/We hereby furnish the Developer/Management a list of my/our workers and their particulars:** 
-
-a) Names of Persons-in-charge  NRIC/Passport No.<br>1) ________________________________________  ___________________________<br>2) ________________________________________  ___________________________<br>3) ________________________________________  ___________________________<br>4) ________________________________________  ___________________________<br>5) ________________________________________  ___________________________<br>Commencement Date:________________ Expected Completion Date: __________________<br>
+##### **7) I/We hereby furnish the Developer/Management a list of my/our workers and their particulars:** a) Names of Persons-in-charge  NRIC/Passport No.<br>1) ________________________________________  ___________________________<br>2) ________________________________________  ___________________________<br>3) ________________________________________  ___________________________<br>4) ________________________________________  ___________________________<br>5) ________________________________________  ___________________________<br>Commencement Date:________________ Expected Completion Date: __________________<br>
 
 I/We also undertake that we shall not at any time during the performance of any part of the services / works for the above premises employ or permit or cause the employment, whether by ourselves or any of our sub-contractors, of any illegal foreign workers at the above premises. 
 

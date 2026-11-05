@@ -37,6 +37,51 @@ class PDFConversionResult:
     engine_used: str = "local"
 
 
+def heal_page_break_splits(text: str) -> str:
+    """
+    Detects and heals sentences artificially severed across PDF page transitions.
+
+    When a physical PDF page breaks mid-sentence, converters insert blank lines (\n\n)
+    leaving a dangling clause (e.g. '...clean and\n\nsatisfactory condition...').
+
+    This function detects non-terminal paragraph ends followed by lowercase continuation
+    clauses and reunites them into unbroken, coherent sentences.
+    """
+    if not text:
+        return text
+
+    paragraphs = re.split(r"(\n\s*\n+)", text)
+    healed: list[str] = []
+
+    i = 0
+    while i < len(paragraphs):
+        seg = paragraphs[i]
+        if i % 2 == 0 and i + 2 < len(paragraphs):
+            p1 = seg.rstrip()
+            sep = paragraphs[i + 1]
+            p2 = paragraphs[i + 2].lstrip()
+
+            # Check conditions for sentence continuation:
+            # 1. p1 is not empty and doesn't look like a header, table, or list
+            # 2. p1 does not end in terminal punctuation (. ! ? : | # > ---)
+            # 3. p2 is not empty, not a header/table, and starts with a lowercase letter
+            if (
+                p1
+                and p2
+                and not p1.endswith(("|", "#", "---", ">", ":", ".", "!", "?"))
+                and not p2.startswith(("#", "|", "---", ">", "-", "*", "1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9."))
+                and p2[0].islower()
+            ):
+                merged = p1 + " " + p2
+                healed.append(merged)
+                i += 3
+                continue
+        healed.append(seg)
+        i += 1
+
+    return "".join(healed)
+
+
 def clean_markdown_artifacts(text: str) -> str:
     """
     Cleans layout noise without dropping any actual content:
@@ -45,6 +90,7 @@ def clean_markdown_artifacts(text: str) -> str:
     - Removes navigation anchor links (e.g. '**CONTENTS**', '**CONTENTS BACK**')
     - Removes running page numbers (e.g. 'Page 12 of 50', 'Page 12', '--- 12 ---')
     - Cleans duplicate blank lines
+    - Heals sentences severed across PDF page breaks
     - Preserves all tables (| ... |), headers (#, ##), and inline formatting
     """
     # Normalize unicode noise
@@ -78,6 +124,8 @@ def clean_markdown_artifacts(text: str) -> str:
     cleaned = "\n".join(cleaned_lines)
     # Collapse 3+ consecutive newlines into 2
     cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
+    # Heal sentences severed across PDF page boundaries
+    cleaned = heal_page_break_splits(cleaned)
     return cleaned.strip()
 
 

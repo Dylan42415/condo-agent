@@ -190,6 +190,9 @@ def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
 
 def split_into_sentences(text: str) -> list[str]:
     """Splits text into sentences while keeping bullet points and tables intact."""
+    from condo_classifier.pdf_converter import heal_page_break_splits
+
+    text = heal_page_break_splits(text)
     lines = text.splitlines()
     sentences: list[str] = []
     table_buffer: list[str] = []
@@ -252,6 +255,11 @@ class SemanticChunker:
         Executes two-stage semantic chunking on markdown content.
         Preserves parent section relationships for Small-to-Big retrieval.
         """
+        # Heal any dangling sentences severed by PDF page transitions
+        from condo_classifier.pdf_converter import heal_page_break_splits
+
+        markdown_text = heal_page_break_splits(markdown_text)
+
         # Stage 1: Structural Markdown Header Splitting
         from langchain_text_splitters import MarkdownHeaderTextSplitter
 
