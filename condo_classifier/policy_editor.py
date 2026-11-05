@@ -299,6 +299,14 @@ def locate_target_section(
         if s.level == 3 and score > 0:
             score += 0.5
 
+        # Prefer operative rule/by-law sections over static application forms unless the user explicitly mentions 'form' or 'application'
+        is_form_section = "application form" in s.breadcrumb.lower() or "form " in s.title.lower()
+        mentions_form = "form" in intent_clean or "application" in intent_clean
+        if not mentions_form and is_form_section:
+            score -= 3.0
+        elif not is_form_section and not mentions_form and score > 0:
+            score += 1.0
+
         scored.append((score, s, list(set(matches))))
 
     scored.sort(key=lambda x: x[0], reverse=True)
@@ -352,6 +360,64 @@ def locate_target_section(
 # Amendment Proposal Generator (Human-in-the-Loop)
 # ============================================================================
 
+def reconcile_surgical_amendment(orig_block: str, prop_block: str) -> str:
+    """
+    Surgically reconciles the proposed text against the original section block.
+
+    Eliminates spurious/hallucinated micro-diffs where the LLM accidentally altered
+    whitespace, trailing punctuation on blanks (e.g. '$__________.|' vs '$__________|'),
+    underline lengths, or stripped trailing newlines on lines that were NOT intended to change.
+    """
+    orig_trailing_ws = orig_block[len(orig_block.rstrip("\r\n")):]
+    orig_lines = [l.rstrip("\r\n") for l in orig_block.splitlines()]
+    prop_lines = [l.rstrip("\r\n") for l in prop_block.splitlines()]
+
+    def is_semantically_identical(orig_l: str, prop_l: str) -> bool:
+        o_clean = re.sub(r"[^a-zA-Z0-9]+", "", orig_l).lower()
+        p_clean = re.sub(r"[^a-zA-Z0-9]+", "", prop_l).lower()
+        return o_clean == p_clean
+
+    sm = difflib.SequenceMatcher(None, orig_lines, prop_lines)
+    reconciled: list[str] = []
+
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        if tag == "equal":
+            reconciled.extend(orig_lines[i1:i2])
+        elif tag == "replace":
+            orig_sub = orig_lines[i1:i2]
+            prop_sub = prop_lines[j1:j2]
+
+            if len(orig_sub) == len(prop_sub):
+                for o_ln, p_ln in zip(orig_sub, prop_sub):
+                    if is_semantically_identical(o_ln, p_ln):
+                        reconciled.append(o_ln)
+                    else:
+                        reconciled.append(p_ln)
+            else:
+                o_norm = "".join(re.sub(r"[^a-zA-Z0-9]+", "", l).lower() for l in orig_sub)
+                p_norm = "".join(re.sub(r"[^a-zA-Z0-9]+", "", l).lower() for l in prop_sub)
+                if o_norm == p_norm:
+                    reconciled.extend(orig_sub)
+                else:
+                    reconciled.extend(prop_sub)
+        elif tag == "delete":
+            # If the deleted lines are merely blank lines or whitespace, keep from orig
+            if all(not l.strip() for l in orig_lines[i1:i2]):
+                reconciled.extend(orig_lines[i1:i2])
+            else:
+                pass  # Real deletion
+        elif tag == "insert":
+            reconciled.extend(prop_lines[j1:j2])
+
+    result = "\n".join(reconciled)
+    if orig_trailing_ws:
+        result = result.rstrip("\r\n") + orig_trailing_ws
+    elif not result.endswith("\n"):
+        result += "\n"
+
+    return result
+
+
 def generate_policy_amendment(
     section: PolicySection,
     user_intent: str,
@@ -375,22 +441,27 @@ def generate_policy_amendment(
 
             system_instruction = (
                 "You are an expert Condominium Legal & Operations Policy Editor.\n"
-                "Your objective is to help estate staff amend condominium handbook clauses and tables.\n\n"
-                "CRITICAL RULES:\n"
-                "1. Apply ONLY the changes requested by the employee. Do NOT rewrite or alter unrelated sentences.\n"
-                "2. Maintain strict GitHub-Flavored Markdown table formatting (`|---|---|`).\n"
-                "3. Preserve the exact top heading of the section.\n"
-                "4. Return ONLY a valid JSON object matching the requested schema.\n"
+                "Your objective is to apply SURGICAL, MINIMAL amendments to condominium house rules and tables.\n\n"
+                "CRITICAL SURGICAL MANDATES:\n"
+                "1. ZERO UNNECESSARY CHANGES: Modify ONLY the specific number, word, or clause requested by the employee.\n"
+                "2. NO WASTED OUTPUT TOKENS: Identify the exact phrase/clause to be changed. Do NOT invent changes to untouched sentences.\n"
+                "3. VERBATIM PRESERVATION: Every untouched line, table row, sentence, punctuation mark, and blank underline must remain 100% IDENTICAL to the original text.\n"
+                "4. DO NOT trim, reformat, or alter fill-in lines (e.g. keep 'for $__________.|' exactly as-is).\n"
+                "5. Maintain strict GitHub-Flavored Markdown table formatting.\n"
+                "6. Return ONLY a valid JSON object matching the requested schema.\n"
             )
 
             prompt = (
                 f"EMPLOYEE INTENT / INSTRUCTION:\n\"{user_intent}\"\n\n"
                 f"CURRENT SECTION TEXT:\n{section.raw_block}\n\n"
-                f"Produce the updated section markdown and a concise explanation.\n"
+                f"Provide targeted surgical replacement phrases AND the full updated markdown.\n"
                 f"Return JSON:\n"
                 f"{{\n"
                 f"  \"explanation\": \"Brief 1-sentence summary of the rule change\",\n"
                 f"  \"summary_bullets\": [\"Bullet 1 of exact changes made\", \"Bullet 2\"],\n"
+                f"  \"replacements\": [\n"
+                f"    {{\"original_phrase\": \"verbatim substring from CURRENT SECTION TEXT to replace\", \"updated_phrase\": \"replacement substring\"}}\n"
+                f"  ],\n"
                 f"  \"updated_markdown\": \"Full updated markdown including heading and tables\"\n"
                 f"}}"
             )
@@ -406,10 +477,29 @@ def generate_policy_amendment(
             )
 
             parsed = json.loads(res.text)
-            proposed_raw_block = parsed.get("updated_markdown", "").strip()
             summary_bullets = parsed.get("summary_bullets", [])
             explanation = parsed.get("explanation", f"Amended {section.title} to satisfy intent.")
             model_used = f"gemini:{model_name}"
+
+            # Step 1: Attempt ultra-surgical verbatim replacements if provided (eliminates spurious line diffs)
+            replacements = parsed.get("replacements", [])
+            if isinstance(replacements, list) and len(replacements) > 0:
+                candidate_block = section.raw_block
+                all_applied = True
+                for rep in replacements:
+                    orig_p = rep.get("original_phrase", "")
+                    upd_p = rep.get("updated_phrase", "")
+                    if orig_p and orig_p in candidate_block:
+                        candidate_block = candidate_block.replace(orig_p, upd_p, 1)
+                    else:
+                        all_applied = False
+                        break
+                if all_applied and candidate_block != section.raw_block:
+                    proposed_raw_block = candidate_block
+
+            # Step 2: Fall back to updated_markdown if replacements weren't provided or didn't match
+            if not proposed_raw_block:
+                proposed_raw_block = parsed.get("updated_markdown", "").strip()
         except Exception as e:
             logger.warning(f"Gemini amendment generation call failed ({e}); falling back to deterministic.")
 
@@ -418,6 +508,9 @@ def generate_policy_amendment(
         proposed_raw_block, summary_bullets, explanation = _deterministic_amendment_fallback(
             section, user_intent
         )
+
+    # Surgically reconcile proposed block against original to eliminate accidental micro-diffs on untouched lines
+    proposed_raw_block = reconcile_surgical_amendment(section.raw_block, proposed_raw_block)
 
     # Ensure trailing horizontal rule (---) is preserved if original had it
     had_hr = bool(re.search(r"\n---\s*$", section.raw_block.rstrip()))

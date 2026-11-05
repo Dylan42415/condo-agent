@@ -17,8 +17,10 @@ from condo_classifier.policy_editor import (
     load_audit_history,
     locate_target_section,
     parse_handbook_sections,
+    reconcile_surgical_amendment,
     render_diff_html,
     rollback_amendment,
+    _compute_annotated_diff,
 )
 
 SAMPLE_HANDBOOK_TEXT = """# Marina Heights Condominium - By-laws
@@ -168,3 +170,54 @@ def test_apply_amendment_and_audit_trail(tmp_path: Path, monkeypatch):
     new_history = load_audit_history()
     assert len(new_history) == 2
     assert new_history[0]["status"] == "ROLLED_BACK"
+
+
+def test_reconcile_surgical_amendment_eliminates_spurious_diffs():
+    """Verify that accidental micro-diffs on untouched lines and trailing blank deletions are eliminated."""
+    orig_block = (
+        "|3.00 pm / 4.00 pm to 10.00 pm). I/We hereby place the deposit of **$150.00** by way of <br>Cheque No.______________ . In addition to the refundable deposit, I/We also enclose a **$15.00**|\n"
+        "|I/We acknowledge the return of my Cheque No._____________ for $_________.|\n"
+        "|I/We acknowledge receipt of the refund of $_______in *cash/Cheque No._________.|\n\n"
+    )
+    # LLM altered $150 to $300 (intentional), dropped a trailing period on line 2 (accidental), and trimmed trailing newline
+    prop_block_from_llm = (
+        "|3.00 pm / 4.00 pm to 10.00 pm). I/We hereby place the deposit of **$300.00** by way of <br>Cheque No.______________ . In addition to the refundable deposit, I/We also enclose a **$15.00**|\n"
+        "|I/We acknowledge the return of my Cheque No._____________ for $_________|\n"
+        "|I/We acknowledge receipt of the refund of $_______in *cash/Cheque No._________.|"
+    )
+
+    reconciled = reconcile_surgical_amendment(orig_block, prop_block_from_llm)
+
+    # Line 2 should have been snapped back to orig_block character-for-character
+    assert "|I/We acknowledge the return of my Cheque No._____________ for $_________.|" in reconciled
+    # Trailing newline/blank should be preserved
+    assert reconciled.endswith("\n\n")
+
+    # Compute diff lines
+    orig_lines = orig_block.splitlines(keepends=True)
+    rec_lines = reconciled.splitlines(keepends=True)
+    diff_lines, adds, dels = _compute_annotated_diff(orig_lines, rec_lines)
+
+    # Exactly 1 add and 1 del for the deposit change ($150 -> $300); zero spurious diffs
+    assert adds == 1
+    assert dels == 1
+    non_unchanged = [d for d in diff_lines if d[0] != "unchanged"]
+    assert len(non_unchanged) == 2
+    assert "$150.00" in non_unchanged[0][1]
+    assert "$300.00" in non_unchanged[1][1]
+
+
+def test_locate_target_section_prioritizes_rules_over_forms():
+    """Verify that operative rules are prioritized over application forms unless 'form' is requested."""
+    text = Path("Knowledge Base/converted_tribeca_handbook.md").read_text(encoding="utf-8")
+    sections = parse_handbook_sections(text)
+
+    intent = "When booking a barbecue pit, Resident shall deposit from $150.00 per pit to 300$"
+    best_sec, score, rationale = locate_target_section(sections, intent, use_llm=False)
+
+    # Must select the operative Barbecue Area rule section, NOT Form E
+    assert "Barbecue Area" in best_sec.title
+    assert "Form" not in best_sec.title
+    assert "Application" not in best_sec.breadcrumb
+    assert score > 10.0
+
